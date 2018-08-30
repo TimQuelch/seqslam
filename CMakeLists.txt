@@ -8,10 +8,13 @@ find_package(Eigen3 REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(benchmark REQUIRED)
 
-add_library(seqslam src/seqslam.cpp)
 
+set(warnings -Wall -Wextra -Wpedantic)
+set(optimisations -O3 -march=native)
+add_compile_options(${warnings} ${optimisations})
+
+add_library(seqslam src/seqslam.cpp)
 target_compile_features(seqslam PUBLIC cxx_std_17)
-target_compile_options(seqslam PRIVATE -Wall -Wextra -Wpedantic -O3)
 target_link_libraries(seqslam
     PUBLIC
     Eigen3::Eigen
@@ -22,9 +25,11 @@ target_link_libraries(seqslam
     stdc++fs)
 
 add_executable(demo src/demo.cpp)
-target_compile_options(demo PRIVATE -Wall -Wextra -Wpedantic -O3)
 target_link_libraries(demo PRIVATE seqslam)
 
 add_executable(seqslam-benchmark src/benchmark.cpp)
-target_compile_options(seqslam-benchmark PRIVATE -Wall -Wextra -Wpedantic -O3)
 target_link_libraries(seqslam-benchmark PRIVATE seqslam benchmark)
+
+add_executable(sad-benchmark src/sad-benchmark.cpp)
+target_compile_features(sad-benchmark PRIVATE cxx_std_17)
+target_link_libraries(sad-benchmark PRIVATE benchmark Eigen3::Eigen)
