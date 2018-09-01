@@ -64,8 +64,6 @@ namespace seqslam {
                     (*mx)(i, j) = (referenceMxs[i] - queryMxs[j]).cwiseAbs().sum();
                 }
             }
-            mx.array() -= mx.minCoeff();
-            mx /= mx.maxCoeff();
             return mx;
         }
 
@@ -76,8 +74,6 @@ namespace seqslam {
                 auto std = std::sqrt((mx.col(i).array() - mean).square().sum() / (mx.rows() - 1));
                 res.col(i) = (mx.col(i).array() - mean) / std;
             }
-            res.array() -= res.minCoeff();
-            res /= res.maxCoeff();
             return res;
         }
     } // namespace cpu
