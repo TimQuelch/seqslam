@@ -17,8 +17,8 @@ int main() {
     const auto diffMatrix = cpu::generateDiffMx(referenceImages, queryImages);
 
     const auto diffMatrixIm = [&]() -> cv::Mat {
-        auto im = cv::Mat(diffMatrix.rows(), diffMatrix.cols(), CV_8UC1);
-        cv::eigen2cv(DiffMx{diffMatrix}, im);
+        auto im = cv::Mat(diffMatrix->rows(), diffMatrix->cols(), CV_8UC1);
+        cv::eigen2cv(*diffMatrix, im);
         return im;
     }();
 
