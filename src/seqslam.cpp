@@ -66,15 +66,5 @@ namespace seqslam {
             }
             return mx;
         }
-
-        auto enhanceDiffMxContrast(const DiffMx& mx) -> DiffMx {
-            DiffMx res = DiffMx{mx.rows(), mx.cols()};
-            for (auto i = 0u; i < mx.cols(); i++) {
-                auto mean = mx.col(i).mean();
-                auto std = std::sqrt((mx.col(i).array() - mean).square().sum() / (mx.rows() - 1));
-                res.col(i) = (mx.col(i).array() - mean) / std;
-            }
-            return res;
-        }
     } // namespace cpu
 } // namespace seqslam

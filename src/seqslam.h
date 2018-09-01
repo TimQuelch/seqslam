@@ -23,7 +23,5 @@ namespace seqslam {
     namespace cpu {
         auto generateDiffMx(const ImgMxVector& referenceMxs, const ImgMxVector& queryMxs)
             -> std::unique_ptr<DiffMx>;
-
-        auto enhanceDiffMxContrast(const DiffMx& mx) -> DiffMx;
     } // namespace cpu
 } // namespace seqslam

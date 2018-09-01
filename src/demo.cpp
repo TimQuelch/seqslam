@@ -15,11 +15,10 @@ int main() {
         convertToEigen(contrastEnhancement(readImages(dataDir / "summer"), 20));
 
     const auto diffMatrix = cpu::generateDiffMx(referenceImages, queryImages);
-    const auto diffMatrixEnhanced = cpu::enhanceDiffMxContrast(diffMatrix);
 
     const auto diffMatrixIm = [&]() -> cv::Mat {
-        auto im = cv::Mat(diffMatrixEnhanced.rows(), diffMatrixEnhanced.cols(), CV_8UC1);
-        cv::eigen2cv(diffMx{diffMatrixEnhanced * 255}, im);
+        auto im = cv::Mat(diffMatrix.rows(), diffMatrix.cols(), CV_8UC1);
+        cv::eigen2cv(DiffMx{diffMatrix}, im);
         return im;
     }();
 
