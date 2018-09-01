@@ -33,18 +33,18 @@ namespace seqslam {
         return contrastEnhanced;
     }
 
-    auto convertToEigen(const std::vector<cv::Mat>& images) -> imgMxVector {
-        imgMxVector res;
+    auto convertToEigen(const std::vector<cv::Mat>& images) -> ImgMxVector {
+        ImgMxVector res;
         res.reserve(images.size());
         std::transform(images.begin(), images.end(), std::back_inserter(res), [](const auto& im) {
-            imgMx mat;
+            ImgMx mat;
             cv::cv2eigen(im, mat);
             return mat;
         });
         return res;
     }
 
-    auto convertToCv(const imgMxVector& mxs) -> std::vector<cv::Mat> {
+    auto convertToCv(const ImgMxVector& mxs) -> std::vector<cv::Mat> {
         std::vector<cv::Mat> res;
         res.reserve(mxs.size());
         std::transform(mxs.begin(), mxs.end(), std::back_inserter(res), [](const auto& mx) {
@@ -56,12 +56,12 @@ namespace seqslam {
     }
 
     namespace cpu {
-        auto generateDiffMx(const imgMxVector& referenceMats, const imgMxVector& queryMats)
-            -> diffMx {
-            diffMx mx{referenceMats.size(), queryMats.size()};
-            for (auto i = 0u; i < referenceMats.size(); i++) {
-                for (auto j = 0u; j < queryMats.size(); j++) {
-                    mx(i, j) = (referenceMats[i] - queryMats[j]).cwiseAbs().sum();
+        auto generateDiffMx(const ImgMxVector& referenceMxs, const ImgMxVector& queryMxs)
+            -> std::unique_ptr<DiffMx> {
+            auto mx = std::make_unique<DiffMx>(referenceMxs.size(), queryMxs.size());
+            for (auto i = 0u; i < referenceMxs.size(); i++) {
+                for (auto j = 0u; j < queryMxs.size(); j++) {
+                    (*mx)(i, j) = (referenceMxs[i] - queryMxs[j]).cwiseAbs().sum();
                 }
             }
             mx.array() -= mx.minCoeff();
@@ -69,8 +69,8 @@ namespace seqslam {
             return mx;
         }
 
-        auto enhanceDiffMxContrast(const diffMx& mx) -> diffMx {
-            diffMx res = diffMx{mx.rows(), mx.cols()};
+        auto enhanceDiffMxContrast(const DiffMx& mx) -> DiffMx {
+            DiffMx res = DiffMx{mx.rows(), mx.cols()};
             for (auto i = 0u; i < mx.cols(); i++) {
                 auto mean = mx.col(i).mean();
                 auto std = std::sqrt((mx.col(i).array() - mean).square().sum() / (mx.rows() - 1));
