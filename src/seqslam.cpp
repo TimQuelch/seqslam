@@ -56,12 +56,44 @@ namespace seqslam {
     }
 
     namespace cpu {
-        auto generateDiffMx(const ImgMxVector& referenceMxs, const ImgMxVector& queryMxs)
-            -> std::unique_ptr<DiffMx> {
+        auto generateDiffMx(const ImgMxVector& referenceMxs,
+                            const ImgMxVector& queryMxs,
+                            std::size_t tileSize) -> std::unique_ptr<DiffMx> {
             auto mx = std::make_unique<DiffMx>(referenceMxs.size(), queryMxs.size());
-            for (auto i = 0u; i < referenceMxs.size(); i++) {
-                for (auto j = 0u; j < queryMxs.size(); j++) {
-                    (*mx)(i, j) = (referenceMxs[i] - queryMxs[j]).cwiseAbs().sum();
+            for (auto tr = 0u; tr < referenceMxs.size() / tileSize; tr++) {
+                for (auto tq = 0u; tq < queryMxs.size() / tileSize; tq++) {
+                    for (auto i = 0u; i < tileSize; i++) {
+                        for (auto j = 0u; j < tileSize; j++) {
+                            const auto r = tr * tileSize + i;
+                            const auto q = tq * tileSize + j;
+                            (*mx)(r, q) = (referenceMxs[r] - queryMxs[q]).cwiseAbs().sum();
+                        }
+                    }
+                }
+            }
+            const auto rrem = referenceMxs.size() % tileSize;
+            const auto qrem = queryMxs.size() % tileSize;
+            for (auto tr = 0u; tr < referenceMxs.size() / tileSize; tr++) {
+                for (auto i = 0u; i < tileSize; i++) {
+                    for (auto j = 0u; j < qrem; j++) {
+                        const auto r = tr * tileSize + i;
+                        const auto q = queryMxs.size() - qrem + j;
+                        (*mx)(r, q) = (referenceMxs[r] - queryMxs[q]).cwiseAbs().sum();
+                    }
+                }
+            }
+            for (auto tq = 0u; tq < queryMxs.size() / tileSize; tq++) {
+                for (auto i = 0u; i < rrem; i++) {
+                    for (auto j = 0u; j < tileSize; j++) {
+                        const auto r = referenceMxs.size() - rrem + i;
+                        const auto q = tq * tileSize + j;
+                        (*mx)(r, q) = (referenceMxs[r] - queryMxs[q]).cwiseAbs().sum();
+                    }
+                }
+            }
+            for (auto r = referenceMxs.size() - rrem; r < referenceMxs.size(); r++) {
+                for (auto q = queryMxs.size() - qrem; q < queryMxs.size(); q++) {
+                    (*mx)(r, q) = (referenceMxs[r] - queryMxs[q]).cwiseAbs().sum();
                 }
             }
             return mx;

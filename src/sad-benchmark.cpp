@@ -10,7 +10,7 @@
 
 constexpr auto rows = 32;
 constexpr auto cols = 64;
-constexpr auto nVecImages = 8192;
+constexpr auto nVecImages = 32768;
 constexpr auto nSqrImages = 4096;
 
 template <typename T>
@@ -83,11 +83,11 @@ void sadMx(benchmark::State& state) {
     }
     state.SetItemsProcessed(state.iterations() * rows * cols);
 }
-BENCHMARK_TEMPLATE(sadMx, uint8_t);
-BENCHMARK_TEMPLATE(sadMx, int16_t);
-BENCHMARK_TEMPLATE(sadMx, int32_t);
-BENCHMARK_TEMPLATE(sadMx, float);
-BENCHMARK_TEMPLATE(sadMx, double);
+// BENCHMARK_TEMPLATE(sadMx, uint8_t);
+// BENCHMARK_TEMPLATE(sadMx, int16_t);
+// BENCHMARK_TEMPLATE(sadMx, int32_t);
+// BENCHMARK_TEMPLATE(sadMx, float);
+// BENCHMARK_TEMPLATE(sadMx, double);
 
 template <typename T>
 void sadFlatMx(benchmark::State& state) {
@@ -100,11 +100,11 @@ void sadFlatMx(benchmark::State& state) {
     }
     state.SetItemsProcessed(state.iterations() * rows * cols);
 }
-BENCHMARK_TEMPLATE(sadFlatMx, uint8_t);
-BENCHMARK_TEMPLATE(sadFlatMx, int16_t);
-BENCHMARK_TEMPLATE(sadFlatMx, int32_t);
-BENCHMARK_TEMPLATE(sadFlatMx, float);
-BENCHMARK_TEMPLATE(sadFlatMx, double);
+// BENCHMARK_TEMPLATE(sadFlatMx, uint8_t);
+// BENCHMARK_TEMPLATE(sadFlatMx, int16_t);
+// BENCHMARK_TEMPLATE(sadFlatMx, int32_t);
+// BENCHMARK_TEMPLATE(sadFlatMx, float);
+// BENCHMARK_TEMPLATE(sadFlatMx, double);
 
 template <typename T>
 void vecSadMx(benchmark::State& state) {
@@ -119,11 +119,11 @@ void vecSadMx(benchmark::State& state) {
     }
     state.SetItemsProcessed(state.iterations() * n * rows * cols);
 }
-BENCHMARK_TEMPLATE(vecSadMx, uint8_t)->Arg(nVecImages);
-BENCHMARK_TEMPLATE(vecSadMx, int16_t)->Arg(nVecImages);
-BENCHMARK_TEMPLATE(vecSadMx, int32_t)->Arg(nVecImages);
+// BENCHMARK_TEMPLATE(vecSadMx, uint8_t)->Arg(nVecImages);
+// BENCHMARK_TEMPLATE(vecSadMx, int16_t)->Arg(nVecImages);
+// BENCHMARK_TEMPLATE(vecSadMx, int32_t)->Arg(nVecImages);
 BENCHMARK_TEMPLATE(vecSadMx, float)->Arg(nVecImages);
-BENCHMARK_TEMPLATE(vecSadMx, double)->Arg(nVecImages);
+// BENCHMARK_TEMPLATE(vecSadMx, double)->Arg(nVecImages);
 
 template <typename T>
 void vecSadFlatMx(benchmark::State& state) {
@@ -138,11 +138,11 @@ void vecSadFlatMx(benchmark::State& state) {
     }
     state.SetItemsProcessed(state.iterations() * n * rows * cols);
 }
-BENCHMARK_TEMPLATE(vecSadFlatMx, uint8_t)->Arg(nVecImages);
-BENCHMARK_TEMPLATE(vecSadFlatMx, int16_t)->Arg(nVecImages);
-BENCHMARK_TEMPLATE(vecSadFlatMx, int32_t)->Arg(nVecImages);
-BENCHMARK_TEMPLATE(vecSadFlatMx, float)->Arg(nVecImages);
-BENCHMARK_TEMPLATE(vecSadFlatMx, double)->Arg(nVecImages);
+// BENCHMARK_TEMPLATE(vecSadFlatMx, uint8_t)->Arg(nVecImages);
+// BENCHMARK_TEMPLATE(vecSadFlatMx, int16_t)->Arg(nVecImages);
+// BENCHMARK_TEMPLATE(vecSadFlatMx, int32_t)->Arg(nVecImages);
+// BENCHMARK_TEMPLATE(vecSadFlatMx, float)->Arg(nVecImages);
+// BENCHMARK_TEMPLATE(vecSadFlatMx, double)->Arg(nVecImages);
 
 template <typename T>
 void sqrSadMx(benchmark::State& state) {
@@ -159,11 +159,11 @@ void sqrSadMx(benchmark::State& state) {
     }
     state.SetItemsProcessed(state.iterations() * n * n * rows * cols);
 }
-BENCHMARK_TEMPLATE(sqrSadMx, uint8_t)->Arg(nSqrImages);
-BENCHMARK_TEMPLATE(sqrSadMx, int16_t)->Arg(nSqrImages);
-BENCHMARK_TEMPLATE(sqrSadMx, int32_t)->Arg(nSqrImages);
-BENCHMARK_TEMPLATE(sqrSadMx, float)->Arg(nSqrImages);
-BENCHMARK_TEMPLATE(sqrSadMx, double)->Arg(nSqrImages);
+// BENCHMARK_TEMPLATE(sqrSadMx, uint8_t)->Arg(nSqrImages);
+// BENCHMARK_TEMPLATE(sqrSadMx, int16_t)->Arg(nSqrImages);
+// BENCHMARK_TEMPLATE(sqrSadMx, int32_t)->Arg(nSqrImages);
+// BENCHMARK_TEMPLATE(sqrSadMx, float)->Arg(nSqrImages);
+// BENCHMARK_TEMPLATE(sqrSadMx, double)->Arg(nSqrImages);
 
 template <typename T>
 void sqrSadFlatMx(benchmark::State& state) {
@@ -180,10 +180,64 @@ void sqrSadFlatMx(benchmark::State& state) {
     }
     state.SetItemsProcessed(state.iterations() * n * n * rows * cols);
 }
-BENCHMARK_TEMPLATE(sqrSadFlatMx, uint8_t)->Arg(nSqrImages);
-BENCHMARK_TEMPLATE(sqrSadFlatMx, int16_t)->Arg(nSqrImages);
-BENCHMARK_TEMPLATE(sqrSadFlatMx, int32_t)->Arg(nSqrImages);
+// BENCHMARK_TEMPLATE(sqrSadFlatMx, uint8_t)->Arg(nSqrImages);
+// BENCHMARK_TEMPLATE(sqrSadFlatMx, int16_t)->Arg(nSqrImages);
+// BENCHMARK_TEMPLATE(sqrSadFlatMx, int32_t)->Arg(nSqrImages);
 BENCHMARK_TEMPLATE(sqrSadFlatMx, float)->Arg(nSqrImages);
-BENCHMARK_TEMPLATE(sqrSadFlatMx, double)->Arg(nSqrImages);
+// BENCHMARK_TEMPLATE(sqrSadFlatMx, double)->Arg(nSqrImages);
+
+template <typename T, int TileSize>
+void sqrCacheOptimisedSadMx(benchmark::State& state) {
+    auto n = state.range(0);
+    auto a = genVecMx<T>(n);
+    auto b = genVecMx<T>(n);
+
+    for (auto _ : state) {
+        for (auto tx = 0; tx < n / TileSize; tx++) {
+            for (auto ty = 0; ty < n / TileSize; ty++) {
+                for (auto i = 0u; i < TileSize; i++) {
+                    for (auto j = 0u; j < TileSize; j++) {
+                        auto d = (a[tx * TileSize + i] - b[ty * TileSize + j]).cwiseAbs().sum();
+                        benchmark::DoNotOptimize(&d);
+                    }
+                }
+            }
+        }
+    }
+    state.SetItemsProcessed(state.iterations() * n * n * rows * cols);
+}
+// BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMx, uint8_t)->Arg(nSqrImages);
+// BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMx, int16_t)->Arg(nSqrImages);
+// BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMx, int32_t)->Arg(nSqrImages);
+// BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMx, float, 4)->Arg(nSqrImages);
+// BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMx, double)->Arg(nSqrImages);
+BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMx, float, 8)->Arg(nSqrImages);
+BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMx, float, 16)->Arg(nSqrImages);
+BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMx, float, 32)->Arg(nSqrImages);
+BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMx, float, 64)->Arg(nSqrImages);
+BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMx, float, 128)->Arg(nSqrImages);
+
+template <typename T, int TileSize>
+void sqrCacheOptimisedThreadSadMx(benchmark::State& state) {
+    auto n = state.range(0);
+    auto a = genVecMx<T>(n);
+    auto b = genVecMx<T>(n);
+
+    for (auto _ : state) {
+#pragma omp parallel for
+        for (auto tx = 0; tx < n / TileSize; tx++) {
+            for (auto ty = 0; ty < n / TileSize; ty++) {
+                for (auto i = 0u; i < TileSize; i++) {
+                    for (auto j = 0u; j < TileSize; j++) {
+                        auto d = (a[tx * TileSize + i] - b[ty * TileSize + j]).cwiseAbs().sum();
+                        benchmark::DoNotOptimize(&d);
+                    }
+                }
+            }
+        }
+    }
+    state.SetItemsProcessed(state.iterations() * n * n * rows * cols);
+}
+BENCHMARK_TEMPLATE(sqrCacheOptimisedThreadSadMx, float, 16)->Arg(nSqrImages);
 
 BENCHMARK_MAIN();

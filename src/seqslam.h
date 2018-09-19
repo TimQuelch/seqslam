@@ -21,7 +21,8 @@ namespace seqslam {
     auto convertToCv(const ImgMxVector& images) -> std::vector<cv::Mat>;
 
     namespace cpu {
-        auto generateDiffMx(const ImgMxVector& referenceMxs, const ImgMxVector& queryMxs)
-            -> std::unique_ptr<DiffMx>;
+        auto generateDiffMx(const ImgMxVector& referenceMxs,
+                            const ImgMxVector& queryMxs,
+                            std::size_t tileSize = 32) -> std::unique_ptr<DiffMx>;
     } // namespace cpu
 } // namespace seqslam

@@ -6,8 +6,8 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 
 find_package(Eigen3 REQUIRED)
 find_package(OpenCV REQUIRED)
+find_package(OpenMP REQUIRED COMPONENTS CXX)
 find_package(benchmark REQUIRED)
-
 
 set(warnings -Wall -Wextra -Wpedantic)
 set(optimisations -O3 -march=native)
@@ -32,4 +32,4 @@ target_link_libraries(seqslam-benchmark PRIVATE seqslam benchmark)
 
 add_executable(sad-benchmark src/sad-benchmark.cpp)
 target_compile_features(sad-benchmark PRIVATE cxx_std_17)
-target_link_libraries(sad-benchmark PRIVATE benchmark Eigen3::Eigen)
+target_link_libraries(sad-benchmark PRIVATE benchmark Eigen3::Eigen OpenMP::OpenMP_CXX)
