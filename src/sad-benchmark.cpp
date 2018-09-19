@@ -8,8 +8,8 @@
 #include <Eigen/Dense>
 #include <Eigen/StdVector>
 
-constexpr auto rows = 32;
-constexpr auto cols = 64;
+constexpr auto rows = 16;
+constexpr auto cols = 32;
 constexpr auto nVecImages = 32768;
 constexpr auto nSqrImages = 4096;
 

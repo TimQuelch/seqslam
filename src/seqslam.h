@@ -5,8 +5,8 @@
 #include <opencv2/core.hpp>
 
 namespace seqslam {
-    constexpr auto nRows = 32u;
-    constexpr auto nCols = 64u;
+    constexpr auto nRows = 16u;
+    constexpr auto nCols = 32u;
 
     using ImgMx = Eigen::Matrix<float, nRows, nCols>;
     using ImgMxVector = std::vector<ImgMx, Eigen::aligned_allocator<ImgMx>>;
