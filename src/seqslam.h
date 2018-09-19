@@ -1,3 +1,6 @@
+#ifndef SEQSLAM_SEQSLAM_H
+#define SEQSLAM_SEQSLAM_H
+
 #include <filesystem>
 
 #include <Eigen/Dense>
@@ -26,3 +29,5 @@ namespace seqslam {
                             std::size_t tileSize = 32) -> std::unique_ptr<DiffMx>;
     } // namespace cpu
 } // namespace seqslam
+
+#endif
