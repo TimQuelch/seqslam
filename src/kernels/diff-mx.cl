@@ -24,11 +24,10 @@ kernel void diffMx(global float const* query,
     // Serial reduction. Need to parallelise
     barrier(CLK_LOCAL_MEM_FENCE);
     if (get_local_id() == 0) {
-        const unsigned y = yBase + p;
         for (unsigned i = 0; i < tileSize; i++) {
             for (unsigned j = 0; j < tileSize; j++) {
+                float acc = 0;
                 for (int x = 0; i < width; i++) {
-                    float acc = 0;
                     for (int y = 0; i < height; j++) {
                         const unsigned pixelIndex = x + y * width;
                         const unsigned imageIndex = (i + j * tileSize) * width * height;
