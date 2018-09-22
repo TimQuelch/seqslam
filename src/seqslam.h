@@ -11,9 +11,9 @@ namespace seqslam {
     constexpr auto nRows = 16u;
     constexpr auto nCols = 32u;
 
-    using ImgMx = Eigen::Matrix<float, nRows, nCols>;
+    using ImgMx = Eigen::Matrix<float, nRows, nCols, Eigen::RowMajor>;
     using ImgMxVector = std::vector<ImgMx, Eigen::aligned_allocator<ImgMx>>;
-    using DiffMx = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic>;
+    using DiffMx = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 
     auto readImages(std::filesystem::path dir) -> std::vector<cv::Mat>;
 
