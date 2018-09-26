@@ -97,4 +97,18 @@ namespace seqslam {
             return mx;
         }
     } // namespace cpu
+
+    namespace opencl {
+        auto convertToBuffer(const ImgMxVector& images, Context& context, Buffer::Access access)
+            -> Buffer {
+            auto clbuffer =
+                Buffer{context, images.size() * nRows * nCols * sizeof(PixType), access};
+            auto buffer = std::make_unique<PixType[]>(images.size() * nRows * nCols);
+            for (auto i = 0u; i < images.size(); i++) {
+                Eigen::Map<ImgMx>{buffer.get() + i* nRows* nCols} = images[i];
+            }
+            clbuffer.writeBuffer(buffer.get());
+            return clbuffer;
+        }
+    } // namespace opencl
 } // namespace seqslam

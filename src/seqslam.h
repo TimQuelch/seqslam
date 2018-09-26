@@ -1,6 +1,8 @@
 #ifndef SEQSLAM_SEQSLAM_H
 #define SEQSLAM_SEQSLAM_H
 
+#include "clutils.h"
+
 #include <filesystem>
 
 #include <Eigen/Dense>
@@ -29,6 +31,11 @@ namespace seqslam {
                             const ImgMxVector& queryMxs,
                             std::size_t tileSize = 32) -> std::unique_ptr<DiffMx>;
     } // namespace cpu
+
+    namespace opencl {
+        auto convertToBuffer(const ImgMxVector& images, Context& context, Buffer::Access access)
+            -> Buffer;
+    } // namespace opencl
 } // namespace seqslam
 
 #endif
