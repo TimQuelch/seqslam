@@ -1,7 +1,5 @@
 #include "seqslam.h"
 
-#include <filesystem>
-
 #include <opencv2/core.hpp>
 #include <opencv2/core/eigen.hpp>
 #include <opencv2/highgui.hpp>
