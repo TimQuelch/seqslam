@@ -40,3 +40,5 @@ target_link_libraries(seqslam-benchmark PRIVATE seqslam benchmark)
 add_executable(sad-benchmark src/sad-benchmark.cpp)
 target_compile_features(sad-benchmark PRIVATE cxx_std_17)
 target_link_libraries(sad-benchmark PRIVATE benchmark Eigen3::Eigen OpenMP::OpenMP_CXX)
+
+configure_file(src/kernels/diff-mx.cl ./kernels/diff-mx.cl COPYONLY)
