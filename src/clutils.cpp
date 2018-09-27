@@ -38,15 +38,15 @@ namespace seqslam {
                                    size},
               queue_{context.queue()} {}
 
-        void Buffer::readBuffer(void* destination) { readBuffer(destination, 0, size_); }
+        void Buffer::readBuffer(void* destination) const { readBuffer(destination, 0, size_); }
 
-        void Buffer::readBuffer(void* destination, std::size_t offset, std::size_t size) {
+        void Buffer::readBuffer(void* destination, std::size_t offset, std::size_t size) const {
             queue_.enqueueReadBuffer(buffer_, true, offset, size, destination);
         }
 
-        void Buffer::writeBuffer(void const* source) { writeBuffer(source, 0, size_); }
+        void Buffer::writeBuffer(void const* source) const { writeBuffer(source, 0, size_); }
 
-        void Buffer::writeBuffer(void const* source, std::size_t offset, std::size_t size) {
+        void Buffer::writeBuffer(void const* source, std::size_t offset, std::size_t size) const {
             queue_.enqueueWriteBuffer(buffer_, true, offset, size, source);
         }
 
@@ -102,20 +102,20 @@ namespace seqslam {
 
         void Context::runKernel(std::string const& kernelName,
                                 std::vector<std::size_t> const& globalDims,
-                                std::vector<std::size_t> const& localDims) {
+                                std::vector<std::size_t> const& localDims) const {
             queue_.enqueueNDRangeKernel(
-                kernels_[kernelName], {0, 0, 0}, toNdRange(globalDims), toNdRange(localDims));
+                kernels_.at(kernelName), {0, 0, 0}, toNdRange(globalDims), toNdRange(localDims));
         }
 
         void
         Context::setKernelArg(std::string const& kernelName, unsigned index, Buffer const& arg) {
-            kernels_[kernelName].setArg(index, arg.buffer());
+            kernels_.at(kernelName).setArg(index, arg.buffer());
         }
 
         void Context::setKernelLocalArg(std::string const& kernelName,
                                         unsigned index,
                                         std::size_t size) {
-            kernels_[kernelName].setArg(index, size, NULL);
+            kernels_.at(kernelName).setArg(index, size, NULL);
         };
     } // namespace opencl
 } // namespace seqslam

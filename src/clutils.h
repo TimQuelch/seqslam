@@ -18,10 +18,10 @@ namespace seqslam {
 
             Buffer(Context const& context, std::size_t size, Access access);
 
-            void readBuffer(void* destination);
-            void readBuffer(void* destination, std::size_t offset, std::size_t size);
-            void writeBuffer(void const* source);
-            void writeBuffer(void const* source, std::size_t offset, std::size_t size);
+            void readBuffer(void* destination) const;
+            void readBuffer(void* destination, std::size_t offset, std::size_t size) const;
+            void writeBuffer(void const* source) const;
+            void writeBuffer(void const* source, std::size_t offset, std::size_t size) const;
 
             cl::Buffer& buffer() { return buffer_; }
             cl::Buffer const& buffer() const { return buffer_; }
@@ -42,11 +42,11 @@ namespace seqslam {
 
             void runKernel(std::string const& kernelName,
                            std::vector<std::size_t> const& globalDims,
-                           std::vector<std::size_t> const& localDims);
+                           std::vector<std::size_t> const& localDims) const;
 
             template <typename T>
             void setKernelArg(std::string const& kernelName, unsigned index, T const& arg) {
-                kernels_[kernelName].setArg(index, arg);
+                kernels_.at(kernelName).setArg(index, arg);
             }
 
             void setKernelArg(std::string const& kernelName, unsigned index, Buffer const& arg);
