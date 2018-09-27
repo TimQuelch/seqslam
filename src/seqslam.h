@@ -40,6 +40,17 @@ namespace seqslam {
         auto generateDiffMx(ImgMxVector const& referenceMxs,
                             ImgMxVector const& queryMxs,
                             std::size_t tileSize) -> std::unique_ptr<DiffMx>;
+
+        auto generateDiffMx(Context& context,
+                            ImgMxVector const& referenceMxs,
+                            ImgMxVector const& queryMxs,
+                            std::size_t tileSize) -> std::unique_ptr<DiffMx>;
+
+        auto generateDiffMx(Context const& context,
+                            Buffer const& outBuffer,
+                            std::size_t referenceSize,
+                            std::size_t querySize,
+                            std::size_t tileSize) -> std::unique_ptr<DiffMx>;
     } // namespace opencl
 } // namespace seqslam
 

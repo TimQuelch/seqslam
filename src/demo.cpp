@@ -15,7 +15,7 @@ int main() {
         convertToEigen(contrastEnhancement(readImages(dataDir / "winter"), 20));
 
     // auto const diffMatrix = cpu::generateDiffMx(referenceImages, queryImages);
-    auto const diffMatrix = opencl::generateDiffMx(referenceImages, queryImages);
+    auto const diffMatrix = opencl::generateDiffMx(referenceImages, queryImages, 4);
 
     *diffMatrix *= 255 / diffMatrix->maxCoeff();
 

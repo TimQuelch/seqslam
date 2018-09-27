@@ -112,19 +112,26 @@ namespace seqslam {
             return clbuffer;
         }
 
-        auto generateDiffMx(ImgMxVector const& reference,
-                            ImgMxVector const& query,
+        auto generateDiffMx(ImgMxVector const& referenceMxs,
+                            ImgMxVector const& queryMxs,
                             std::size_t tileSize) -> std::unique_ptr<DiffMx> {
             auto context = opencl::Context{};
-
-            auto referenceBuffer =
-                convertToBuffer(reference, context, opencl::Buffer::Access::read);
-            auto queryBuffer = convertToBuffer(query, context, opencl::Buffer::Access::read);
-            auto resultBuffer = opencl::Buffer{context,
-                                               reference.size() * query.size() * sizeof(PixType),
-                                               opencl::Buffer::Access::write};
-
             context.addKernels("kernels/diff-mx.cl", {"diffMx"});
+            return generateDiffMx(context, referenceMxs, queryMxs, tileSize);
+        }
+
+        auto generateDiffMx(Context& context,
+                            ImgMxVector const& referenceMxs,
+                            ImgMxVector const& queryMxs,
+                            std::size_t tileSize) -> std::unique_ptr<DiffMx> {
+            auto referenceBuffer =
+                convertToBuffer(referenceMxs, context, opencl::Buffer::Access::read);
+            auto queryBuffer = convertToBuffer(queryMxs, context, opencl::Buffer::Access::read);
+            auto resultBuffer =
+                opencl::Buffer{context,
+                               referenceMxs.size() * queryMxs.size() * sizeof(PixType),
+                               opencl::Buffer::Access::write};
+
             context.setKernelArg("diffMx", 0, queryBuffer);
             context.setKernelArg("diffMx", 1, referenceBuffer);
             context.setKernelArg("diffMx", 2, static_cast<std::size_t>(nRows * nCols));
@@ -133,18 +140,27 @@ namespace seqslam {
             context.setKernelLocalArg(
                 "diffMx", 5, nRows * nCols * tileSize * tileSize * sizeof(PixType));
 
+            return generateDiffMx(
+                context, resultBuffer, referenceMxs.size(), queryMxs.size(), tileSize);
+        }
+
+        auto generateDiffMx(Context const& context,
+                            Buffer const& outBuffer,
+                            std::size_t referenceSize,
+                            std::size_t querySize,
+                            std::size_t tileSize) -> std::unique_ptr<DiffMx> {
             context.runKernel("diffMx",
-                              {query.size() / tileSize, reference.size() / tileSize, nRows * nCols},
+                              {querySize / tileSize, referenceSize / tileSize, nRows * nCols},
                               {1, 1, nRows * nCols});
 
-            auto buffer = std::make_unique<PixType[]>(reference.size() * query.size());
-            resultBuffer.readBuffer(buffer.get());
+            auto buffer = std::make_unique<PixType[]>(referenceSize * querySize);
+            outBuffer.readBuffer(buffer.get());
 
             DiffMx mx = Eigen::Map<DiffMx>{buffer.get(),
-                                           static_cast<Eigen::Index>(reference.size()),
-                                           static_cast<Eigen::Index>(query.size())};
+                                           static_cast<Eigen::Index>(referenceSize),
+                                           static_cast<Eigen::Index>(querySize)};
 
-            return std::make_unique<DiffMx>(mx);
+            return std::make_unique<DiffMx>(std::move(mx));
         }
     } // namespace opencl
 } // namespace seqslam
