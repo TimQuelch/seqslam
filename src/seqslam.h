@@ -25,6 +25,7 @@ namespace seqslam {
 
     auto convertToEigen(std::vector<cv::Mat> const& images) -> ImgMxVector;
     auto convertToCv(ImgMxVector const& images) -> std::vector<cv::Mat>;
+    auto convertToBuffer(ImgMxVector const& images) -> std::unique_ptr<PixType[]>;
 
     namespace cpu {
         auto generateDiffMx(ImgMxVector const& referenceMxs,
@@ -33,9 +34,24 @@ namespace seqslam {
     } // namespace cpu
 
     namespace opencl {
-        auto convertToBuffer(ImgMxVector const& images,
-                             clutils::Context const& context,
-                             clutils::Buffer::Access access) -> clutils::Buffer;
+        auto const diffMatrixKernel = std::string{"diffMx"};
+        auto const diffMatrixPath = std::filesystem::path{"kernels/diff-mx.cl"};
+
+        auto createDiffMxContext() -> clutils::Context;
+
+        struct diffMxBuffers {
+            clutils::Buffer reference;
+            clutils::Buffer query;
+            clutils::Buffer diffMx;
+        };
+        auto createBuffers(clutils::Context& context, std::size_t nReference, std::size_t nQuery)
+            -> diffMxBuffers;
+
+        void writeArgs(clutils::Context& context,
+                       diffMxBuffers const& buffers,
+                       ImgMxVector const& referenceMxs,
+                       ImgMxVector const& queryMxs,
+                       std::size_t tileSize);
 
         auto generateDiffMx(ImgMxVector const& referenceMxs,
                             ImgMxVector const& queryMxs,
