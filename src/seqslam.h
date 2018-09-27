@@ -34,20 +34,20 @@ namespace seqslam {
 
     namespace opencl {
         auto convertToBuffer(ImgMxVector const& images,
-                             Context const& context,
-                             Buffer::Access access) -> Buffer;
+                             clutils::Context const& context,
+                             clutils::Buffer::Access access) -> clutils::Buffer;
 
         auto generateDiffMx(ImgMxVector const& referenceMxs,
                             ImgMxVector const& queryMxs,
                             std::size_t tileSize) -> std::unique_ptr<DiffMx>;
 
-        auto generateDiffMx(Context& context,
+        auto generateDiffMx(clutils::Context& context,
                             ImgMxVector const& referenceMxs,
                             ImgMxVector const& queryMxs,
                             std::size_t tileSize) -> std::unique_ptr<DiffMx>;
 
-        auto generateDiffMx(Context const& context,
-                            Buffer const& outBuffer,
+        auto generateDiffMx(clutils::Context const& context,
+                            clutils::Buffer const& outBuffer,
                             std::size_t referenceSize,
                             std::size_t querySize,
                             std::size_t tileSize) -> std::unique_ptr<DiffMx>;
