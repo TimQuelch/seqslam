@@ -147,8 +147,7 @@ namespace seqslam {
         auto generateDiffMx(ImgMxVector const& referenceMxs,
                             ImgMxVector const& queryMxs,
                             std::size_t tileSize) -> std::unique_ptr<DiffMx> {
-            auto context = clutils::Context{};
-            context.addKernels(diffMatrixPath, {diffMatrixKernel});
+            auto context = createDiffMxContext();
             return generateDiffMx(context, referenceMxs, queryMxs, tileSize);
         }
 
