@@ -110,5 +110,40 @@ namespace seqslam {
             clbuffer.writeBuffer(buffer.get());
             return clbuffer;
         }
+
+        auto generateDiffMx(ImgMxVector const& reference,
+                            ImgMxVector const& query,
+                            std::size_t tileSize) -> std::unique_ptr<DiffMx> {
+            auto context = opencl::Context{};
+
+            auto referenceBuffer =
+                convertToBuffer(reference, context, opencl::Buffer::Access::read);
+            auto queryBuffer = convertToBuffer(query, context, opencl::Buffer::Access::read);
+            auto resultBuffer = opencl::Buffer{context,
+                                               reference.size() * query.size() * sizeof(PixType),
+                                               opencl::Buffer::Access::write};
+
+            context.addKernels("kernels/diff-mx.cl", {"diffMx"});
+            context.setKernelArg("diffMx", 0, queryBuffer);
+            context.setKernelArg("diffMx", 1, referenceBuffer);
+            context.setKernelArg("diffMx", 2, static_cast<std::size_t>(nRows * nCols));
+            context.setKernelArg("diffMx", 3, static_cast<std::size_t>(tileSize));
+            context.setKernelArg("diffMx", 4, resultBuffer);
+            context.setKernelLocalArg(
+                "diffMx", 5, nRows * nCols * tileSize * tileSize * sizeof(PixType));
+
+            context.runKernel("diffMx",
+                              {query.size() / tileSize, reference.size() / tileSize, nRows * nCols},
+                              {1, 1, nRows * nCols});
+
+            auto buffer = std::make_unique<PixType[]>(reference.size() * query.size());
+            resultBuffer.readBuffer(buffer.get());
+
+            DiffMx mx = Eigen::Map<DiffMx>{buffer.get(),
+                                           static_cast<Eigen::Index>(reference.size()),
+                                           static_cast<Eigen::Index>(query.size())};
+
+            return std::make_unique<DiffMx>(mx);
+        }
     } // namespace opencl
 } // namespace seqslam

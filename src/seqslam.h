@@ -35,6 +35,10 @@ namespace seqslam {
     namespace opencl {
         auto convertToBuffer(const ImgMxVector& images, Context& context, Buffer::Access access)
             -> Buffer;
+
+        auto generateDiffMx(const ImgMxVector& referenceMxs,
+                            const ImgMxVector& queryMxs,
+                            std::size_t tileSize = 32) -> std::unique_ptr<DiffMx>;
     } // namespace opencl
 } // namespace seqslam
 
