@@ -14,7 +14,10 @@ int main() {
     const auto queryImages =
         convertToEigen(contrastEnhancement(readImages(dataDir / "winter"), 20));
 
-    const auto diffMatrix = cpu::generateDiffMx(referenceImages, queryImages);
+    // const auto diffMatrix = cpu::generateDiffMx(referenceImages, queryImages);
+    const auto diffMatrix = opencl::generateDiffMx(referenceImages, queryImages);
+
+    *diffMatrix *= 255 / diffMatrix->maxCoeff();
 
     const auto diffMatrixIm = [&]() -> cv::Mat {
         auto im = cv::Mat(diffMatrix->rows(), diffMatrix->cols(), CV_8UC1);

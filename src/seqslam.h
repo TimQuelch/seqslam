@@ -1,6 +1,8 @@
 #ifndef SEQSLAM_SEQSLAM_H
 #define SEQSLAM_SEQSLAM_H
 
+#include "clutils.h"
+
 #include <filesystem>
 
 #include <Eigen/Dense>
@@ -11,9 +13,10 @@ namespace seqslam {
     constexpr auto nRows = 16u;
     constexpr auto nCols = 32u;
 
-    using ImgMx = Eigen::Matrix<float, nRows, nCols>;
+    using PixType = float;
+    using ImgMx = Eigen::Matrix<PixType, nRows, nCols, Eigen::RowMajor>;
     using ImgMxVector = std::vector<ImgMx, Eigen::aligned_allocator<ImgMx>>;
-    using DiffMx = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic>;
+    using DiffMx = Eigen::Matrix<PixType, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 
     auto readImages(std::filesystem::path dir) -> std::vector<cv::Mat>;
 
@@ -28,6 +31,15 @@ namespace seqslam {
                             const ImgMxVector& queryMxs,
                             std::size_t tileSize = 32) -> std::unique_ptr<DiffMx>;
     } // namespace cpu
+
+    namespace opencl {
+        auto convertToBuffer(const ImgMxVector& images, Context& context, Buffer::Access access)
+            -> Buffer;
+
+        auto generateDiffMx(const ImgMxVector& referenceMxs,
+                            const ImgMxVector& queryMxs,
+                            std::size_t tileSize = 32) -> std::unique_ptr<DiffMx>;
+    } // namespace opencl
 } // namespace seqslam
 
 #endif

@@ -14,7 +14,7 @@ constexpr auto nVecImages = 32768;
 constexpr auto nSqrImages = 4096;
 
 template <typename T>
-using Mx = Eigen::Matrix<T, rows, cols>;
+using Mx = Eigen::Matrix<T, rows, cols, Eigen::RowMajor>;
 
 template <typename T>
 using FlatMx = Eigen::Matrix<T, rows * cols, 1>;
