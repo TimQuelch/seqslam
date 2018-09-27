@@ -8,18 +8,18 @@
 using namespace seqslam;
 
 int main() {
-    const auto dataDir = std::filesystem::path{"../datasets/nordland_trimmed_resized"};
-    const auto referenceImages =
+    auto const dataDir = std::filesystem::path{"../datasets/nordland_trimmed_resized"};
+    auto const referenceImages =
         convertToEigen(contrastEnhancement(readImages(dataDir / "summer"), 20));
-    const auto queryImages =
+    auto const queryImages =
         convertToEigen(contrastEnhancement(readImages(dataDir / "winter"), 20));
 
-    // const auto diffMatrix = cpu::generateDiffMx(referenceImages, queryImages);
-    const auto diffMatrix = opencl::generateDiffMx(referenceImages, queryImages);
+    // auto const diffMatrix = cpu::generateDiffMx(referenceImages, queryImages);
+    auto const diffMatrix = opencl::generateDiffMx(referenceImages, queryImages);
 
     *diffMatrix *= 255 / diffMatrix->maxCoeff();
 
-    const auto diffMatrixIm = [&]() -> cv::Mat {
+    auto const diffMatrixIm = [&]() -> cv::Mat {
         auto im = cv::Mat(diffMatrix->rows(), diffMatrix->cols(), CV_8UC1);
         cv::eigen2cv(*diffMatrix, im);
         return im;

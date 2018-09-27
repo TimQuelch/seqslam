@@ -54,7 +54,7 @@ namespace seqslam {
 
         Context::Context(unsigned platformId, unsigned deviceId) {
             // Query the available platforms and get specified platform
-            const auto platforms = []() {
+            auto const platforms = []() {
                 auto p = std::vector<cl::Platform>{};
                 cl::Platform::get(&p);
                 return p;
@@ -64,9 +64,9 @@ namespace seqslam {
                 throw std::runtime_error{"Requested OpenCL platform does not exist"};
             }
 
-            const auto platform = platforms[platformId];
+            auto const platform = platforms[platformId];
 
-            const auto allDevices = [&platform]() {
+            auto const allDevices = [&platform]() {
                 auto d = std::vector<cl::Device>{};
                 platform.getDevices(CL_DEVICE_TYPE_ALL, &d);
                 return d;
@@ -76,7 +76,7 @@ namespace seqslam {
                 throw std::runtime_error{"Requested OpenCL device does not exist"};
             }
 
-            const auto device = allDevices[deviceId];
+            auto const device = allDevices[deviceId];
             context_ = cl::Context{device};
             queue_ = cl::CommandQueue{context_};
             devices_.push_back(device);
@@ -84,11 +84,11 @@ namespace seqslam {
 
         void Context::addKernels(std::filesystem::path const& sourceFile,
                                  std::vector<std::string> const& kernelNames) {
-            const auto program = [this, &sourceFile]() {
+            auto const program = [this, &sourceFile]() {
                 auto filestream = std::ifstream{sourceFile};
-                const auto sourceString = std::string{std::istreambuf_iterator<char>{filestream},
+                auto const sourceString = std::string{std::istreambuf_iterator<char>{filestream},
                                                       std::istreambuf_iterator<char>{}};
-                const auto source = cl::Program::Sources{
+                auto const source = cl::Program::Sources{
                     std::pair{sourceString.c_str(), std::strlen(sourceString.c_str())}};
                 return cl::Program{context_, source};
             }();

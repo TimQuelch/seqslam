@@ -8,13 +8,13 @@
 namespace seqslam {
     auto readImages(std::filesystem::path dir) -> std::vector<cv::Mat> {
         std::vector<cv::Mat> images;
-        for (const auto& imagePath : std::filesystem::directory_iterator(dir)) {
+        for (auto const& imagePath : std::filesystem::directory_iterator(dir)) {
             images.push_back(cv::imread(imagePath.path().string(), CV_LOAD_IMAGE_GRAYSCALE));
         }
         return images;
     }
 
-    auto contrastEnhancement(const std::vector<cv::Mat>& images, double threshold)
+    auto contrastEnhancement(std::vector<cv::Mat> const& images, double threshold)
         -> std::vector<cv::Mat> {
         cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
         clahe->setClipLimit(threshold);
@@ -23,7 +23,7 @@ namespace seqslam {
         std::transform(images.begin(),
                        images.end(),
                        std::back_inserter(contrastEnhanced),
-                       [&clahe](const auto& im) {
+                       [&clahe](auto const& im) {
                            cv::Mat res;
                            clahe->apply(im, res);
                            return res;
@@ -31,10 +31,10 @@ namespace seqslam {
         return contrastEnhanced;
     }
 
-    auto convertToEigen(const std::vector<cv::Mat>& images) -> ImgMxVector {
+    auto convertToEigen(std::vector<cv::Mat> const& images) -> ImgMxVector {
         ImgMxVector res;
         res.reserve(images.size());
-        std::transform(images.begin(), images.end(), std::back_inserter(res), [](const auto& im) {
+        std::transform(images.begin(), images.end(), std::back_inserter(res), [](auto const& im) {
             ImgMx mat;
             cv::cv2eigen(im, mat);
             return mat;
@@ -42,10 +42,10 @@ namespace seqslam {
         return res;
     }
 
-    auto convertToCv(const ImgMxVector& mxs) -> std::vector<cv::Mat> {
+    auto convertToCv(ImgMxVector const& mxs) -> std::vector<cv::Mat> {
         std::vector<cv::Mat> res;
         res.reserve(mxs.size());
-        std::transform(mxs.begin(), mxs.end(), std::back_inserter(res), [](const auto& mx) {
+        std::transform(mxs.begin(), mxs.end(), std::back_inserter(res), [](auto const& mx) {
             cv::Mat im;
             cv::eigen2cv(mx, im);
             return im;
@@ -54,28 +54,28 @@ namespace seqslam {
     }
 
     namespace cpu {
-        auto generateDiffMx(const ImgMxVector& referenceMxs,
-                            const ImgMxVector& queryMxs,
+        auto generateDiffMx(ImgMxVector const& referenceMxs,
+                            ImgMxVector const& queryMxs,
                             std::size_t tileSize) -> std::unique_ptr<DiffMx> {
             auto mx = std::make_unique<DiffMx>(referenceMxs.size(), queryMxs.size());
             for (auto tr = 0u; tr < referenceMxs.size() / tileSize; tr++) {
                 for (auto tq = 0u; tq < queryMxs.size() / tileSize; tq++) {
                     for (auto i = 0u; i < tileSize; i++) {
                         for (auto j = 0u; j < tileSize; j++) {
-                            const auto r = tr * tileSize + i;
-                            const auto q = tq * tileSize + j;
+                            auto const r = tr * tileSize + i;
+                            auto const q = tq * tileSize + j;
                             (*mx)(r, q) = (referenceMxs[r] - queryMxs[q]).cwiseAbs().sum();
                         }
                     }
                 }
             }
-            const auto rrem = referenceMxs.size() % tileSize;
-            const auto qrem = queryMxs.size() % tileSize;
+            auto const rrem = referenceMxs.size() % tileSize;
+            auto const qrem = queryMxs.size() % tileSize;
             for (auto tr = 0u; tr < referenceMxs.size() / tileSize; tr++) {
                 for (auto i = 0u; i < tileSize; i++) {
                     for (auto j = 0u; j < qrem; j++) {
-                        const auto r = tr * tileSize + i;
-                        const auto q = queryMxs.size() - qrem + j;
+                        auto const r = tr * tileSize + i;
+                        auto const q = queryMxs.size() - qrem + j;
                         (*mx)(r, q) = (referenceMxs[r] - queryMxs[q]).cwiseAbs().sum();
                     }
                 }
@@ -83,8 +83,8 @@ namespace seqslam {
             for (auto tq = 0u; tq < queryMxs.size() / tileSize; tq++) {
                 for (auto i = 0u; i < rrem; i++) {
                     for (auto j = 0u; j < tileSize; j++) {
-                        const auto r = referenceMxs.size() - rrem + i;
-                        const auto q = tq * tileSize + j;
+                        auto const r = referenceMxs.size() - rrem + i;
+                        auto const q = tq * tileSize + j;
                         (*mx)(r, q) = (referenceMxs[r] - queryMxs[q]).cwiseAbs().sum();
                     }
                 }
@@ -99,8 +99,9 @@ namespace seqslam {
     } // namespace cpu
 
     namespace opencl {
-        auto convertToBuffer(const ImgMxVector& images, Context& context, Buffer::Access access)
-            -> Buffer {
+        auto convertToBuffer(ImgMxVector const& images,
+                             Context const& context,
+                             Buffer::Access access) -> Buffer {
             auto clbuffer =
                 Buffer{context, images.size() * nRows * nCols * sizeof(PixType), access};
             auto buffer = std::make_unique<PixType[]>(images.size() * nRows * nCols);

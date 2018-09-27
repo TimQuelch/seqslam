@@ -5,10 +5,10 @@
 using namespace seqslam;
 
 void cpuDifferenceMatrix(benchmark::State& state) {
-    const auto dataDir = std::filesystem::path{"../datasets/nordland_trimmed_resized"};
-    const auto referenceImages =
+    auto const dataDir = std::filesystem::path{"../datasets/nordland_trimmed_resized"};
+    auto const referenceImages =
         convertToEigen(contrastEnhancement(readImages(dataDir / "summer"), 20));
-    const auto queryImages =
+    auto const queryImages =
         convertToEigen(contrastEnhancement(readImages(dataDir / "winter"), 20));
 
     for (auto _ : state) {
