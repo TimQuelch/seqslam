@@ -60,7 +60,7 @@ template <typename T>
 auto genVecMx(unsigned n) {
     VecMx<T> v;
     v.reserve(n);
-    std::generate_n(std::back_inserter(v), n, randMx<T>);
+    std::generate_n(std::back_inserter(v), n, []() { return randMx<T>(); });
     return v;
 }
 
@@ -68,7 +68,7 @@ template <typename T>
 auto genVecFlatMx(unsigned n) {
     VecFlatMx<T> v;
     v.reserve(n);
-    std::generate_n(std::back_inserter(v), n, randFlatMx<T>);
+    std::generate_n(std::back_inserter(v), n, []() { return randFlatMx<T>(); });
     return v;
 }
 

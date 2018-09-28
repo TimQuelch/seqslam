@@ -28,6 +28,7 @@ namespace clutils {
             case Buffer::Access::readwrite:
                 return CL_MEM_READ_WRITE;
             }
+            return {};
         }
     } // namespace
 
@@ -111,5 +112,5 @@ namespace clutils {
     void
     Context::setKernelLocalArg(std::string const& kernelName, unsigned index, std::size_t size) {
         kernels_.at(kernelName).setArg(index, size, NULL);
-    };
+    }
 } // namespace clutils

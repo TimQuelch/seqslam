@@ -11,7 +11,7 @@ find_package(OpenCL REQUIRED)
 find_package(benchmark REQUIRED)
 find_package(fmt REQUIRED)
 
-set(warnings -Wall -Wextra -Wpedantic)
+include(${CMAKE_SOURCE_DIR}/cmake/warnings.cmake)
 set(optimisations -O3 -march=native)
 add_compile_options(${warnings} ${optimisations})
 
