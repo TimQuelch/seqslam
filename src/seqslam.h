@@ -4,9 +4,12 @@
 #include "clutils.h"
 
 #include <filesystem>
+#include <memory>
+#include <vector>
 
 #include <Eigen/Dense>
 #include <Eigen/StdVector>
+
 #include <opencv2/core.hpp>
 
 namespace seqslam {
