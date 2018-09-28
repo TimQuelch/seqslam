@@ -171,8 +171,8 @@ namespace seqslam {
                             std::size_t querySize,
                             std::size_t tileSize) -> std::unique_ptr<DiffMx> {
             context.runKernel(diffMatrixKernel,
-                              {querySize / tileSize, referenceSize / tileSize, nRows * nCols},
-                              {1, 1, nRows * nCols});
+                              {nRows * nCols, querySize / tileSize, referenceSize / tileSize},
+                              {nRows * nCols, 1, 1});
 
             auto buffer = std::make_unique<PixType[]>(referenceSize * querySize);
             outBuffer.readBuffer(buffer.get());
