@@ -101,8 +101,14 @@ namespace clutils {
     void Context::runKernel(std::string const& kernelName,
                             std::vector<std::size_t> const& globalDims,
                             std::vector<std::size_t> const& localDims) const {
-        queue_.enqueueNDRangeKernel(
-            kernels_.at(kernelName), {0, 0, 0}, toNdRange(globalDims), toNdRange(localDims));
+        try {
+            queue_.enqueueNDRangeKernel(
+                kernels_.at(kernelName), {0, 0, 0}, toNdRange(globalDims), toNdRange(localDims));
+        } catch (cl::Error& e) {
+            fmt::print("{}\n", e.what());
+            fmt::print("Error code {}\n", e.err());
+            throw;
+        }
     }
 
     void Context::setKernelArg(std::string const& kernelName, unsigned index, Buffer const& arg) {
