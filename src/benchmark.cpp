@@ -4,12 +4,17 @@
 
 using namespace seqslam;
 
-void cpuDifferenceMatrix(benchmark::State& state) {
+auto loadImages() {
     auto const dataDir = std::filesystem::path{"../datasets/nordland_trimmed_resized"};
     auto const referenceImages =
         convertToEigen(contrastEnhancement(readImages(dataDir / "summer"), 20));
     auto const queryImages =
         convertToEigen(contrastEnhancement(readImages(dataDir / "winter"), 20));
+    return std::tuple{std::move(referenceImages), std::move(queryImages)};
+}
+
+void cpuDifferenceMatrix(benchmark::State& state) {
+    auto const [referenceImages, queryImages] = loadImages();
 
     for (auto _ : state) {
         auto diffMatrix = cpu::generateDiffMx(referenceImages, queryImages, state.range(0));
@@ -26,11 +31,7 @@ void cpuDifferenceMatrix(benchmark::State& state) {
 //    ->MinTime(1);
 
 void gpuDifferenceMatrix(benchmark::State& state) {
-    auto const dataDir = std::filesystem::path{"../datasets/nordland_trimmed_resized"};
-    auto const referenceImages =
-        convertToEigen(contrastEnhancement(readImages(dataDir / "summer"), 20));
-    auto const queryImages =
-        convertToEigen(contrastEnhancement(readImages(dataDir / "winter"), 20));
+    auto const [referenceImages, queryImages] = loadImages();
 
     for (auto _ : state) {
         auto diffMatrix = opencl::generateDiffMx(referenceImages, queryImages, state.range(0));
@@ -47,11 +48,7 @@ BENCHMARK(gpuDifferenceMatrix)
     ->MinTime(1);
 
 void gpuDifferenceMatrixNoContext(benchmark::State& state) {
-    auto const dataDir = std::filesystem::path{"../datasets/nordland_trimmed_resized"};
-    auto const referenceImages =
-        convertToEigen(contrastEnhancement(readImages(dataDir / "summer"), 20));
-    auto const queryImages =
-        convertToEigen(contrastEnhancement(readImages(dataDir / "winter"), 20));
+    auto const [referenceImages, queryImages] = loadImages();
 
     auto context = opencl::createDiffMxContext();
 
@@ -71,11 +68,7 @@ BENCHMARK(gpuDifferenceMatrixNoContext)
     ->MinTime(1);
 
 void gpuDifferenceMatrixNoCopy(benchmark::State& state) {
-    auto const dataDir = std::filesystem::path{"../datasets/nordland_trimmed_resized"};
-    auto const referenceImages =
-        convertToEigen(contrastEnhancement(readImages(dataDir / "summer"), 20));
-    auto const queryImages =
-        convertToEigen(contrastEnhancement(readImages(dataDir / "winter"), 20));
+    auto const [referenceImages, queryImages] = loadImages();
 
     auto context = opencl::createDiffMxContext();
     auto bufs = opencl::createBuffers(context, referenceImages.size(), queryImages.size());
