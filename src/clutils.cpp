@@ -111,6 +111,6 @@ namespace clutils {
 
     void
     Context::setKernelLocalArg(std::string const& kernelName, unsigned index, std::size_t size) {
-        kernels_.at(kernelName).setArg(index, size, NULL);
-    }
+        kernels_.at(kernelName).setArg(index, cl::Local(size));
+    };
 } // namespace clutils
