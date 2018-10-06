@@ -139,8 +139,8 @@ namespace seqslam {
 
             context.setKernelArg(diffMatrixKernel, 0, buffers.query);
             context.setKernelArg(diffMatrixKernel, 1, buffers.reference);
-            context.setKernelArg(diffMatrixKernel, 2, static_cast<std::size_t>(nRows * nCols));
-            context.setKernelArg(diffMatrixKernel, 3, tileSize);
+            context.setKernelArg(diffMatrixKernel, 2, static_cast<unsigned int>(nRows * nCols));
+            context.setKernelArg(diffMatrixKernel, 3, static_cast<unsigned int>(tileSize));
             context.setKernelArg(diffMatrixKernel, 4, buffers.diffMx);
             context.setKernelLocalArg(
                 diffMatrixKernel, 5, nRows * nCols * tileSize * tileSize * sizeof(PixType));

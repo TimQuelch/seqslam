@@ -1,7 +1,7 @@
 kernel void diffMx(global float const* query,
                    global float const* reference,
-                   size_t nPix,
-                   size_t tileSize,
+                   unsigned int nPix,
+                   unsigned int tileSize,
                    global float* diffMxOutput,
                    local float* diffs) {
     const size_t tx = get_group_id(0);
