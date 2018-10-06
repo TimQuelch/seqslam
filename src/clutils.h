@@ -59,6 +59,10 @@ namespace clutils {
         cl::Context const& context() const { return context_; }
         cl::CommandQueue& queue() { return queue_; }
         cl::CommandQueue const& queue() const { return queue_; }
+        cl::Kernel& kernel(std::string const& kernelName) { return kernels_.at(kernelName); };
+        cl::Kernel const& kernel(std::string const& kernelName) const {
+            return kernels_.at(kernelName);
+        };
 
     private:
         cl::Context context_;
