@@ -26,6 +26,8 @@ namespace clutils {
         cl::Buffer& buffer() { return buffer_; }
         cl::Buffer const& buffer() const { return buffer_; }
 
+        std::size_t size() const { return size_; }
+
     private:
         std::size_t size_;
         cl::Buffer buffer_;
