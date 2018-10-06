@@ -23,10 +23,10 @@ namespace clutils {
         void writeBuffer(void const* source) const;
         void writeBuffer(void const* source, std::size_t offset, std::size_t size) const;
 
-        cl::Buffer& buffer() { return buffer_; }
-        cl::Buffer const& buffer() const { return buffer_; }
+        auto& buffer() noexcept { return buffer_; }
+        auto const& buffer() const noexcept { return buffer_; }
 
-        std::size_t size() const { return size_; }
+        auto size() const noexcept { return size_; }
 
     private:
         std::size_t size_;
@@ -55,14 +55,12 @@ namespace clutils {
 
         void setKernelLocalArg(std::string const& kernelName, unsigned index, std::size_t size);
 
-        cl::Context& context() { return context_; }
-        cl::Context const& context() const { return context_; }
-        cl::CommandQueue& queue() { return queue_; }
-        cl::CommandQueue const& queue() const { return queue_; }
-        cl::Kernel& kernel(std::string const& kernelName) { return kernels_.at(kernelName); };
-        cl::Kernel const& kernel(std::string const& kernelName) const {
-            return kernels_.at(kernelName);
-        };
+        auto& context() noexcept { return context_; }
+        auto const& context() const noexcept { return context_; }
+        auto& queue() noexcept { return queue_; }
+        auto const& queue() const noexcept { return queue_; }
+        auto& kernel(std::string const& name) noexcept { return kernels_.at(name); };
+        auto const& kernel(std::string const& name) const noexcept { return kernels_.at(name); };
 
     private:
         cl::Context context_;
