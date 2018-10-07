@@ -181,11 +181,10 @@ namespace seqslam {
             auto buffer = std::make_unique<PixType[]>(referenceSize * querySize);
             outBuffer.readBuffer(buffer.get());
 
-            DiffMx mx = Eigen::Map<DiffMx>{buffer.get(),
-                                           static_cast<Eigen::Index>(referenceSize),
-                                           static_cast<Eigen::Index>(querySize)};
-
-            return std::make_unique<DiffMx>(std::move(mx));
+            return std::make_unique<DiffMx>(
+                Eigen::Map<DiffMx>{buffer.get(),
+                                   static_cast<Eigen::Index>(referenceSize),
+                                   static_cast<Eigen::Index>(querySize)});
         }
     } // namespace opencl
 } // namespace seqslam
