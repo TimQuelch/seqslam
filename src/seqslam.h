@@ -38,7 +38,7 @@ namespace seqslam {
 
     namespace opencl {
         using namespace std::literals::string_literals;
-        auto const kernelNames = std::vector{"diffMx"s, "diffMxSerialReduce"s};
+        auto const kernelNames = std::vector{"diffMx"s, "diffMxStridedIndex"s, "diffMxSerialSave"s};
         auto const diffMatrixPath = std::filesystem::path{"kernels/diff-mx.cl"};
 
         auto createDiffMxContext() -> clutils::Context;
