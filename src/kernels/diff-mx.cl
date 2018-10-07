@@ -41,7 +41,7 @@ kernel void diffMx(global float const* query,
     }
 }
 
-kernel void diffMxSerialReduce(global float const* query,
+kernel void diffMxSerialSave(global float const* query,
                                global float const* reference,
                                unsigned int nPix,
                                unsigned int tileSize,

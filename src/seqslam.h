@@ -60,14 +60,14 @@ namespace seqslam {
 
         auto generateDiffMx(ImgMxVector const& referenceMxs,
                             ImgMxVector const& queryMxs,
-                            std::size_t tileSize,
+                            std::size_t tileSize = 4,
                             std::string const& kernelName = kernelNames[0])
             -> std::unique_ptr<DiffMx>;
 
         auto generateDiffMx(clutils::Context& context,
                             ImgMxVector const& referenceMxs,
                             ImgMxVector const& queryMxs,
-                            std::size_t tileSize,
+                            std::size_t tileSize = 4,
                             std::string const& kernelName = kernelNames[0])
             -> std::unique_ptr<DiffMx>;
 
@@ -75,7 +75,7 @@ namespace seqslam {
                             clutils::Buffer const& outBuffer,
                             std::size_t referenceSize,
                             std::size_t querySize,
-                            std::size_t tileSize,
+                            std::size_t tileSize = 4,
                             std::string const& kernelName = kernelNames[0])
             -> std::unique_ptr<DiffMx>;
     } // namespace opencl
