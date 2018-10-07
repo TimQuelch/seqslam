@@ -24,11 +24,11 @@ void cpuDifferenceMatrix(benchmark::State& state) {
     state.SetItemsProcessed(state.iterations() * referenceImages.size() * queryImages.size() *
                             nRows * nCols);
 }
-// BENCHMARK(cpuDifferenceMatrix)
-//    ->Unit(benchmark::kMillisecond)
-//    ->RangeMultiplier(2)
-//    ->Range(1, 256)
-//    ->MinTime(1);
+BENCHMARK(cpuDifferenceMatrix)
+    ->Unit(benchmark::kMillisecond)
+    ->RangeMultiplier(4)
+    ->Range(1, 256)
+    ->MinTime(1);
 
 void gpuDifferenceMatrix(benchmark::State& state) {
     auto const [referenceImages, queryImages] = loadImages();
