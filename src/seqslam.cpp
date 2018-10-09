@@ -140,11 +140,10 @@ namespace seqslam {
 
             context.setKernelArg(kernelName, 0, buffers.query);
             context.setKernelArg(kernelName, 1, buffers.reference);
-            context.setKernelArg(kernelName, 2, static_cast<unsigned int>(nRows * nCols));
-            context.setKernelArg(kernelName, 3, static_cast<unsigned int>(tileSize));
-            context.setKernelArg(kernelName, 4, buffers.diffMx);
+            context.setKernelArg(kernelName, 2, static_cast<unsigned int>(tileSize));
+            context.setKernelArg(kernelName, 3, buffers.diffMx);
             context.setKernelLocalArg(
-                kernelName, 5, nRows * nCols * tileSize * tileSize * sizeof(PixType));
+                kernelName, 4, nRows * nCols * tileSize * tileSize * sizeof(PixType));
         }
 
         auto generateDiffMx(ImgMxVector const& referenceMxs,

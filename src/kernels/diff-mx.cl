@@ -1,12 +1,12 @@
 kernel void diffMx(global float const* query,
                    global float const* reference,
-                   unsigned int nPix,
                    unsigned int tileSize,
                    global float* diffMxOutput,
                    local float* diffs) {
     const size_t tx = get_group_id(1);
     const size_t ty = get_group_id(2);
     const size_t pi = get_local_id(0);
+    const size_t nPix = get_global_size(0);
 
     for (size_t i = 0; i < tileSize; i++) {
         for (size_t j = 0; j < tileSize; j++) {
@@ -40,13 +40,13 @@ kernel void diffMx(global float const* query,
 
 kernel void diffMxSingleDiff(global float const* query,
                              global float const* reference,
-                             unsigned int nPix,
                              unsigned int tileSize,
                              global float* diffMxOutput,
                              local float* diffs) {
     const size_t tx = get_group_id(1);
     const size_t ty = get_group_id(2);
     const size_t pi = get_local_id(0);
+    const size_t nPix = get_global_size(0);
 
     for (size_t i = 0; i < tileSize; i++) {
         for (size_t j = 0; j < tileSize; j++) {
@@ -80,13 +80,13 @@ kernel void diffMxSingleDiff(global float const* query,
 
 kernel void diffMxStridedIndex(global float const* query,
                                global float const* reference,
-                               unsigned int nPix,
                                unsigned int tileSize,
                                global float* diffMxOutput,
                                local float* diffs) {
     const size_t tx = get_group_id(1);
     const size_t ty = get_group_id(2);
     const size_t pi = get_local_id(0);
+    const size_t nPix = get_global_size(0);
 
     for (size_t i = 0; i < tileSize; i++) {
         for (size_t j = 0; j < tileSize; j++) {
@@ -123,13 +123,13 @@ kernel void diffMxStridedIndex(global float const* query,
 
 kernel void diffMxSerialSave(global float const* query,
                              global float const* reference,
-                             unsigned int nPix,
                              unsigned int tileSize,
                              global float* diffMxOutput,
                              local float* diffs) {
     const size_t tx = get_group_id(1);
     const size_t ty = get_group_id(2);
     const size_t pi = get_local_id(0);
+    const size_t nPix = get_global_size(0);
 
     for (size_t i = 0; i < tileSize; i++) {
         for (size_t j = 0; j < tileSize; j++) {
