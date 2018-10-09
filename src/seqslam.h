@@ -37,7 +37,8 @@ namespace seqslam {
     } // namespace cpu
 
     namespace opencl {
-        auto const diffMatrixKernel = std::string{"diffMx"};
+        using namespace std::literals::string_literals;
+        auto const kernelNames = std::vector{"diffMx"s, "diffMxStridedIndex"s, "diffMxSerialSave"s};
         auto const diffMatrixPath = std::filesystem::path{"kernels/diff-mx.cl"};
 
         auto createDiffMxContext() -> clutils::Context;
@@ -54,22 +55,29 @@ namespace seqslam {
                        diffMxBuffers const& buffers,
                        ImgMxVector const& referenceMxs,
                        ImgMxVector const& queryMxs,
-                       std::size_t tileSize);
+                       std::size_t tileSize,
+                       std::string const& kernelName = kernelNames[0]);
 
         auto generateDiffMx(ImgMxVector const& referenceMxs,
                             ImgMxVector const& queryMxs,
-                            std::size_t tileSize) -> std::unique_ptr<DiffMx>;
+                            std::size_t tileSize = 4,
+                            std::string const& kernelName = kernelNames[0])
+            -> std::unique_ptr<DiffMx>;
 
         auto generateDiffMx(clutils::Context& context,
                             ImgMxVector const& referenceMxs,
                             ImgMxVector const& queryMxs,
-                            std::size_t tileSize) -> std::unique_ptr<DiffMx>;
+                            std::size_t tileSize = 4,
+                            std::string const& kernelName = kernelNames[0])
+            -> std::unique_ptr<DiffMx>;
 
         auto generateDiffMx(clutils::Context const& context,
                             clutils::Buffer const& outBuffer,
                             std::size_t referenceSize,
                             std::size_t querySize,
-                            std::size_t tileSize) -> std::unique_ptr<DiffMx>;
+                            std::size_t tileSize = 4,
+                            std::string const& kernelName = kernelNames[0])
+            -> std::unique_ptr<DiffMx>;
     } // namespace opencl
 } // namespace seqslam
 
