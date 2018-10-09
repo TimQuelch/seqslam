@@ -39,13 +39,25 @@ namespace clutils {
     void Buffer::readBuffer(void* destination) const { readBuffer(destination, 0, size_); }
 
     void Buffer::readBuffer(void* destination, std::size_t offset, std::size_t size) const {
-        queue_.enqueueReadBuffer(buffer_, true, offset, size, destination);
+        try {
+            queue_.enqueueReadBuffer(buffer_, true, offset, size, destination);
+        } catch (cl::Error& e) {
+            fmt::print("{}\n", e.what());
+            fmt::print("Error code {}\n", e.err());
+            throw;
+        }
     }
 
     void Buffer::writeBuffer(void const* source) const { writeBuffer(source, 0, size_); }
 
     void Buffer::writeBuffer(void const* source, std::size_t offset, std::size_t size) const {
-        queue_.enqueueWriteBuffer(buffer_, true, offset, size, source);
+        try {
+            queue_.enqueueWriteBuffer(buffer_, true, offset, size, source);
+        } catch (cl::Error& e) {
+            fmt::print("{}\n", e.what());
+            fmt::print("Error code {}\n", e.err());
+            throw;
+        }
     }
 
     Context::Context() : Context{0, 0} {}
