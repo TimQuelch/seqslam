@@ -39,11 +39,11 @@ void gpuDifferenceMatrix(benchmark::State& state) {
     state.SetItemsProcessed(state.iterations() * referenceImages.size() * queryImages.size() *
                             nRows * nCols);
 }
-BENCHMARK(gpuDifferenceMatrix)
-    ->Unit(benchmark::kMillisecond)
-    ->RangeMultiplier(2)
-    ->Range(1, 4)
-    ->MinTime(1);
+// BENCHMARK(gpuDifferenceMatrix)
+//    ->Unit(benchmark::kMillisecond)
+//    ->RangeMultiplier(2)
+//    ->Range(1, 4)
+//    ->MinTime(1);
 
 void gpuDifferenceMatrixNoContext(benchmark::State& state) {
     auto const [referenceImages, queryImages] = loadImages();
@@ -59,18 +59,18 @@ void gpuDifferenceMatrixNoContext(benchmark::State& state) {
     state.SetItemsProcessed(state.iterations() * referenceImages.size() * queryImages.size() *
                             nRows * nCols);
 }
-BENCHMARK(gpuDifferenceMatrixNoContext)
-    ->Unit(benchmark::kMillisecond)
-    ->RangeMultiplier(2)
-    ->Range(1, 4)
-    ->MinTime(1);
+// BENCHMARK(gpuDifferenceMatrixNoContext)
+//    ->Unit(benchmark::kMillisecond)
+//    ->RangeMultiplier(2)
+//    ->Range(1, 4)
+//    ->MinTime(1);
 
 void gpuDifferenceMatrixNoCopy(benchmark::State& state, std::string const& kernel) {
     auto const [referenceImages, queryImages] = loadImages();
 
     auto context = opencl::createDiffMxContext();
     auto bufs = opencl::createBuffers(context, referenceImages.size(), queryImages.size());
-    opencl::writeArgs(context, bufs, referenceImages, queryImages, state.range(0), kernel);
+    opencl::writeArgs(context, bufs, referenceImages, queryImages, state.range(0), 4, kernel);
 
     for (auto _ : state) {
         auto diffMatrix = opencl::generateDiffMx(context,
@@ -78,6 +78,7 @@ void gpuDifferenceMatrixNoCopy(benchmark::State& state, std::string const& kerne
                                                  referenceImages.size(),
                                                  queryImages.size(),
                                                  state.range(0),
+                                                 4,
                                                  kernel);
         benchmark::DoNotOptimize(diffMatrix.get());
         benchmark::ClobberMemory();
@@ -88,17 +89,22 @@ void gpuDifferenceMatrixNoCopy(benchmark::State& state, std::string const& kerne
 BENCHMARK_CAPTURE(gpuDifferenceMatrixNoCopy, best, "diffMx")
     ->Unit(benchmark::kMillisecond)
     ->RangeMultiplier(2)
-    ->Range(1, 4)
+    ->DenseRange(1, 6)
     ->MinTime(1);
-BENCHMARK_CAPTURE(gpuDifferenceMatrixNoCopy, stridedIndex, "diffMxStridedIndex")
-    ->Unit(benchmark::kMillisecond)
-    ->RangeMultiplier(2)
-    ->Range(1, 4)
-    ->MinTime(1);
-BENCHMARK_CAPTURE(gpuDifferenceMatrixNoCopy, serialReduce, "diffMxSerialSave")
-    ->Unit(benchmark::kMillisecond)
-    ->RangeMultiplier(2)
-    ->Range(1, 4)
-    ->MinTime(1);
+// BENCHMARK_CAPTURE(gpuDifferenceMatrixNoCopy, bestNoUnroll, "diffMxNoUnroll")
+//    ->Unit(benchmark::kMillisecond)
+//    ->RangeMultiplier(2)
+//    ->DenseRange(1, 6)
+//    ->MinTime(1);
+// BENCHMARK_CAPTURE(gpuDifferenceMatrixNoCopy, stridedIndex, "diffMxStridedIndex")
+//    ->Unit(benchmark::kMillisecond)
+//    ->RangeMultiplier(2)
+//    ->Range(1, 4)
+//    ->MinTime(1);
+// BENCHMARK_CAPTURE(gpuDifferenceMatrixNoCopy, serialReduce, "diffMxSerialSave")
+//    ->Unit(benchmark::kMillisecond)
+//    ->RangeMultiplier(2)
+//    ->Range(1, 4)
+//    ->MinTime(1);
 
 BENCHMARK_MAIN();

@@ -15,8 +15,8 @@
 #include <opencv2/core.hpp>
 
 namespace seqslam {
-    constexpr auto nRows = 16u;
-    constexpr auto nCols = 32u;
+    constexpr auto nRows = 32u;
+    constexpr auto nCols = 64u;
 
     using PixType = float;
     using ImgMx = Eigen::Matrix<PixType, nRows, nCols, Eigen::RowMajor>;
@@ -47,7 +47,8 @@ namespace seqslam {
 
     namespace opencl {
         using namespace std::literals::string_literals;
-        auto const kernelNames = std::vector{"diffMx"s, "diffMxStridedIndex"s, "diffMxSerialSave"s};
+        auto const kernelNames =
+            std::vector{"diffMx"s, "diffMxStridedIndex"s, "diffMxSerialSave"s, "diffMxNoUnroll"s};
         auto const diffMatrixPath = std::filesystem::path{"kernels/diff-mx.cl"};
 
         auto createDiffMxContext() -> clutils::Context;
@@ -65,11 +66,13 @@ namespace seqslam {
                        ImgMxVector const& referenceMxs,
                        ImgMxVector const& queryMxs,
                        std::size_t tileSize,
+                       std::size_t nPerThread,
                        std::string const& kernelName = kernelNames[0]);
 
         auto generateDiffMx(ImgMxVector const& referenceMxs,
                             ImgMxVector const& queryMxs,
                             std::size_t tileSize = 4,
+                            std::size_t nPerThread = 4,
                             std::string const& kernelName = kernelNames[0])
             -> std::unique_ptr<DiffMx>;
 
@@ -77,6 +80,7 @@ namespace seqslam {
                             ImgMxVector const& referenceMxs,
                             ImgMxVector const& queryMxs,
                             std::size_t tileSize = 4,
+                            std::size_t nPerThread = 4,
                             std::string const& kernelName = kernelNames[0])
             -> std::unique_ptr<DiffMx>;
 
@@ -85,6 +89,7 @@ namespace seqslam {
                             std::size_t referenceSize,
                             std::size_t querySize,
                             std::size_t tileSize = 4,
+                            std::size_t nPerThread = 4,
                             std::string const& kernelName = kernelNames[0])
             -> std::unique_ptr<DiffMx>;
     } // namespace opencl
