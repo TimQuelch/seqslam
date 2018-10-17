@@ -63,6 +63,15 @@ namespace seqslam {
         return buffer;
     }
 
+    auto compareDiffMx(DiffMx const& one, DiffMx const& two) -> DiffMxComparison {
+        DiffMx const difference = (one - two).cwiseAbs();
+        auto max = difference.maxCoeff();
+        auto mean = difference.mean();
+        auto std = std::sqrt((difference.array() - mean).sum() /
+                             (difference.rows() * difference.cols() - 1));
+        return {max, mean, std};
+    }
+
     namespace cpu {
         auto generateDiffMx(ImgMxVector const& referenceMxs,
                             ImgMxVector const& queryMxs,

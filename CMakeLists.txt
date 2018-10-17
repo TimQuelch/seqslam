@@ -20,6 +20,7 @@ target_compile_features(seqslam PUBLIC cxx_std_17)
 target_link_libraries(seqslam
     PUBLIC
     Eigen3::Eigen
+    fmt::fmt
     clutils
     PRIVATE
     opencv_core
@@ -32,7 +33,7 @@ target_compile_features(clutils PUBLIC cxx_std_17)
 target_link_libraries(clutils PUBLIC OpenCL::OpenCL stdc++fs PRIVATE fmt::fmt)
 
 add_executable(demo src/demo.cpp)
-target_link_libraries(demo PRIVATE seqslam)
+target_link_libraries(demo PRIVATE seqslam fmt::fmt)
 
 add_executable(seqslam-benchmark src/benchmark.cpp)
 target_link_libraries(seqslam-benchmark PRIVATE seqslam benchmark)

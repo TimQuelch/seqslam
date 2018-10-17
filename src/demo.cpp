@@ -2,6 +2,9 @@
 
 #include <filesystem>
 #include <iostream>
+
+#include <fmt/format.h>
+
 #include <opencv2/core/eigen.hpp>
 #include <opencv2/highgui.hpp>
 

@@ -7,6 +7,8 @@
 #include <memory>
 #include <vector>
 
+#include <fmt/format.h>
+
 #include <Eigen/Dense>
 #include <Eigen/StdVector>
 
@@ -29,6 +31,13 @@ namespace seqslam {
     auto convertToEigen(std::vector<cv::Mat> const& images) -> ImgMxVector;
     auto convertToCv(ImgMxVector const& images) -> std::vector<cv::Mat>;
     auto convertToBuffer(ImgMxVector const& images) -> std::unique_ptr<PixType[]>;
+
+    struct DiffMxComparison {
+        float max;
+        float mean;
+        float std;
+    };
+    auto compareDiffMx(DiffMx const& one, DiffMx const& two) -> DiffMxComparison;
 
     namespace cpu {
         auto generateDiffMx(ImgMxVector const& referenceMxs,
@@ -80,5 +89,21 @@ namespace seqslam {
             -> std::unique_ptr<DiffMx>;
     } // namespace opencl
 } // namespace seqslam
+
+namespace fmt {
+    template <>
+    struct formatter<seqslam::DiffMxComparison> {
+        template <typename ParseContext>
+        constexpr auto parse(ParseContext& context) {
+            return context.begin();
+        }
+
+        template <typename FormatContext>
+        auto format(seqslam::DiffMxComparison const& c, FormatContext& context) {
+            return format_to(
+                context.begin(), "Max diff: {}, Mean diff {}, Std diff {}", c.max, c.mean, c.std);
+        }
+    };
+} // namespace fmt
 
 #endif
