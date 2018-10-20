@@ -8,7 +8,7 @@
 #include <opencv2/imgproc.hpp>
 
 namespace seqslam {
-    auto readImages(std::filesystem::path dir) -> std::vector<cv::Mat> {
+    auto readImages(std::filesystem::path const& dir) -> std::vector<cv::Mat> {
         std::vector<cv::Mat> images;
         for (auto const& imagePath : std::filesystem::directory_iterator(dir)) {
             images.push_back(cv::imread(imagePath.path().string(), CV_LOAD_IMAGE_GRAYSCALE));
@@ -55,19 +55,19 @@ namespace seqslam {
         return res;
     }
 
-    auto convertToBuffer(ImgMxVector const& images) -> std::unique_ptr<PixType[]> {
-        auto buffer = std::make_unique<PixType[]>(images.size() * nRows * nCols);
-        for (auto i = 0u; i < images.size(); i++) {
-            Eigen::Map<ImgMx>{buffer.get() + i* nRows* nCols} = images[i];
+    auto convertToBuffer(ImgMxVector const& mxs) -> std::unique_ptr<PixType[]> {
+        auto buffer = std::make_unique<PixType[]>(mxs.size() * nRows * nCols);
+        for (auto i = 0u; i < mxs.size(); i++) {
+            Eigen::Map<ImgMx>{buffer.get() + i* nRows* nCols} = mxs[i];
         }
         return buffer;
     }
 
     auto compareDiffMx(DiffMx const& one, DiffMx const& two) -> DiffMxComparison {
         DiffMx const difference = (one - two).cwiseAbs();
-        auto max = difference.maxCoeff();
-        auto mean = difference.mean();
-        auto std = std::sqrt((difference.array() - mean).sum() /
+        auto const max = difference.maxCoeff();
+        auto const mean = difference.mean();
+        auto const std = std::sqrt((difference.array() - mean).sum() /
                              (difference.rows() * difference.cols() - 1));
         return {max, mean, std};
     }

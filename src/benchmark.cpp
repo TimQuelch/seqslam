@@ -6,10 +6,8 @@ using namespace seqslam;
 
 auto loadImages() {
     auto const dataDir = std::filesystem::path{"../datasets/nordland_trimmed_resized"};
-    auto const referenceImages =
-        convertToEigen(contrastEnhancement(readImages(dataDir / "summer"), 20));
-    auto const queryImages =
-        convertToEigen(contrastEnhancement(readImages(dataDir / "winter"), 20));
+    auto referenceImages = convertToEigen(contrastEnhancement(readImages(dataDir / "summer"), 20));
+    auto queryImages = convertToEigen(contrastEnhancement(readImages(dataDir / "winter"), 20));
     return std::tuple{std::move(referenceImages), std::move(queryImages)};
 }
 

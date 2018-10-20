@@ -23,14 +23,14 @@ namespace seqslam {
     using ImgMxVector = std::vector<ImgMx, Eigen::aligned_allocator<ImgMx>>;
     using DiffMx = Eigen::Matrix<PixType, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 
-    auto readImages(std::filesystem::path dir) -> std::vector<cv::Mat>;
+    auto readImages(std::filesystem::path const& dir) -> std::vector<cv::Mat>;
 
     auto contrastEnhancement(std::vector<cv::Mat> const& images, double threshold)
         -> std::vector<cv::Mat>;
 
     auto convertToEigen(std::vector<cv::Mat> const& images) -> ImgMxVector;
-    auto convertToCv(ImgMxVector const& images) -> std::vector<cv::Mat>;
-    auto convertToBuffer(ImgMxVector const& images) -> std::unique_ptr<PixType[]>;
+    auto convertToCv(ImgMxVector const& mxs) -> std::vector<cv::Mat>;
+    auto convertToBuffer(ImgMxVector const& mxs) -> std::unique_ptr<PixType[]>;
 
     struct DiffMxComparison {
         float max;

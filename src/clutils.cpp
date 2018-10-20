@@ -8,15 +8,16 @@ namespace clutils {
         auto toNdRange(std::vector<std::size_t> const& range) -> cl::NDRange {
             if (range.size() == 1) {
                 return cl::NDRange(range[0]);
-            } else if (range.size() == 2) {
-                return cl::NDRange(range[0], range[1]);
-            } else if (range.size() == 3) {
-                return cl::NDRange(range[0], range[1], range[2]);
-            } else {
-                throw std::runtime_error{fmt::format(
-                    "Invalid number of dimensions ({}) for NDRange. Must be between 1 and 3",
-                    range.size())};
             }
+            if (range.size() == 2) {
+                return cl::NDRange(range[0], range[1]);
+            }
+            if (range.size() == 3) {
+                return cl::NDRange(range[0], range[1], range[2]);
+            }
+            throw std::runtime_error{fmt::format(
+                "Invalid number of dimensions ({}) for NDRange. Must be between 1 and 3",
+                range.size())};
         }
 
         auto toClAccess(Buffer::Access val) -> cl_mem_flags {
@@ -40,7 +41,8 @@ namespace clutils {
 
     void Buffer::readBuffer(void* destination, std::size_t offset, std::size_t size) const {
         try {
-            queue_.enqueueReadBuffer(buffer_, true, offset, size, destination);
+            queue_.enqueueReadBuffer(
+                buffer_, static_cast<cl_bool>(true), offset, size, destination);
         } catch (cl::Error& e) {
             fmt::print("{}\n", e.what());
             fmt::print("Error code {}\n", e.err());
@@ -52,7 +54,7 @@ namespace clutils {
 
     void Buffer::writeBuffer(void const* source, std::size_t offset, std::size_t size) const {
         try {
-            queue_.enqueueWriteBuffer(buffer_, true, offset, size, source);
+            queue_.enqueueWriteBuffer(buffer_, static_cast<cl_bool>(true), offset, size, source);
         } catch (cl::Error& e) {
             fmt::print("{}\n", e.what());
             fmt::print("Error code {}\n", e.err());
