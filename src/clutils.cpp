@@ -1,5 +1,7 @@
 #include "clutils.h"
 
+#include <numeric>
+
 #include <fmt/format.h>
 #include <fstream>
 
@@ -31,6 +33,11 @@ namespace clutils {
             }
             return {};
         }
+
+        auto clErrorToException(cl::Error const& e) {
+            return std::runtime_error{
+                fmt::format("OpenCL error in {}. Error code {}", e.what(), e.err())};
+        }
     } // namespace
 
     Buffer::Buffer(Context const& context, std::size_t size, Access access)
@@ -43,11 +50,7 @@ namespace clutils {
         try {
             queue_.enqueueReadBuffer(
                 buffer_, static_cast<cl_bool>(true), offset, size, destination);
-        } catch (cl::Error& e) {
-            fmt::print("{}\n", e.what());
-            fmt::print("Error code {}\n", e.err());
-            throw;
-        }
+        } catch (cl::Error& e) { throw clErrorToException(e); }
     }
 
     void Buffer::writeBuffer(void const* source) const { writeBuffer(source, 0, size_); }
@@ -55,11 +58,7 @@ namespace clutils {
     void Buffer::writeBuffer(void const* source, std::size_t offset, std::size_t size) const {
         try {
             queue_.enqueueWriteBuffer(buffer_, static_cast<cl_bool>(true), offset, size, source);
-        } catch (cl::Error& e) {
-            fmt::print("{}\n", e.what());
-            fmt::print("Error code {}\n", e.err());
-            throw;
-        }
+        } catch (cl::Error& e) { throw clErrorToException(e); }
     }
 
     Context::Context() : Context{0, 0} {}
@@ -115,14 +114,25 @@ namespace clutils {
     void Context::runKernel(std::string const& kernelName,
                             std::vector<std::size_t> const& globalDims,
                             std::vector<std::size_t> const& localDims) const {
+        constexpr auto maxWorkgroupSize = 1024u;
+        constexpr auto maxZDimSize = 64u;
+        if (auto s = std::accumulate(
+                localDims.begin(), localDims.end(), 1u, std::multiplies<std::size_t>{});
+            s > maxWorkgroupSize) {
+            throw std::runtime_error{fmt::format(
+                "Workgroup size of {} requested. Max allowable is {}", s, maxWorkgroupSize)};
+        }
+        if (localDims.size() >= 3 && localDims[2] > maxZDimSize) {
+            throw std::runtime_error{
+                fmt::format("Workgroup z dimension size of {} requested. Max allowable is {}",
+                            localDims[2],
+                            maxZDimSize)};
+        }
+
         try {
             queue_.enqueueNDRangeKernel(
                 kernels_.at(kernelName), {0, 0, 0}, toNdRange(globalDims), toNdRange(localDims));
-        } catch (cl::Error& e) {
-            fmt::print("{}\n", e.what());
-            fmt::print("Error code {}\n", e.err());
-            throw;
-        }
+        } catch (cl::Error& e) { throw clErrorToException(e); }
     }
 
     void Context::setKernelArg(std::string const& kernelName, unsigned index, Buffer const& arg) {
