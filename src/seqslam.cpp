@@ -1,6 +1,7 @@
 #include "seqslam.h"
 
 #include <algorithm>
+#include <cassert>
 
 #include <opencv2/core.hpp>
 #include <opencv2/core/eigen.hpp>
@@ -8,6 +9,26 @@
 #include <opencv2/imgproc.hpp>
 
 namespace seqslam {
+    namespace {
+        struct Dims {
+            int rows;
+            int cols;
+            constexpr auto nElems() const { return rows * cols; }
+        };
+
+        auto dims(Mx const& mx) {
+            return Dims{static_cast<int>(mx.rows()), static_cast<int>(mx.cols())};
+        }
+
+        auto dims(cv::Mat const& mx) {
+            return Dims{static_cast<int>(mx.rows), static_cast<int>(mx.cols)};
+        }
+
+        auto operator==(Dims const& one, Dims const& two) {
+            return one.rows == two.rows && one.cols == two.cols;
+        }
+    } // namespace
+
     auto readImages(std::filesystem::path const& dir) -> std::vector<cv::Mat> {
         std::vector<cv::Mat> images;
         for (auto const& imagePath : std::filesystem::directory_iterator(dir)) {
@@ -33,18 +54,22 @@ namespace seqslam {
         return contrastEnhanced;
     }
 
-    auto convertToEigen(std::vector<cv::Mat> const& images) -> ImgMxVector {
-        ImgMxVector res;
+    auto convertToEigen(std::vector<cv::Mat> const& images) -> std::vector<Mx> {
+        assert(images.size() > 0);
+        auto const d = dims(images[0]);
+        std::vector<Mx> res;
         res.reserve(images.size());
-        std::transform(images.begin(), images.end(), std::back_inserter(res), [](auto const& im) {
-            ImgMx mat;
+        std::transform(images.begin(), images.end(), std::back_inserter(res), [d](auto const& im) {
+            assert(im.rows == d.rows);
+            assert(im.cols == d.cols);
+            Mx mat{d.rows, d.cols};
             cv::cv2eigen(im, mat);
             return mat;
         });
         return res;
     }
 
-    auto convertToCv(ImgMxVector const& mxs) -> std::vector<cv::Mat> {
+    auto convertToCv(std::vector<Mx> const& mxs) -> std::vector<cv::Mat> {
         std::vector<cv::Mat> res;
         res.reserve(mxs.size());
         std::transform(mxs.begin(), mxs.end(), std::back_inserter(res), [](auto const& mx) {
@@ -55,28 +80,32 @@ namespace seqslam {
         return res;
     }
 
-    auto convertToBuffer(ImgMxVector const& mxs) -> std::unique_ptr<PixType[]> {
-        auto buffer = std::make_unique<PixType[]>(mxs.size() * nRows * nCols);
+    auto convertToBuffer(std::vector<Mx> const& mxs) -> std::unique_ptr<PixType[]> {
+        assert(mxs.size() > 0);
+        auto const d = dims(mxs[0]);
+        auto buffer = std::make_unique<PixType[]>(mxs.size() * d.nElems());
         for (auto i = 0u; i < mxs.size(); i++) {
-            Eigen::Map<ImgMx>{buffer.get() + i* nRows* nCols} = mxs[i];
+            assert(mxs[i].rows() == d.rows);
+            assert(mxs[i].cols() == d.cols);
+            Eigen::Map<Mx>{buffer.get() + i * d.nElems(), d.rows, d.cols} = mxs[i];
         }
         return buffer;
     }
 
-    auto compareDiffMx(DiffMx const& one, DiffMx const& two) -> DiffMxComparison {
-        DiffMx const difference = (one - two).cwiseAbs();
+    auto compareDiffMx(Mx const& one, Mx const& two) -> DiffMxComparison {
+        Mx const difference = (one - two).cwiseAbs();
         auto const max = difference.maxCoeff();
         auto const mean = difference.mean();
         auto const std = std::sqrt((difference.array() - mean).sum() /
-                             (difference.rows() * difference.cols() - 1));
+                                   (difference.rows() * difference.cols() - 1));
         return {max, mean, std};
     }
 
     namespace cpu {
-        auto generateDiffMx(ImgMxVector const& referenceMxs,
-                            ImgMxVector const& queryMxs,
-                            std::size_t tileSize) -> std::unique_ptr<DiffMx> {
-            auto mx = std::make_unique<DiffMx>(referenceMxs.size(), queryMxs.size());
+        auto generateDiffMx(std::vector<Mx> const& referenceMxs,
+                            std::vector<Mx> const& queryMxs,
+                            std::size_t tileSize) -> std::unique_ptr<Mx> {
+            auto mx = std::make_unique<Mx>(referenceMxs.size(), queryMxs.size());
             for (auto tr = 0u; tr < referenceMxs.size() / tileSize; tr++) {
                 for (auto tq = 0u; tq < queryMxs.size() / tileSize; tq++) {
                     for (auto i = 0u; i < tileSize; i++) {
@@ -124,29 +153,54 @@ namespace seqslam {
             return context;
         }
 
-        auto createBuffers(clutils::Context& context, std::size_t nReference, std::size_t nQuery)
-            -> diffMxBuffers {
-            auto r = clutils::Buffer{context,
-                                     nReference * nRows * nCols * sizeof(PixType),
-                                     clutils::Buffer::Access::read};
+        auto createBuffers(clutils::Context& context,
+                           std::size_t nReference,
+                           std::size_t nQuery,
+                           std::size_t nPix) -> diffMxBuffers {
+            auto r = clutils::Buffer{
+                context, nReference * nPix * sizeof(PixType), clutils::Buffer::Access::read};
             auto q = clutils::Buffer{
-                context, nQuery * nRows * nCols * sizeof(PixType), clutils::Buffer::Access::read};
+                context, nQuery * nPix * sizeof(PixType), clutils::Buffer::Access::read};
             auto d = clutils::Buffer{
                 context, nReference * nQuery * sizeof(PixType), clutils::Buffer::Access::write};
             return {std::move(r), std::move(q), std::move(d)};
         }
 
+        auto fitsInLocalMemory(std::size_t nPix, std::size_t tileSize, std::size_t nPerThread)
+            -> std::tuple<std::size_t, bool> {
+            auto const localMemorySize = 48u * 1024u;
+            auto const memoryRequired = nPix * tileSize * tileSize * sizeof(PixType) / nPerThread;
+            return std::tuple{memoryRequired, memoryRequired < localMemorySize};
+        }
+
         void writeArgs(clutils::Context& context,
                        diffMxBuffers const& buffers,
-                       ImgMxVector const& referenceMxs,
-                       ImgMxVector const& queryMxs,
+                       std::vector<Mx> const& referenceMxs,
+                       std::vector<Mx> const& queryMxs,
                        std::size_t tileSize,
                        std::size_t nPerThread,
                        std::string const& kernelName) {
-            auto rbuf = convertToBuffer(referenceMxs);
-            auto qbuf = convertToBuffer(queryMxs);
+            assert(referenceMxs.size() > 0);
+            assert(queryMxs.size() > 0);
+            assert(dims(referenceMxs[0]) == dims(queryMxs[0]));
+            auto const d = dims(referenceMxs[0]);
+            auto const rbuf = convertToBuffer(referenceMxs);
+            auto const qbuf = convertToBuffer(queryMxs);
             buffers.reference.writeBuffer(rbuf.get());
             buffers.query.writeBuffer(qbuf.get());
+
+            if (auto const [memory, fits] = fitsInLocalMemory(d.nElems(), tileSize, nPerThread);
+                !fits) {
+                throw std::runtime_error{fmt::format(
+                    "Allocation of GPU local memory is too large with parameters number pixels per "
+                    "image = {}, tile size = {}, and number of pixels per thread = {}. Requesting "
+                    "memory allocation of {}, where max is {}",
+                    d.nElems(),
+                    tileSize,
+                    nPerThread,
+                    memory,
+                    48 * 1024)};
+            }
 
             context.setKernelArg(kernelName, 0, buffers.query);
             context.setKernelArg(kernelName, 1, buffers.reference);
@@ -154,33 +208,37 @@ namespace seqslam {
             context.setKernelArg(kernelName, 3, static_cast<unsigned int>(nPerThread));
             context.setKernelArg(kernelName, 4, buffers.diffMx);
             context.setKernelLocalArg(
-                kernelName, 5, nRows * nCols * tileSize * tileSize * sizeof(PixType) / nPerThread);
+                kernelName, 5, d.nElems() * tileSize * tileSize * sizeof(PixType) / nPerThread);
         }
 
-        auto generateDiffMx(ImgMxVector const& referenceMxs,
-                            ImgMxVector const& queryMxs,
+        auto generateDiffMx(std::vector<Mx> const& referenceMxs,
+                            std::vector<Mx> const& queryMxs,
                             std::size_t tileSize,
                             std::size_t nPerThread,
-                            std::string const& kernelName) -> std::unique_ptr<DiffMx> {
+                            std::string const& kernelName) -> std::unique_ptr<Mx> {
             auto context = createDiffMxContext();
             return generateDiffMx(
                 context, referenceMxs, queryMxs, tileSize, nPerThread, kernelName);
         }
 
         auto generateDiffMx(clutils::Context& context,
-                            ImgMxVector const& referenceMxs,
-                            ImgMxVector const& queryMxs,
+                            std::vector<Mx> const& referenceMxs,
+                            std::vector<Mx> const& queryMxs,
                             std::size_t tileSize,
                             std::size_t nPerThread,
-                            std::string const& kernelName) -> std::unique_ptr<DiffMx> {
-
-            auto bufs = createBuffers(context, referenceMxs.size(), queryMxs.size());
+                            std::string const& kernelName) -> std::unique_ptr<Mx> {
+            assert(referenceMxs.size() > 0);
+            assert(queryMxs.size() > 0);
+            assert(dims(referenceMxs[0]) == dims(queryMxs[0]));
+            auto const d = dims(referenceMxs[0]);
+            auto bufs = createBuffers(context, referenceMxs.size(), queryMxs.size(), d.nElems());
             writeArgs(context, bufs, referenceMxs, queryMxs, tileSize, nPerThread, kernelName);
 
             return generateDiffMx(context,
                                   bufs.diffMx,
                                   referenceMxs.size(),
                                   queryMxs.size(),
+                                  d.nElems(),
                                   tileSize,
                                   nPerThread,
                                   kernelName);
@@ -190,22 +248,21 @@ namespace seqslam {
                             clutils::Buffer const& outBuffer,
                             std::size_t referenceSize,
                             std::size_t querySize,
+                            std::size_t nPix,
                             std::size_t tileSize,
                             std::size_t nPerThread,
-                            std::string const& kernelName) -> std::unique_ptr<DiffMx> {
-            context.runKernel(
-                kernelName,
-                {nRows * nCols / nPerThread, querySize / tileSize, referenceSize / tileSize},
-                {nRows * nCols / nPerThread, 1, 1});
+                            std::string const& kernelName) -> std::unique_ptr<Mx> {
+            context.runKernel(kernelName,
+                              {nPix / nPerThread, querySize / tileSize, referenceSize / tileSize},
+                              {nPix / nPerThread, 1, 1});
             context.queue().finish();
 
             auto buffer = std::make_unique<PixType[]>(referenceSize * querySize);
             outBuffer.readBuffer(buffer.get());
 
-            return std::make_unique<DiffMx>(
-                Eigen::Map<DiffMx>{buffer.get(),
-                                   static_cast<Eigen::Index>(referenceSize),
-                                   static_cast<Eigen::Index>(querySize)});
+            return std::make_unique<Mx>(Eigen::Map<Mx>{buffer.get(),
+                                                       static_cast<Eigen::Index>(referenceSize),
+                                                       static_cast<Eigen::Index>(querySize)});
         }
     } // namespace opencl
 } // namespace seqslam
