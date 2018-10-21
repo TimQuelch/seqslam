@@ -50,6 +50,9 @@ target_link_libraries(demo PRIVATE seqslam fmt::fmt)
 add_executable(seqslam-benchmark src/benchmark.cpp)
 target_link_libraries(seqslam-benchmark PRIVATE seqslam benchmark)
 
+add_executable(seqslam-test src/test.cpp)
+target_link_libraries(seqslam-test PRIVATE seqslam fmt)
+
 add_executable(sad-benchmark src/sad-benchmark.cpp)
 target_compile_features(sad-benchmark PRIVATE cxx_std_17)
 target_link_libraries(sad-benchmark PRIVATE benchmark Eigen3::Eigen OpenMP::OpenMP_CXX)
