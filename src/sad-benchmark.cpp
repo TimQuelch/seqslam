@@ -8,8 +8,8 @@
 #include <Eigen/Dense>
 #include <Eigen/StdVector>
 
-constexpr auto rows = 16;
-constexpr auto cols = 32;
+constexpr auto rows = 32;
+constexpr auto cols = 64;
 constexpr auto nVecImages = 32768;
 constexpr auto nSqrImages = 4096;
 
@@ -17,10 +17,16 @@ template <typename T>
 using Mx = Eigen::Matrix<T, rows, cols, Eigen::RowMajor>;
 
 template <typename T>
+using MxDyn = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+
+template <typename T>
 using FlatMx = Eigen::Matrix<T, rows * cols, 1>;
 
 template <typename T>
 using VecMx = std::vector<Mx<T>, Eigen::aligned_allocator<Mx<T>>>;
+
+template <typename T>
+using VecMxDyn = std::vector<MxDyn<T>, Eigen::aligned_allocator<Mx<T>>>;
 
 template <typename T>
 using VecFlatMx = std::vector<FlatMx<T>, Eigen::aligned_allocator<FlatMx<T>>>;
@@ -48,6 +54,17 @@ auto randMx() {
 }
 
 template <typename T>
+auto randMxDyn() {
+    MxDyn<T> mx{rows, cols};
+    for (auto i = 0u; i < mx.rows(); i++) {
+        for (auto j = 0u; j < mx.cols(); j++) {
+            mx(i, j) = dist<T>(rng);
+        }
+    }
+    return mx;
+}
+
+template <typename T>
 auto randFlatMx() {
     FlatMx<T> mx;
     for (auto i = 0u; i < mx.rows(); i++) {
@@ -61,6 +78,14 @@ auto genVecMx(unsigned n) {
     VecMx<T> v;
     v.reserve(n);
     std::generate_n(std::back_inserter(v), n, []() { return randMx<T>(); });
+    return v;
+}
+
+template <typename T>
+auto genVecMxDyn(unsigned n) {
+    VecMxDyn<T> v;
+    v.reserve(n);
+    std::generate_n(std::back_inserter(v), n, []() { return randMxDyn<T>(); });
     return v;
 }
 
@@ -216,6 +241,32 @@ BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMx, float, 16)->Arg(nSqrImages);
 BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMx, float, 32)->Arg(nSqrImages);
 BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMx, float, 64)->Arg(nSqrImages);
 BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMx, float, 128)->Arg(nSqrImages);
+
+template <typename T, int TileSize>
+void sqrCacheOptimisedSadMxDyn(benchmark::State& state) {
+    auto n = state.range(0);
+    auto a = genVecMxDyn<T>(n);
+    auto b = genVecMxDyn<T>(n);
+
+    for (auto _ : state) {
+        for (auto tx = 0; tx < n / TileSize; tx++) {
+            for (auto ty = 0; ty < n / TileSize; ty++) {
+                for (auto i = 0u; i < TileSize; i++) {
+                    for (auto j = 0u; j < TileSize; j++) {
+                        auto d = (a[tx * TileSize + i] - b[ty * TileSize + j]).cwiseAbs().sum();
+                        benchmark::DoNotOptimize(&d);
+                    }
+                }
+            }
+        }
+    }
+    state.SetItemsProcessed(state.iterations() * n * n * rows * cols);
+}
+BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMxDyn, float, 8)->Arg(nSqrImages);
+BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMxDyn, float, 16)->Arg(nSqrImages);
+BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMxDyn, float, 32)->Arg(nSqrImages);
+BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMxDyn, float, 64)->Arg(nSqrImages);
+BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMxDyn, float, 128)->Arg(nSqrImages);
 
 template <typename T, int TileSize>
 void sqrCacheOptimisedThreadSadMx(benchmark::State& state) {
