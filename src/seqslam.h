@@ -57,9 +57,6 @@ namespace seqslam {
                            std::size_t nQuery,
                            std::size_t nPix) -> diffMxBuffers;
 
-        auto fitsInLocalMemory(std::size_t nPix, std::size_t tileSize, std::size_t nPerThread)
-            -> std::tuple<std::size_t, bool>;
-
         void writeArgs(clutils::Context& context,
                        diffMxBuffers const& buffers,
                        std::vector<Mx> const& referenceMxs,

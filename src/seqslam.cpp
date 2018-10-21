@@ -27,6 +27,12 @@ namespace seqslam {
         auto operator==(Dims const& one, Dims const& two) {
             return one.rows == two.rows && one.cols == two.cols;
         }
+
+        auto fitsInLocalMemory(std::size_t nPix, std::size_t tileSize, std::size_t nPerThread) {
+            auto const localMemorySize = 48u * 1024u;
+            auto const memoryRequired = nPix * tileSize * tileSize * sizeof(PixType) / nPerThread;
+            return std::tuple{memoryRequired, memoryRequired < localMemorySize};
+        }
     } // namespace
 
     auto readImages(std::filesystem::path const& dir) -> std::vector<cv::Mat> {
@@ -164,13 +170,6 @@ namespace seqslam {
             auto d = clutils::Buffer{
                 context, nReference * nQuery * sizeof(PixType), clutils::Buffer::Access::write};
             return {std::move(r), std::move(q), std::move(d)};
-        }
-
-        auto fitsInLocalMemory(std::size_t nPix, std::size_t tileSize, std::size_t nPerThread)
-            -> std::tuple<std::size_t, bool> {
-            auto const localMemorySize = 48u * 1024u;
-            auto const memoryRequired = nPix * tileSize * tileSize * sizeof(PixType) / nPerThread;
-            return std::tuple{memoryRequired, memoryRequired < localMemorySize};
         }
 
         void writeArgs(clutils::Context& context,
