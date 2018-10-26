@@ -28,10 +28,8 @@ namespace seqslam {
             return one.rows == two.rows && one.cols == two.cols;
         }
 
-        auto fitsInLocalMemory(std::size_t nPix, std::size_t tileSize, std::size_t nPerThread) {
-            auto const localMemorySize = 48u * 1024u;
-            auto const memoryRequired = nPix * tileSize * tileSize * sizeof(PixType) / nPerThread;
-            return std::tuple{memoryRequired, memoryRequired < localMemorySize};
+        auto localMemoryRequired(std::size_t nPix, std::size_t tileSize, std::size_t nPerThread) {
+            return nPix * tileSize * tileSize * sizeof(PixType) / nPerThread;
         }
     } // namespace
 
@@ -96,15 +94,6 @@ namespace seqslam {
             Eigen::Map<Mx>{buffer.get() + i * d.nElems(), d.rows, d.cols} = mxs[i];
         }
         return buffer;
-    }
-
-    auto compareDiffMx(Mx const& one, Mx const& two) -> DiffMxComparison {
-        Mx const difference = (one - two).cwiseAbs();
-        auto const max = difference.maxCoeff();
-        auto const mean = difference.mean();
-        auto const std = std::sqrt((difference.array() - mean).sum() /
-                                   (difference.rows() * difference.cols() - 1));
-        return {max, mean, std};
     }
 
     namespace cpu {
@@ -172,6 +161,12 @@ namespace seqslam {
             return {std::move(r), std::move(q), std::move(d)};
         }
 
+        auto fitsInLocalMemory(std::size_t nPix, std::size_t tileSize, std::size_t nPerThread)
+            -> bool {
+            auto const localMemorySize = 48u * 1024u;
+            return localMemoryRequired(nPix, tileSize, nPerThread) < localMemorySize;
+        }
+
         void writeArgs(clutils::Context& context,
                        diffMxBuffers const& buffers,
                        std::vector<Mx> const& referenceMxs,
@@ -188,8 +183,7 @@ namespace seqslam {
             buffers.reference.writeBuffer(rbuf.get());
             buffers.query.writeBuffer(qbuf.get());
 
-            if (auto const [memory, fits] = fitsInLocalMemory(d.nElems(), tileSize, nPerThread);
-                !fits) {
+            if (!fitsInLocalMemory(d.nElems(), tileSize, nPerThread)) {
                 throw std::runtime_error{fmt::format(
                     "Allocation of GPU local memory is too large with parameters number pixels per "
                     "image = {}, tile size = {}, and number of pixels per thread = {}. Requesting "
@@ -197,7 +191,7 @@ namespace seqslam {
                     d.nElems(),
                     tileSize,
                     nPerThread,
-                    memory,
+                    localMemoryRequired(d.nElems(), tileSize, nPerThread),
                     48 * 1024)};
             }
 

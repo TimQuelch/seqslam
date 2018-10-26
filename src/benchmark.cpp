@@ -20,7 +20,7 @@ namespace {
                           std::size_t maxNPerThread) {
         for (auto tileSize = 1u; tileSize <= maxTileSize; tileSize++) {
             for (auto nPerThread = 1u; nPerThread <= maxNPerThread; nPerThread++) {
-                bool const fits = nPix * tileSize * tileSize * sizeof(PixType) / nPerThread < 48u * 1024;
+                bool const fits = opencl::fitsInLocalMemory(nPix, tileSize, nPerThread);
                 bool const nThreads = nPix / nPerThread < 1024;
                 if (fits && nThreads) {
                     b->Args({tileSize, nPerThread});
