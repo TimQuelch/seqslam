@@ -104,7 +104,7 @@ namespace clutils {
             return cl::Program{context_, source};
         }();
 
-        program.build(devices_);
+        program.build(devices_, "-cl-mad-enable -cl-fast-relaxed-math -cl-no-signed-zeros");
 
         for (auto name : kernelNames) {
             kernels_.insert({name, cl::Kernel{program, name.c_str()}});
