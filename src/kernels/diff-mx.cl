@@ -17,12 +17,12 @@ void warpReduce(local volatile float* diffs,
     }
 }
 
-kernel void diffMx(global float const* query,
-                   global float const* reference,
-                   unsigned int tileSize,
-                   unsigned int nPerThread,
-                   global float* diffMxOutput,
-                   local float* diffs) {
+kernel void diffMxNDiffs(global float const* query,
+                         global float const* reference,
+                         unsigned int tileSize,
+                         unsigned int nPerThread,
+                         global float* diffMxOutput,
+                         local float* diffs) {
     const unsigned tx = get_group_id(1);
     const unsigned ty = get_group_id(2);
     const unsigned pi = get_local_id(0);
@@ -71,9 +71,62 @@ kernel void diffMx(global float const* query,
     }
 }
 
-kernel void diffMxNoUnroll(global float const* query,
+kernel void diffMxUnrolledWarpReduce(global float const* query,
+                                     global float const* reference,
+                                     unsigned int tileSize,
+                                     unsigned int nPerThread, // Ignored
+                                     global float* diffMxOutput,
+                                     local float* diffs) {
+    const unsigned tx = get_group_id(1);
+    const unsigned ty = get_group_id(2);
+    const unsigned pi = get_local_id(0);
+    const unsigned offset = get_local_size(0);
+    const unsigned nPix = offset * 2;
+
+    for (unsigned i = 0; i < tileSize; i++) {
+        for (unsigned j = 0; j < tileSize; j++) {
+            const unsigned imageIndex = (i + j * tileSize) * offset;
+            diffs[pi + imageIndex] = fabs(query[(tx * tileSize + i) * nPix + pi] -
+                                          reference[(ty * tileSize + j) * nPix + pi]) +
+                                     fabs(query[(tx * tileSize + i) * nPix + pi + offset] -
+                                          reference[(ty * tileSize + j) * nPix + pi + offset]);
+        }
+    }
+
+    barrier(CLK_LOCAL_MEM_FENCE);
+    for (unsigned int s = get_local_size(0) / 2; s > WARP_SIZE; s >>= 1) {
+        if (pi < s) {
+            for (unsigned int i = 0; i < tileSize; i++) {
+                for (unsigned int j = 0; j < tileSize; j++) {
+                    const unsigned int imageIndex = (i + j * tileSize) * offset;
+                    diffs[imageIndex + pi] += diffs[imageIndex + pi + s];
+                }
+            }
+        }
+        barrier(CLK_LOCAL_MEM_FENCE);
+    }
+
+    if (pi < WARP_SIZE) {
+        warpReduce(diffs, tileSize, offset, pi);
+    }
+
+    if (tileSize * tileSize > WARP_SIZE) {
+        barrier(CLK_LOCAL_MEM_FENCE);
+    }
+
+    if (pi < tileSize * tileSize) {
+        const unsigned int i = pi % tileSize;
+        const unsigned int j = pi / tileSize;
+        const unsigned int imageIndex = (i + j * tileSize) * offset;
+        diffMxOutput[tx * tileSize + i + (ty * tileSize + j) * get_global_size(1) * tileSize] =
+            diffs[imageIndex];
+    }
+}
+
+kernel void diffMxTwoDiffs(global float const* query,
                            global float const* reference,
                            unsigned int tileSize,
+                           unsigned int nPerThread, // Ignored
                            global float* diffMxOutput,
                            local float* diffs) {
     const unsigned tx = get_group_id(1);
@@ -114,11 +167,12 @@ kernel void diffMxNoUnroll(global float const* query,
     }
 }
 
-kernel void diffMxSingleDiff(global float const* query,
-                             global float const* reference,
-                             unsigned int tileSize,
-                             global float* diffMxOutput,
-                             local float* diffs) {
+kernel void diffMxContinuousIndex(global float const* query,
+                                  global float const* reference,
+                                  unsigned int tileSize,
+                                  unsigned int nPerThread, // Ignored
+                                  global float* diffMxOutput,
+                                  local float* diffs) {
     const size_t tx = get_group_id(1);
     const size_t ty = get_group_id(2);
     const size_t pi = get_local_id(0);
@@ -154,9 +208,10 @@ kernel void diffMxSingleDiff(global float const* query,
     }
 }
 
-kernel void diffMxStridedIndex(global float const* query,
+kernel void diffMxParallelSave(global float const* query,
                                global float const* reference,
                                unsigned int tileSize,
+                               unsigned int nPerThread, // Ignored
                                global float* diffMxOutput,
                                local float* diffs) {
     const size_t tx = get_group_id(1);
@@ -197,11 +252,12 @@ kernel void diffMxStridedIndex(global float const* query,
     }
 }
 
-kernel void diffMxSerialSave(global float const* query,
-                             global float const* reference,
-                             unsigned int tileSize,
-                             global float* diffMxOutput,
-                             local float* diffs) {
+kernel void diffMxNaive(global float const* query,
+                        global float const* reference,
+                        unsigned int tileSize,
+                        unsigned int nPerThread, // Ignored
+                        global float* diffMxOutput,
+                        local float* diffs) {
     const size_t tx = get_group_id(1);
     const size_t ty = get_group_id(2);
     const size_t pi = get_local_id(0);
