@@ -26,13 +26,6 @@ namespace seqslam {
     auto convertToCv(std::vector<Mx> const& mxs) -> std::vector<cv::Mat>;
     auto convertToBuffer(std::vector<Mx> const& mxs) -> std::unique_ptr<PixType[]>;
 
-    struct DiffMxComparison {
-        float max;
-        float mean;
-        float std;
-    };
-    auto compareDiffMx(Mx const& one, Mx const& two) -> DiffMxComparison;
-
     namespace cpu {
         auto generateDiffMx(std::vector<Mx> const& referenceMxs,
                             std::vector<Mx> const& queryMxs,
@@ -56,6 +49,14 @@ namespace seqslam {
                            std::size_t nReference,
                            std::size_t nQuery,
                            std::size_t nPix) -> diffMxBuffers;
+
+        auto fitsInLocalMemory(std::size_t nPix, std::size_t tileSize, std::size_t nPerThread)
+            -> bool;
+
+        auto isValidParameters(std::size_t nImages,
+                               std::size_t nPix,
+                               std::size_t tileSize,
+                               std::size_t nPixPerThread) -> bool;
 
         void writeArgs(clutils::Context& context,
                        diffMxBuffers const& buffers,
@@ -88,21 +89,5 @@ namespace seqslam {
                             std::string const& kernelName = kernelNames[0]) -> std::unique_ptr<Mx>;
     } // namespace opencl
 } // namespace seqslam
-
-namespace fmt {
-    template <>
-    struct formatter<seqslam::DiffMxComparison> {
-        template <typename ParseContext>
-        constexpr auto parse(ParseContext& context) {
-            return context.begin();
-        }
-
-        template <typename FormatContext>
-        auto format(seqslam::DiffMxComparison const& c, FormatContext& context) {
-            return format_to(
-                context.begin(), "Max diff: {}, Mean diff {}, Std diff {}", c.max, c.mean, c.std);
-        }
-    };
-} // namespace fmt
 
 #endif
