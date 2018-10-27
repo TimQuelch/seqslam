@@ -167,6 +167,17 @@ namespace seqslam {
             return localMemoryRequired(nPix, tileSize, nPerThread) < localMemorySize;
         }
 
+        auto isValidParameters(std::size_t nImages,
+                               std::size_t nPix,
+                               std::size_t tileSize,
+                               std::size_t nPixPerThread) -> bool {
+            bool const fits = opencl::fitsInLocalMemory(nPix, tileSize, nPixPerThread);
+            bool const nThreads = nPix / nPixPerThread <= 1024;
+            bool const tilesCorrectly = !(nImages % tileSize);
+            bool const initialReduceCorrectly = !(nPix % nPixPerThread);
+            return fits && nThreads && tilesCorrectly && initialReduceCorrectly;
+        }
+
         void writeArgs(clutils::Context& context,
                        diffMxBuffers const& buffers,
                        std::vector<Mx> const& referenceMxs,

@@ -68,13 +68,9 @@ int main() {
                              },
                              fmt::format("CPU tile size {}", tileSize)});
     }
-    for (auto tileSize = 1u; tileSize <= 50; tileSize++) {
+    for (auto tileSize = 1u; tileSize <= 4; tileSize++) {
         for (auto nPerThread = 1u; nPerThread <= 50; nPerThread++) {
-            bool const fits = opencl::fitsInLocalMemory(nPix, tileSize, nPerThread);
-            bool const nThreads = nPix / nPerThread < 1024;
-            bool const tilesCorrectly = !(nImages % tileSize);
-            bool const initialReduceCorrectly = !(nPix % nPerThread);
-            if (fits && nThreads && tilesCorrectly && initialReduceCorrectly) {
+            if (opencl::isValidParameters(nImages, nPix, tileSize, nPerThread)) {
                 diffMxFns.push_back(
                     {[&referenceImages, &queryImages, tileSize, nPerThread]() {
                          return opencl::generateDiffMx(

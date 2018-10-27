@@ -53,6 +53,11 @@ namespace seqslam {
         auto fitsInLocalMemory(std::size_t nPix, std::size_t tileSize, std::size_t nPerThread)
             -> bool;
 
+        auto isValidParameters(std::size_t nImages,
+                               std::size_t nPix,
+                               std::size_t tileSize,
+                               std::size_t nPixPerThread) -> bool;
+
         void writeArgs(clutils::Context& context,
                        diffMxBuffers const& buffers,
                        std::vector<Mx> const& referenceMxs,

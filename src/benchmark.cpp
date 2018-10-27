@@ -10,19 +10,19 @@ using namespace std::literals::string_view_literals;
 
 constexpr auto smallImagesDir = "../datasets/nordland_trimmed_resized"sv;
 constexpr auto largeImagesDir = "../datasets/nordland_trimmed"sv;
-constexpr auto smallSize = 16 * 32;
-constexpr auto largeSize = 32 * 64;
+constexpr auto smallSize = 16u * 32u;
+constexpr auto largeSize = 32u * 64u;
+constexpr auto nImages = 3576u;
 
 namespace {
     void gpuBenchmarkArgs(benchmark::internal::Benchmark* b,
+                          std::size_t nImages,
                           std::size_t nPix,
                           std::size_t maxTileSize,
                           std::size_t maxNPerThread) {
         for (auto tileSize = 1u; tileSize <= maxTileSize; tileSize++) {
             for (auto nPerThread = 1u; nPerThread <= maxNPerThread; nPerThread++) {
-                bool const fits = opencl::fitsInLocalMemory(nPix, tileSize, nPerThread);
-                bool const nThreads = nPix / nPerThread < 1024;
-                if (fits && nThreads) {
+                if (opencl::isValidParameters(nImages, nPix, tileSize, nPerThread)) {
                     b->Args({tileSize, nPerThread});
                 }
             }
@@ -57,7 +57,7 @@ void cpuDifferenceMatrix(benchmark::State& state) {
     state.SetItemsProcessed(state.iterations() * referenceImages.size() * queryImages.size() *
                             nRows * nCols);
 }
-//BENCHMARK(cpuDifferenceMatrix)
+// BENCHMARK(cpuDifferenceMatrix)
 //    ->Unit(benchmark::kMillisecond)
 //    ->RangeMultiplier(4)
 //    ->Range(1, 256)
@@ -128,8 +128,8 @@ void gpuDifferenceMatrixNoCopy(benchmark::State& state,
 }
 BENCHMARK_CAPTURE(gpuDifferenceMatrixNoCopy, best, "diffMx", largeImagesDir)
     ->Unit(benchmark::kMillisecond)
-    ->MinTime(1)
-    ->Apply([](auto b) { return gpuBenchmarkArgs(b, largeSize, 32, 32); });
+    ->MinTime(10)
+    ->Apply([](auto b) { return gpuBenchmarkArgs(b, nImages, largeSize, 4, 32); });
 // BENCHMARK_CAPTURE(gpuDifferenceMatrixNoCopy, bestNoUnroll, "diffMxNoUnroll")
 //    ->Unit(benchmark::kMillisecond)
 //    ->RangeMultiplier(2)
