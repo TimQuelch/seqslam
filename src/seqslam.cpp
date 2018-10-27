@@ -59,7 +59,7 @@ namespace seqslam {
     }
 
     auto convertToEigen(std::vector<cv::Mat> const& images) -> std::vector<Mx> {
-        assert(images.size() > 0);
+        assert(!images.empty());
         auto const d = dims(images[0]);
         std::vector<Mx> res;
         res.reserve(images.size());
@@ -85,7 +85,7 @@ namespace seqslam {
     }
 
     auto convertToBuffer(std::vector<Mx> const& mxs) -> std::unique_ptr<PixType[]> {
-        assert(mxs.size() > 0);
+        assert(!mxs.empty());
         auto const d = dims(mxs[0]);
         auto buffer = std::make_unique<PixType[]>(mxs.size() * d.nElems());
         for (auto i = 0u; i < mxs.size(); i++) {
@@ -176,8 +176,8 @@ namespace seqslam {
             bool const tLessThanMax = nThreads <= 1024;
             bool const tMoreThanWarp = nThreads > 32;
             bool const tMoreThanTiles = nThreads > tileSize * tileSize;
-            bool const tilesCorrectly = !(nImages % tileSize);
-            bool const initialReduceCorrectly = !(nPix % nPixPerThread);
+            bool const tilesCorrectly = nImages % tileSize == 0u;
+            bool const initialReduceCorrectly = nPix % nPixPerThread == 0u;
             return fitsInLocal && tLessThanMax && tMoreThanWarp && tMoreThanTiles &&
                    tilesCorrectly && initialReduceCorrectly;
         }
@@ -189,8 +189,8 @@ namespace seqslam {
                        std::size_t tileSize,
                        std::size_t nPerThread,
                        std::string const& kernelName) {
-            assert(referenceMxs.size() > 0);
-            assert(queryMxs.size() > 0);
+            assert(!referenceMxs.empty());
+            assert(!queryMxs.empty());
             assert(dims(referenceMxs[0]) == dims(queryMxs[0]));
             auto const d = dims(referenceMxs[0]);
             auto const rbuf = convertToBuffer(referenceMxs);
@@ -235,8 +235,8 @@ namespace seqslam {
                             std::size_t tileSize,
                             std::size_t nPerThread,
                             std::string const& kernelName) -> std::unique_ptr<Mx> {
-            assert(referenceMxs.size() > 0);
-            assert(queryMxs.size() > 0);
+            assert(!referenceMxs.empty());
+            assert(!queryMxs.empty());
             assert(dims(referenceMxs[0]) == dims(queryMxs[0]));
             auto const d = dims(referenceMxs[0]);
             auto bufs = createBuffers(context, referenceMxs.size(), queryMxs.size(), d.nElems());

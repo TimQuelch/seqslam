@@ -53,8 +53,8 @@ int main() {
     auto const queryImages =
         convertToEigen(contrastEnhancement(readImages(largeImagesDir / "winter"), 20));
 
-    assert(referenceImages.size() > 0);
-    assert(queryImages.size() > 0);
+    assert(!referenceImages.empty());
+    assert(!queryImages.empty());
     assert(referenceImages.size() == queryImages.size());
     assert(referenceImages[0].rows() == queryImages[0].rows());
     assert(referenceImages[0].cols() == queryImages[0].cols());

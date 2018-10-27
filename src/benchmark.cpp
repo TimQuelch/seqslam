@@ -51,8 +51,8 @@ namespace {
             convertToEigen(contrastEnhancement(readImages(dataDir / "summer"), 20));
         auto queryImages = convertToEigen(contrastEnhancement(readImages(dataDir / "winter"), 20));
 
-        assert(referenceImages.size() > 0);
-        assert(queryImages.size() > 0);
+        assert(!referenceImages.empty());
+        assert(!queryImages.empty());
         assert(referenceImages[0].rows() == queryImages[0].rows());
         assert(referenceImages[0].cols() == queryImages[0].cols());
         auto const nRows = queryImages[0].rows();
