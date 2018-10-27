@@ -58,6 +58,10 @@ kernel void diffMx(global float const* query,
         warpReduce(diffs, tileSize, offset, pi);
     }
 
+    if (tileSize * tileSize > WARP_SIZE) {
+        barrier(CLK_LOCAL_MEM_FENCE);
+    }
+
     if (pi < tileSize * tileSize) {
         const unsigned int i = pi % tileSize;
         const unsigned int j = pi / tileSize;
