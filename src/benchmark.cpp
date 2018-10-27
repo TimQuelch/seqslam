@@ -72,6 +72,7 @@ void cpuDifferenceMatrix(benchmark::State& state, std::string_view dir) {
     }
     state.SetItemsProcessed(state.iterations() * referenceImages.size() * queryImages.size() *
                             nRows * nCols);
+    state.SetBytesProcessed(state.items_processed() * sizeof(PixType));
 }
 BENCHMARK_CAPTURE(cpuDifferenceMatrix, small, smallImagesDir)
     ->Unit(benchmark::kMillisecond)
@@ -91,6 +92,7 @@ void gpuDifferenceMatrixWithCopyAndContext(benchmark::State& state, std::string_
     }
     state.SetItemsProcessed(state.iterations() * referenceImages.size() * queryImages.size() *
                             nRows * nCols);
+    state.SetBytesProcessed(state.items_processed() * sizeof(PixType));
 }
 BENCHMARK_CAPTURE(gpuDifferenceMatrixWithCopyAndContext, small, smallImagesDir)
     ->Unit(benchmark::kMillisecond)
@@ -116,6 +118,7 @@ void gpuDifferenceMatrixWithCopy(benchmark::State& state, std::string_view dir) 
     }
     state.SetItemsProcessed(state.iterations() * referenceImages.size() * queryImages.size() *
                             nRows * nCols);
+    state.SetBytesProcessed(state.items_processed() * sizeof(PixType));
 }
 BENCHMARK_CAPTURE(gpuDifferenceMatrixWithCopy, small, smallImagesDir)
     ->Unit(benchmark::kMillisecond)
@@ -151,6 +154,7 @@ void gpuDifferenceMatrix(benchmark::State& state, std::string const& kernel, std
     }
     state.SetItemsProcessed(state.iterations() * referenceImages.size() * queryImages.size() *
                             nRows * nCols);
+    state.SetBytesProcessed(state.items_processed() * sizeof(PixType));
 }
 BENCHMARK_CAPTURE(gpuDifferenceMatrix, best, "diffMxNDiffs", smallImagesDir)
     ->Unit(benchmark::kMillisecond)
