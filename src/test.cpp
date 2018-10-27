@@ -62,7 +62,7 @@ int main() {
     auto const nImages = referenceImages.size();
 
     auto diffMxFns = std::vector<std::pair<std::function<std::unique_ptr<Mx>()>, std::string>>{};
-    for (auto tileSize = 1u; tileSize <= 8; tileSize *= 2) {
+    for (auto tileSize = 1u; tileSize <= 256; tileSize *= 2) {
         diffMxFns.push_back({[&referenceImages, &queryImages, tileSize]() {
                                  return cpu::generateDiffMx(referenceImages, queryImages, tileSize);
                              },
