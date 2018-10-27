@@ -171,11 +171,15 @@ namespace seqslam {
                                std::size_t nPix,
                                std::size_t tileSize,
                                std::size_t nPixPerThread) -> bool {
-            bool const fits = opencl::fitsInLocalMemory(nPix, tileSize, nPixPerThread);
-            bool const nThreads = nPix / nPixPerThread <= 1024;
+            auto const nThreads = nPix / nPixPerThread;
+            bool const fitsInLocal = opencl::fitsInLocalMemory(nPix, tileSize, nPixPerThread);
+            bool const tLessThanMax = nThreads <= 1024;
+            bool const tMoreThanWarp = nThreads > 32;
+            bool const tMoreThanTiles = nThreads > tileSize * tileSize;
             bool const tilesCorrectly = !(nImages % tileSize);
             bool const initialReduceCorrectly = !(nPix % nPixPerThread);
-            return fits && nThreads && tilesCorrectly && initialReduceCorrectly;
+            return fitsInLocal && tLessThanMax && tMoreThanWarp && tMoreThanTiles &&
+                   tilesCorrectly && initialReduceCorrectly;
         }
 
         void writeArgs(clutils::Context& context,

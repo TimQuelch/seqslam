@@ -68,8 +68,8 @@ int main() {
                              },
                              fmt::format("CPU tile size {}", tileSize)});
     }
-    for (auto tileSize = 1u; tileSize <= 4; tileSize++) {
-        for (auto nPerThread = 1u; nPerThread <= 50; nPerThread++) {
+    for (auto tileSize = 1u; tileSize <= 512; tileSize++) {
+        for (auto nPerThread = 1u; nPerThread <= 512; nPerThread++) {
             if (opencl::isValidParameters(nImages, nPix, tileSize, nPerThread)) {
                 diffMxFns.push_back(
                     {[&referenceImages, &queryImages, tileSize, nPerThread]() {
