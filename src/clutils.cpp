@@ -132,6 +132,7 @@ namespace clutils {
         try {
             queue_.enqueueNDRangeKernel(
                 kernels_.at(kernelName), {0, 0, 0}, toNdRange(globalDims), toNdRange(localDims));
+            queue_.finish();
         } catch (cl::Error& e) { throw clErrorToException(e); }
     }
 

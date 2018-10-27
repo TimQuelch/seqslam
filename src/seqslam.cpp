@@ -259,7 +259,6 @@ namespace seqslam {
             context.runKernel(kernelName,
                               {nPix / nPerThread, querySize / tileSize, referenceSize / tileSize},
                               {nPix / nPerThread, 1, 1});
-            context.queue().finish();
 
             auto buffer = std::make_unique<PixType[]>(referenceSize * querySize);
             outBuffer.readBuffer(buffer.get());
