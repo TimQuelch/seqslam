@@ -1,0 +1,1901 @@
+{
+  "context": {
+    "date": "2018-10-27 21:13:32",
+    "executable": "./seqslam-benchmark",
+    "num_cpus": 4,
+    "mhz_per_cpu": 4300,
+    "cpu_scaling_enabled": true,
+    "caches": [
+      {
+        "type": "Data",
+        "level": 1,
+        "size": 32000000,
+        "num_sharing": 1
+      },
+      {
+        "type": "Instruction",
+        "level": 1,
+        "size": 32000000,
+        "num_sharing": 1
+      },
+      {
+        "type": "Unified",
+        "level": 2,
+        "size": 256000000,
+        "num_sharing": 1
+      },
+      {
+        "type": "Unified",
+        "level": 3,
+        "size": 6144000000,
+        "num_sharing": 4
+      }
+    ],
+    "library_build_type": "debug"
+  },
+  "benchmarks": [
+    {
+      "name": "cpuDifferenceMatrix/small/1",
+      "iterations": 11,
+      "real_time": 1.4056203357276072e+03,
+      "cpu_time": 1.4026913419999998e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 1.8670796962828907e+10,
+      "items_per_second": 4.6676992407072268e+09
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/2",
+      "iterations": 13,
+      "real_time": 8.8313076669258476e+02,
+      "cpu_time": 8.8140685392307705e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 2.9713140000481121e+10,
+      "items_per_second": 7.4282850001202803e+09
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/4",
+      "iterations": 21,
+      "real_time": 6.5247157100003233e+02,
+      "cpu_time": 6.5126117238095219e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.0213306671199265e+10,
+      "items_per_second": 1.0053326667799816e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/8",
+      "iterations": 25,
+      "real_time": 5.6338784999999916e+02,
+      "cpu_time": 5.6234630035999976e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.6571596952330330e+10,
+      "items_per_second": 1.1642899238082582e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/12",
+      "iterations": 26,
+      "real_time": 5.4275012742297031e+02,
+      "cpu_time": 5.4172850750000055e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.8344078049095421e+10,
+      "items_per_second": 1.2086019512273855e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/16",
+      "iterations": 25,
+      "real_time": 5.6914542035985505e+02,
+      "cpu_time": 5.6805137228000035e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.6103867583108139e+10,
+      "items_per_second": 1.1525966895777035e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/20",
+      "iterations": 25,
+      "real_time": 5.5753488688002108e+02,
+      "cpu_time": 5.5652230828000029e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.7058967553235039e+10,
+      "items_per_second": 1.1764741888308760e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/24",
+      "iterations": 26,
+      "real_time": 5.5216362630772687e+02,
+      "cpu_time": 5.5120872015384657e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.7512610541956497e+10,
+      "items_per_second": 1.1878152635489124e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/28",
+      "iterations": 27,
+      "real_time": 5.1226740548143562e+02,
+      "cpu_time": 5.1138203162962958e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 5.1212916426769859e+10,
+      "items_per_second": 1.2803229106692465e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/32",
+      "iterations": 28,
+      "real_time": 5.2048692635720988e+02,
+      "cpu_time": 5.1966770807142882e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 5.0396368373922981e+10,
+      "items_per_second": 1.2599092093480745e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/40",
+      "iterations": 28,
+      "real_time": 4.9814728571410734e+02,
+      "cpu_time": 4.9742674728571501e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 5.2649692423871994e+10,
+      "items_per_second": 1.3162423105967999e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/48",
+      "iterations": 29,
+      "real_time": 5.2714266717245255e+02,
+      "cpu_time": 5.2641732165517203e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.9750196603817802e+10,
+      "items_per_second": 1.2437549150954451e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/56",
+      "iterations": 28,
+      "real_time": 5.3203703907144825e+02,
+      "cpu_time": 5.3135726803571356e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.9287676716675224e+10,
+      "items_per_second": 1.2321919179168806e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/64",
+      "iterations": 26,
+      "real_time": 5.1996101573072690e+02,
+      "cpu_time": 5.1935265465384691e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 5.0426940178933792e+10,
+      "items_per_second": 1.2606735044733448e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/72",
+      "iterations": 27,
+      "real_time": 4.9290587222209001e+02,
+      "cpu_time": 4.9242057381481646e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 5.3184953352190720e+10,
+      "items_per_second": 1.3296238338047680e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/80",
+      "iterations": 28,
+      "real_time": 4.9840135171429472e+02,
+      "cpu_time": 4.9794005710714373e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 5.2595417609402596e+10,
+      "items_per_second": 1.3148854402350649e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/88",
+      "iterations": 28,
+      "real_time": 5.0656573753570098e+02,
+      "cpu_time": 5.0612984782142894e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 5.1744360386428040e+10,
+      "items_per_second": 1.2936090096607010e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/96",
+      "iterations": 27,
+      "real_time": 5.1807882459252141e+02,
+      "cpu_time": 5.1764726896296315e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 5.0593071418046654e+10,
+      "items_per_second": 1.2648267854511663e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/104",
+      "iterations": 27,
+      "real_time": 5.2271712929629120e+02,
+      "cpu_time": 5.2233142840740743e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 5.0139363292481903e+10,
+      "items_per_second": 1.2534840823120476e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/112",
+      "iterations": 27,
+      "real_time": 5.2966793407405794e+02,
+      "cpu_time": 5.2930015755555564e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.9479231914362595e+10,
+      "items_per_second": 1.2369807978590649e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/120",
+      "iterations": 26,
+      "real_time": 5.4209777696171216e+02,
+      "cpu_time": 5.4170582884615419e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.8346101986356598e+10,
+      "items_per_second": 1.2086525496589149e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/128",
+      "iterations": 25,
+      "real_time": 5.4783325491996948e+02,
+      "cpu_time": 5.4747073504000127e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.7837014057174141e+10,
+      "items_per_second": 1.1959253514293535e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/160",
+      "iterations": 24,
+      "real_time": 5.7679315712509072e+02,
+      "cpu_time": 5.7643961799999954e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.5432972388098450e+10,
+      "items_per_second": 1.1358243097024612e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/192",
+      "iterations": 24,
+      "real_time": 5.9314680945832754e+02,
+      "cpu_time": 5.9279329295833350e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.4179591029618500e+10,
+      "items_per_second": 1.1044897757404625e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/small/224",
+      "iterations": 23,
+      "real_time": 5.9499686439148320e+02,
+      "cpu_time": 5.9465543999999932e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.4041243863841606e+10,
+      "items_per_second": 1.1010310965960402e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/1",
+      "iterations": 2,
+      "real_time": 6.2298277420013619e+03,
+      "cpu_time": 6.2168960584999695e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 1.6850444338501001e+10,
+      "items_per_second": 4.2126110846252503e+09
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/2",
+      "iterations": 3,
+      "real_time": 4.0487361686682561e+03,
+      "cpu_time": 4.0404664866666735e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 2.5927070880972309e+10,
+      "items_per_second": 6.4817677202430773e+09
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/4",
+      "iterations": 5,
+      "real_time": 2.9047948040009942e+03,
+      "cpu_time": 2.8989149952000162e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 3.6136782611927559e+10,
+      "items_per_second": 9.0341956529818897e+09
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/8",
+      "iterations": 6,
+      "real_time": 2.3154291143340138e+03,
+      "cpu_time": 2.3108557418333171e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.5332756647496597e+10,
+      "items_per_second": 1.1333189161874149e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/12",
+      "iterations": 7,
+      "real_time": 2.1279267575716535e+03,
+      "cpu_time": 2.1239237441428550e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.9322609289005630e+10,
+      "items_per_second": 1.2330652322251408e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/16",
+      "iterations": 7,
+      "real_time": 2.0425348472854239e+03,
+      "cpu_time": 2.0387666722857280e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 5.1382761164401909e+10,
+      "items_per_second": 1.2845690291100477e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/20",
+      "iterations": 7,
+      "real_time": 2.0385570837139053e+03,
+      "cpu_time": 2.0349418572857139e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 5.1479338643969734e+10,
+      "items_per_second": 1.2869834660992434e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/24",
+      "iterations": 7,
+      "real_time": 2.0709463155716157e+03,
+      "cpu_time": 2.0674655221428598e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 5.0669508086123894e+10,
+      "items_per_second": 1.2667377021530973e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/28",
+      "iterations": 7,
+      "real_time": 2.1169029695707391e+03,
+      "cpu_time": 2.1136769818571438e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.9561717278085121e+10,
+      "items_per_second": 1.2390429319521280e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/32",
+      "iterations": 6,
+      "real_time": 2.1704452421666551e+03,
+      "cpu_time": 2.1673472301666834e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.8334415239935249e+10,
+      "items_per_second": 1.2083603809983812e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/40",
+      "iterations": 6,
+      "real_time": 2.2579391979998036e+03,
+      "cpu_time": 2.2550273506666749e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.6455073354666656e+10,
+      "items_per_second": 1.1613768338666664e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/48",
+      "iterations": 6,
+      "real_time": 2.2957595723334330e+03,
+      "cpu_time": 2.2931753983333274e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.5682271433810684e+10,
+      "items_per_second": 1.1420567858452671e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/56",
+      "iterations": 6,
+      "real_time": 2.3103345441668353e+03,
+      "cpu_time": 2.3080270938333456e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.5388315099027237e+10,
+      "items_per_second": 1.1347078774756809e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/64",
+      "iterations": 6,
+      "real_time": 2.2990254150002634e+03,
+      "cpu_time": 2.2968968650000079e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.5608256334138733e+10,
+      "items_per_second": 1.1402064083534683e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/72",
+      "iterations": 6,
+      "real_time": 2.2921835293333666e+03,
+      "cpu_time": 2.2901139639999997e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.5743339693465149e+10,
+      "items_per_second": 1.1435834923366287e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/80",
+      "iterations": 6,
+      "real_time": 2.2883042218333380e+03,
+      "cpu_time": 2.2863304768333328e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.5819037122355843e+10,
+      "items_per_second": 1.1454759280588961e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/88",
+      "iterations": 6,
+      "real_time": 2.2810578728337227e+03,
+      "cpu_time": 2.2790971169999921e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.5964456806427689e+10,
+      "items_per_second": 1.1491114201606922e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/96",
+      "iterations": 6,
+      "real_time": 2.2762325050001286e+03,
+      "cpu_time": 2.2743408728333256e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.6060580559102989e+10,
+      "items_per_second": 1.1515145139775747e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/104",
+      "iterations": 6,
+      "real_time": 2.2787954503328365e+03,
+      "cpu_time": 2.2769658526666681e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.6007480028439308e+10,
+      "items_per_second": 1.1501870007109827e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/112",
+      "iterations": 6,
+      "real_time": 2.2723115358336750e+03,
+      "cpu_time": 2.2704469551666571e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.6139576506560799e+10,
+      "items_per_second": 1.1534894126640200e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/120",
+      "iterations": 6,
+      "real_time": 2.2745058738340354e+03,
+      "cpu_time": 2.2726887845000001e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.6094063431147270e+10,
+      "items_per_second": 1.1523515857786818e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/128",
+      "iterations": 6,
+      "real_time": 2.2653813914997349e+03,
+      "cpu_time": 2.2636937231666820e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.6277223778071335e+10,
+      "items_per_second": 1.1569305944517834e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/160",
+      "iterations": 6,
+      "real_time": 2.2599788028334538e+03,
+      "cpu_time": 2.2582794051666801e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.6388175330442787e+10,
+      "items_per_second": 1.1597043832610697e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/192",
+      "iterations": 6,
+      "real_time": 2.2608609951663916e+03,
+      "cpu_time": 2.2592124016666730e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.6369018209495491e+10,
+      "items_per_second": 1.1592254552373873e+10
+    },
+    {
+      "name": "cpuDifferenceMatrix/large/224",
+      "iterations": 6,
+      "real_time": 2.2622579918327879e+03,
+      "cpu_time": 2.2605491024999842e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.6341599426505150e+10,
+      "items_per_second": 1.1585399856626287e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/small/1/1",
+      "iterations": 13,
+      "real_time": 1.0346030502304739e+03,
+      "cpu_time": 1.0261119593076885e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 2.5522912008227451e+10,
+      "items_per_second": 6.3807280020568628e+09
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/small/1/2",
+      "iterations": 24,
+      "real_time": 5.7677119137497357e+02,
+      "cpu_time": 5.7168807312500292e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.5810585315942986e+10,
+      "items_per_second": 1.1452646328985746e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/small/1/4",
+      "iterations": 37,
+      "real_time": 3.8046932016201225e+02,
+      "cpu_time": 3.7591795300000138e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 6.9667769360299484e+10,
+      "items_per_second": 1.7416942340074871e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/small/1/8",
+      "iterations": 37,
+      "real_time": 3.7320456664865316e+02,
+      "cpu_time": 3.6996046337837987e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 7.0789632515987610e+10,
+      "items_per_second": 1.7697408128996902e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/small/2/1",
+      "iterations": 21,
+      "real_time": 6.5902206361906360e+02,
+      "cpu_time": 6.5306150409523548e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.0102448366303986e+10,
+      "items_per_second": 1.0025612091575996e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/small/2/2",
+      "iterations": 33,
+      "real_time": 4.3304649118164724e+02,
+      "cpu_time": 4.3006331027273023e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 6.0896534585551308e+10,
+      "items_per_second": 1.5224133646387827e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/small/2/4",
+      "iterations": 48,
+      "real_time": 2.9969820927090041e+02,
+      "cpu_time": 2.9638176789583309e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 8.8363617755342377e+10,
+      "items_per_second": 2.2090904438835594e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/small/2/8",
+      "iterations": 48,
+      "real_time": 2.9742784335424705e+02,
+      "cpu_time": 2.9402958347916791e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 8.9070510994535782e+10,
+      "items_per_second": 2.2267627748633945e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/small/3/1",
+      "iterations": 25,
+      "real_time": 5.6513029872003244e+02,
+      "cpu_time": 5.6039358064000226e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.6733878032810822e+10,
+      "items_per_second": 1.1683469508202705e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/small/3/2",
+      "iterations": 36,
+      "real_time": 3.9196671205556618e+02,
+      "cpu_time": 3.8682351425000485e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 6.7703653690178101e+10,
+      "items_per_second": 1.6925913422544525e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/small/3/4",
+      "iterations": 46,
+      "real_time": 3.0254243893479884e+02,
+      "cpu_time": 2.9918848449999984e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 8.7534669964879669e+10,
+      "items_per_second": 2.1883667491219917e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/small/3/8",
+      "iterations": 49,
+      "real_time": 2.9550004673468982e+02,
+      "cpu_time": 2.9219414028571288e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 8.9630015243945511e+10,
+      "items_per_second": 2.2407503810986378e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/small/4/1",
+      "iterations": 22,
+      "real_time": 6.3717677377247708e+02,
+      "cpu_time": 6.3253390499999739e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.1403891619058922e+10,
+      "items_per_second": 1.0350972904764730e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/small/4/2",
+      "iterations": 35,
+      "real_time": 4.0381981422854420e+02,
+      "cpu_time": 3.9944753894285765e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 6.5563966966251556e+10,
+      "items_per_second": 1.6390991741562889e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/small/4/4",
+      "iterations": 49,
+      "real_time": 2.8568965951022358e+02,
+      "cpu_time": 2.8273741953061364e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 9.2627871087874603e+10,
+      "items_per_second": 2.3156967771968651e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/small/4/8",
+      "iterations": 48,
+      "real_time": 2.8750861977080905e+02,
+      "cpu_time": 2.8375772599999988e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 9.2294809438950790e+10,
+      "items_per_second": 2.3073702359737698e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/small/6/2",
+      "iterations": 20,
+      "real_time": 6.9066183899994940e+02,
+      "cpu_time": 6.8375452904999747e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 3.8302291444251602e+10,
+      "items_per_second": 9.5755728610629005e+09
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/small/6/4",
+      "iterations": 41,
+      "real_time": 3.4692230919520114e+02,
+      "cpu_time": 3.4271801663414698e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 7.6416657359327759e+10,
+      "items_per_second": 1.9104164339831940e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/small/6/8",
+      "iterations": 48,
+      "real_time": 2.8790407427095488e+02,
+      "cpu_time": 2.8404446141666523e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 9.2201640255124649e+10,
+      "items_per_second": 2.3050410063781162e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/small/8/4",
+      "iterations": 26,
+      "real_time": 5.5658716342329103e+02,
+      "cpu_time": 5.5020457746153488e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.7599322726156189e+10,
+      "items_per_second": 1.1899830681539047e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/1/2",
+      "iterations": 4,
+      "real_time": 3.5278899747499963e+03,
+      "cpu_time": 3.5004276257500351e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 2.9927046690346489e+10,
+      "items_per_second": 7.4817616725866222e+09
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/1/4",
+      "iterations": 11,
+      "real_time": 1.2879895111817116e+03,
+      "cpu_time": 1.2766956564545455e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 8.2053589250015350e+10,
+      "items_per_second": 2.0513397312503838e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/1/8",
+      "iterations": 17,
+      "real_time": 8.4600949529404340e+02,
+      "cpu_time": 8.3807001311764475e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.2499845997627238e+11,
+      "items_per_second": 3.1249614994068096e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/1/16",
+      "iterations": 17,
+      "real_time": 8.4234656082373795e+02,
+      "cpu_time": 8.3780470758823435e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.2503804292716670e+11,
+      "items_per_second": 3.1259510731791676e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/1/32",
+      "iterations": 17,
+      "real_time": 8.5386242058859136e+02,
+      "cpu_time": 8.4512957364706699e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.2395431926483212e+11,
+      "items_per_second": 3.0988579816208031e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/2/2",
+      "iterations": 6,
+      "real_time": 2.2244275220000418e+03,
+      "cpu_time": 2.2009723349999981e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.7595991701549522e+10,
+      "items_per_second": 1.1898997925387381e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/2/4",
+      "iterations": 16,
+      "real_time": 9.0524031150016526e+02,
+      "cpu_time": 8.9784590106249595e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.1667643731294174e+11,
+      "items_per_second": 2.9169109328235435e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/2/8",
+      "iterations": 19,
+      "real_time": 7.2051528778951922e+02,
+      "cpu_time": 7.1590288021052640e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.4632915146422354e+11,
+      "items_per_second": 3.6582287866055885e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/2/16",
+      "iterations": 20,
+      "real_time": 7.1760712380018958e+02,
+      "cpu_time": 7.1157254084999977e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.4721965081292111e+11,
+      "items_per_second": 3.6804912703230278e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/2/32",
+      "iterations": 19,
+      "real_time": 7.4470718521058041e+02,
+      "cpu_time": 7.3675775736842297e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.4218711638161279e+11,
+      "items_per_second": 3.5546779095403198e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/3/2",
+      "iterations": 8,
+      "real_time": 1.8303388881249703e+03,
+      "cpu_time": 1.8156593067500069e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 5.7696650799270111e+10,
+      "items_per_second": 1.4424162699817528e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/3/4",
+      "iterations": 17,
+      "real_time": 8.1564059258808436e+02,
+      "cpu_time": 8.0622906982353015e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.2993510766726587e+11,
+      "items_per_second": 3.2483776916816467e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/3/8",
+      "iterations": 20,
+      "real_time": 7.1382407185010379e+02,
+      "cpu_time": 7.0737890254999911e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.4809243054092288e+11,
+      "items_per_second": 3.7023107635230721e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/3/16",
+      "iterations": 20,
+      "real_time": 7.1257023549987935e+02,
+      "cpu_time": 7.0456879705000119e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.4868308308658420e+11,
+      "items_per_second": 3.7170770771646049e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/3/32",
+      "iterations": 18,
+      "real_time": 7.8656412750003960e+02,
+      "cpu_time": 7.7645367955555378e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3491784989925443e+11,
+      "items_per_second": 3.3729462474813606e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/4/4",
+      "iterations": 16,
+      "real_time": 9.0556526412501626e+02,
+      "cpu_time": 8.9678686037498778e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.1681422378132982e+11,
+      "items_per_second": 2.9203555945332455e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/4/8",
+      "iterations": 20,
+      "real_time": 7.2156716290010081e+02,
+      "cpu_time": 7.1524989794999101e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.4646274161275653e+11,
+      "items_per_second": 3.6615685403189133e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/4/16",
+      "iterations": 20,
+      "real_time": 7.1617093425011262e+02,
+      "cpu_time": 7.0969763625000724e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.4760858095220819e+11,
+      "items_per_second": 3.6902145238052048e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/4/32",
+      "iterations": 19,
+      "real_time": 7.5818131668424223e+02,
+      "cpu_time": 7.5006996336841632e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3966358620941824e+11,
+      "items_per_second": 3.4915896552354561e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/6/8",
+      "iterations": 16,
+      "real_time": 8.8234235968775465e+02,
+      "cpu_time": 8.7738017781249766e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.1939802566908163e+11,
+      "items_per_second": 2.9849506417270409e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/6/16",
+      "iterations": 19,
+      "real_time": 7.3112140978934656e+02,
+      "cpu_time": 7.2529635357894131e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.4443401028431918e+11,
+      "items_per_second": 3.6108502571079796e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/6/32",
+      "iterations": 20,
+      "real_time": 7.2464844870009983e+02,
+      "cpu_time": 7.1623999344999447e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.4626027860773712e+11,
+      "items_per_second": 3.6565069651934280e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopyAndContext/large/8/16",
+      "iterations": 14,
+      "real_time": 1.0309676360713117e+03,
+      "cpu_time": 1.0238199958571548e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 1.0232019438563100e+11,
+      "items_per_second": 2.5580048596407749e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/small/1/1",
+      "iterations": 15,
+      "real_time": 9.4107957713325357e+02,
+      "cpu_time": 9.4064283446665888e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 2.7841986658888733e+10,
+      "items_per_second": 6.9604966647221832e+09
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/small/1/2",
+      "iterations": 29,
+      "real_time": 4.8060078555161078e+02,
+      "cpu_time": 4.8031157927586469e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 5.4525783632957687e+10,
+      "items_per_second": 1.3631445908239422e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/small/1/4",
+      "iterations": 49,
+      "real_time": 2.8581938869394099e+02,
+      "cpu_time": 2.8560965457142851e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 9.1696358399713211e+10,
+      "items_per_second": 2.2924089599928303e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/small/1/8",
+      "iterations": 49,
+      "real_time": 2.8550601663271073e+02,
+      "cpu_time": 2.8529492324490053e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 9.1797515883304855e+10,
+      "items_per_second": 2.2949378970826214e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/small/2/1",
+      "iterations": 24,
+      "real_time": 5.7484393266683276e+02,
+      "cpu_time": 5.7452613791666829e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.5584288545978424e+10,
+      "items_per_second": 1.1396072136494606e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/small/2/2",
+      "iterations": 41,
+      "real_time": 3.4324999543889311e+02,
+      "cpu_time": 3.4301047634146084e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 7.6351502517750946e+10,
+      "items_per_second": 1.9087875629437737e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/small/2/4",
+      "iterations": 69,
+      "real_time": 2.0402715714495255e+02,
+      "cpu_time": 2.0385875252173864e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.2846819145136914e+11,
+      "items_per_second": 3.2117047862842285e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/small/2/8",
+      "iterations": 70,
+      "real_time": 2.0031103222863749e+02,
+      "cpu_time": 2.0015465852857233e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3084564426593866e+11,
+      "items_per_second": 3.2711411066484665e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/small/3/1",
+      "iterations": 30,
+      "real_time": 4.7314946879996569e+02,
+      "cpu_time": 4.7288919669999814e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 5.5381610387294563e+10,
+      "items_per_second": 1.3845402596823641e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/small/3/2",
+      "iterations": 47,
+      "real_time": 3.0027949051052815e+02,
+      "cpu_time": 2.9607884459574052e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 8.8454024075101944e+10,
+      "items_per_second": 2.2113506018775486e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/small/3/4",
+      "iterations": 68,
+      "real_time": 2.0883168952936745e+02,
+      "cpu_time": 2.0618971263235488e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.2701586763786206e+11,
+      "items_per_second": 3.1753966909465515e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/small/3/8",
+      "iterations": 70,
+      "real_time": 2.0196635785718431e+02,
+      "cpu_time": 2.0150748147142232e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.2996721043190727e+11,
+      "items_per_second": 3.2491802607976818e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/small/4/1",
+      "iterations": 26,
+      "real_time": 5.4838863661531764e+02,
+      "cpu_time": 5.4808284961537674e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.7783588314027115e+10,
+      "items_per_second": 1.1945897078506779e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/small/4/2",
+      "iterations": 45,
+      "real_time": 3.1046710013324628e+02,
+      "cpu_time": 3.1024109686667441e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 8.4416170238254517e+10,
+      "items_per_second": 2.1104042559563629e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/small/4/4",
+      "iterations": 70,
+      "real_time": 1.9852209368577209e+02,
+      "cpu_time": 1.9833342724285623e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3204715721435866e+11,
+      "items_per_second": 3.3011789303589664e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/small/4/8",
+      "iterations": 72,
+      "real_time": 1.9750521452776107e+02,
+      "cpu_time": 1.9520616536110916e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3416259265967680e+11,
+      "items_per_second": 3.3540648164919201e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/small/6/2",
+      "iterations": 24,
+      "real_time": 5.9406055516653089e+02,
+      "cpu_time": 5.9375173875001030e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.4108275460607307e+10,
+      "items_per_second": 1.1027068865151827e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/small/6/4",
+      "iterations": 56,
+      "real_time": 2.5043557657149253e+02,
+      "cpu_time": 2.5024159639286023e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.0465632263184851e+11,
+      "items_per_second": 2.6164080657962128e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/small/6/8",
+      "iterations": 71,
+      "real_time": 1.9790951290141635e+02,
+      "cpu_time": 1.9772615723943576e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3245270941206876e+11,
+      "items_per_second": 3.3113177353017189e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/small/8/4",
+      "iterations": 30,
+      "real_time": 4.6544419709995663e+02,
+      "cpu_time": 4.6516937303332878e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 5.6300708443510460e+10,
+      "items_per_second": 1.4075177110877615e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/1/2",
+      "iterations": 4,
+      "real_time": 3.4397481317500933e+03,
+      "cpu_time": 3.4043620214999919e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 3.0771539668934193e+10,
+      "items_per_second": 7.6928849172335482e+09
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/1/4",
+      "iterations": 12,
+      "real_time": 1.2075999175831384e+03,
+      "cpu_time": 1.1937824633333396e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 8.7752554765707428e+10,
+      "items_per_second": 2.1938138691426857e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/1/8",
+      "iterations": 19,
+      "real_time": 7.6347024799983240e+02,
+      "cpu_time": 7.6294053447368003e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3730750465928210e+11,
+      "items_per_second": 3.4326876164820526e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/1/16",
+      "iterations": 18,
+      "real_time": 7.6460968149977919e+02,
+      "cpu_time": 7.6409114627777956e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3710073922766829e+11,
+      "items_per_second": 3.4275184806917072e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/1/32",
+      "iterations": 18,
+      "real_time": 7.8048990594430097e+02,
+      "cpu_time": 7.7934144938889301e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3441792563983827e+11,
+      "items_per_second": 3.3604481409959568e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/2/2",
+      "iterations": 6,
+      "real_time": 2.1786876394993064e+03,
+      "cpu_time": 2.1423394220000014e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.8898629188367668e+10,
+      "items_per_second": 1.2224657297091917e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/2/4",
+      "iterations": 17,
+      "real_time": 8.3804907505862718e+02,
+      "cpu_time": 8.3494884341176021e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.2546572382080444e+11,
+      "items_per_second": 3.1366430955201111e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/2/8",
+      "iterations": 22,
+      "real_time": 6.4150658236361448e+02,
+      "cpu_time": 6.3726079113635853e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.6438711191566849e+11,
+      "items_per_second": 4.1096777978917122e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/2/16",
+      "iterations": 22,
+      "real_time": 6.2635007872714516e+02,
+      "cpu_time": 6.2589613731816746e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.6737195637740082e+11,
+      "items_per_second": 4.1842989094350204e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/2/32",
+      "iterations": 21,
+      "real_time": 6.8156929171423792e+02,
+      "cpu_time": 6.7971016628572602e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.5412077998545587e+11,
+      "items_per_second": 3.8530194996363968e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/3/2",
+      "iterations": 8,
+      "real_time": 1.7833946136252052e+03,
+      "cpu_time": 1.7817896112499625e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 5.8793395320399506e+10,
+      "items_per_second": 1.4698348830099876e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/3/4",
+      "iterations": 19,
+      "real_time": 7.3224097899985372e+02,
+      "cpu_time": 7.3174852536840262e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.4316046751069202e+11,
+      "items_per_second": 3.5790116877673004e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/3/8",
+      "iterations": 23,
+      "real_time": 6.2514385143478410e+02,
+      "cpu_time": 6.2414929786955724e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.6784038906968948e+11,
+      "items_per_second": 4.1960097267422371e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/3/16",
+      "iterations": 22,
+      "real_time": 6.3512015795442323e+02,
+      "cpu_time": 6.3442397413636672e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.6512216634720496e+11,
+      "items_per_second": 4.1280541586801239e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/3/32",
+      "iterations": 20,
+      "real_time": 6.8682346665009391e+02,
+      "cpu_time": 6.8638171739999052e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.5262274378289182e+11,
+      "items_per_second": 3.8155685945722954e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/4/4",
+      "iterations": 17,
+      "real_time": 8.0077136199971017e+02,
+      "cpu_time": 8.0030555064706061e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3089683172546013e+11,
+      "items_per_second": 3.2724207931365032e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/4/8",
+      "iterations": 22,
+      "real_time": 6.3295625050027002e+02,
+      "cpu_time": 6.3247677072728368e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.6563052722322058e+11,
+      "items_per_second": 4.1407631805805145e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/4/16",
+      "iterations": 23,
+      "real_time": 6.2757618882618692e+02,
+      "cpu_time": 6.2716449091304526e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.6703346970344397e+11,
+      "items_per_second": 4.1758367425860992e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/4/32",
+      "iterations": 21,
+      "real_time": 6.7117344371425656e+02,
+      "cpu_time": 6.7074084433334929e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.5618172335414978e+11,
+      "items_per_second": 3.9045430838537445e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/6/8",
+      "iterations": 17,
+      "real_time": 7.9912138188228710e+02,
+      "cpu_time": 7.9861231264703747e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3117436249483376e+11,
+      "items_per_second": 3.2793590623708439e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/6/16",
+      "iterations": 21,
+      "real_time": 6.5831389033320147e+02,
+      "cpu_time": 6.5759804899999790e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.5930318094967514e+11,
+      "items_per_second": 3.9825795237418785e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/6/32",
+      "iterations": 22,
+      "real_time": 6.4689194554541075e+02,
+      "cpu_time": 6.4354915886362755e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.6278082186756274e+11,
+      "items_per_second": 4.0695205466890686e+10
+    },
+    {
+      "name": "gpuDifferenceMatrixWithCopy/large/8/16",
+      "iterations": 15,
+      "real_time": 9.7327489966701251e+02,
+      "cpu_time": 9.5708127206665574e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.0945513620363077e+11,
+      "items_per_second": 2.7363784050907692e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/best/1/1",
+      "iterations": 15,
+      "real_time": 9.4981545526631328e+02,
+      "cpu_time": 9.4841465299999379e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 2.7613834481741367e+10,
+      "items_per_second": 6.9034586204353418e+09
+    },
+    {
+      "name": "gpuDifferenceMatrix/best/1/2",
+      "iterations": 29,
+      "real_time": 4.8162562534482026e+02,
+      "cpu_time": 4.8130084662068776e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 5.4413711157752831e+10,
+      "items_per_second": 1.3603427789438208e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/best/1/4",
+      "iterations": 50,
+      "real_time": 2.8399975980006275e+02,
+      "cpu_time": 2.8353069124000285e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 9.2368713713011215e+10,
+      "items_per_second": 2.3092178428252804e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/best/1/8",
+      "iterations": 51,
+      "real_time": 2.8046004735298601e+02,
+      "cpu_time": 2.8023873313725511e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 9.3453766917983429e+10,
+      "items_per_second": 2.3363441729495857e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/best/2/1",
+      "iterations": 25,
+      "real_time": 5.6822271087992704e+02,
+      "cpu_time": 5.6788200068000151e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.6117618126019051e+10,
+      "items_per_second": 1.1529404531504763e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/best/2/2",
+      "iterations": 42,
+      "real_time": 3.3573263480953062e+02,
+      "cpu_time": 3.3546473678571994e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 7.8068906732002090e+10,
+      "items_per_second": 1.9517226683000523e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/best/2/4",
+      "iterations": 69,
+      "real_time": 1.9768702221736550e+02,
+      "cpu_time": 1.9752642950724939e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3258663822017209e+11,
+      "items_per_second": 3.3146659555043022e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/best/2/8",
+      "iterations": 71,
+      "real_time": 1.9243077695772254e+02,
+      "cpu_time": 1.9229572574647432e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3619317406216542e+11,
+      "items_per_second": 3.4048293515541355e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/best/3/1",
+      "iterations": 30,
+      "real_time": 4.7219888770002098e+02,
+      "cpu_time": 4.7166388153333781e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 5.5525483873941498e+10,
+      "items_per_second": 1.3881370968485374e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/best/3/2",
+      "iterations": 48,
+      "real_time": 2.9686258449995267e+02,
+      "cpu_time": 2.9647467514583542e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 8.8335926956046051e+10,
+      "items_per_second": 2.2083981739011513e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/best/3/4",
+      "iterations": 70,
+      "real_time": 2.0241804057139754e+02,
+      "cpu_time": 2.0225513829999986e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.2948677333059389e+11,
+      "items_per_second": 3.2371693332648472e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/best/3/8",
+      "iterations": 73,
+      "real_time": 1.9740013080824099e+02,
+      "cpu_time": 1.9415960135616120e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3488575926749524e+11,
+      "items_per_second": 3.3721439816873810e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/best/4/1",
+      "iterations": 25,
+      "real_time": 5.4699528055993142e+02,
+      "cpu_time": 5.4590323779999380e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.7974372442896507e+10,
+      "items_per_second": 1.1993593110724127e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/best/4/2",
+      "iterations": 46,
+      "real_time": 3.0656132791298899e+02,
+      "cpu_time": 3.0634047510869533e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 8.5491038161730103e+10,
+      "items_per_second": 2.1372759540432526e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/best/4/4",
+      "iterations": 71,
+      "real_time": 1.9137782915497385e+02,
+      "cpu_time": 1.9121641277464553e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3696191068527669e+11,
+      "items_per_second": 3.4240477671319172e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/best/4/8",
+      "iterations": 73,
+      "real_time": 1.9318449282193436e+02,
+      "cpu_time": 1.9283279691780243e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3581385359028719e+11,
+      "items_per_second": 3.3953463397571796e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/best/6/2",
+      "iterations": 24,
+      "real_time": 5.9913415745844156e+02,
+      "cpu_time": 5.8739078441666004e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.4585931449382133e+10,
+      "items_per_second": 1.1146482862345533e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/best/6/4",
+      "iterations": 59,
+      "real_time": 2.4561876955926044e+02,
+      "cpu_time": 2.4194932049153130e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.0824318578285356e+11,
+      "items_per_second": 2.7060796445713390e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/best/6/8",
+      "iterations": 72,
+      "real_time": 1.9405685018056022e+02,
+      "cpu_time": 1.9345280029166486e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3537857921164659e+11,
+      "items_per_second": 3.3844644802911648e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/best/8/4",
+      "iterations": 30,
+      "real_time": 4.6485845393326599e+02,
+      "cpu_time": 4.6438029750000470e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 5.6396374671773697e+10,
+      "items_per_second": 1.4099093667943424e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/warpreduce/1/2",
+      "iterations": 33,
+      "real_time": 4.3787770545454941e+02,
+      "cpu_time": 4.3731897615151121e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 5.9886185315970764e+10,
+      "items_per_second": 1.4971546328992691e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/warpreduce/2/2",
+      "iterations": 51,
+      "real_time": 2.7296511666659796e+02,
+      "cpu_time": 2.7229969623529399e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 9.6178459286160156e+10,
+      "items_per_second": 2.4044614821540039e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/warpreduce/3/2",
+      "iterations": 67,
+      "real_time": 2.0954830159701203e+02,
+      "cpu_time": 2.0932541459701972e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.2511316553901559e+11,
+      "items_per_second": 3.1278291384753899e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/warpreduce/4/2",
+      "iterations": 74,
+      "real_time": 1.8962581454045878e+02,
+      "cpu_time": 1.8948215839189263e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3821546825445367e+11,
+      "items_per_second": 3.4553867063613419e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/warpreduce/6/2",
+      "iterations": 39,
+      "real_time": 3.6559680120505317e+02,
+      "cpu_time": 3.6537758687180218e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 7.1677536304899033e+10,
+      "items_per_second": 1.7919384076224758e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/twodiffs/1/2",
+      "iterations": 22,
+      "real_time": 6.3300257559107695e+02,
+      "cpu_time": 6.3265273018181358e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.1396115117488899e+10,
+      "items_per_second": 1.0349028779372225e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/twodiffs/2/2",
+      "iterations": 39,
+      "real_time": 3.5807814469239344e+02,
+      "cpu_time": 3.5785722892308348e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 7.3183837383452835e+10,
+      "items_per_second": 1.8295959345863209e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/twodiffs/3/2",
+      "iterations": 55,
+      "real_time": 2.5881446856365073e+02,
+      "cpu_time": 2.5863418474545227e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.0126026176228627e+11,
+      "items_per_second": 2.5315065440571568e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/twodiffs/4/2",
+      "iterations": 62,
+      "real_time": 2.2161910001605358e+02,
+      "cpu_time": 2.2142500001613399e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.1827646040913052e+11,
+      "items_per_second": 2.9569115102282631e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/twodiffs/6/2",
+      "iterations": 31,
+      "real_time": 4.5525955525813663e+02,
+      "cpu_time": 4.5497129925806507e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 5.7562675471414917e+10,
+      "items_per_second": 1.4390668867853729e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/continuousindex/1/1",
+      "iterations": 9,
+      "real_time": 1.5408320546662758e+03,
+      "cpu_time": 1.5393443729999995e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 1.7013324443418749e+10,
+      "items_per_second": 4.2533311108546872e+09
+    },
+    {
+      "name": "gpuDifferenceMatrix/continuousindex/2/1",
+      "iterations": 17,
+      "real_time": 8.0576121770590203e+02,
+      "cpu_time": 8.0426891382352119e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 3.2562946046857494e+10,
+      "items_per_second": 8.1407365117143736e+09
+    },
+    {
+      "name": "gpuDifferenceMatrix/continuousindex/3/1",
+      "iterations": 25,
+      "real_time": 5.5539233707997482e+02,
+      "cpu_time": 5.5507368484000835e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.7181781380158005e+10,
+      "items_per_second": 1.1795445345039501e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/continuousindex/4/1",
+      "iterations": 29,
+      "real_time": 4.9287237906913828e+02,
+      "cpu_time": 4.9248279103447453e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 5.3178234295229828e+10,
+      "items_per_second": 1.3294558573807457e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/parallelsave/1/1",
+      "iterations": 8,
+      "real_time": 1.7737011292501847e+03,
+      "cpu_time": 1.7709562881249781e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 1.4788261812903534e+10,
+      "items_per_second": 3.6970654532258835e+09
+    },
+    {
+      "name": "gpuDifferenceMatrix/parallelsave/2/1",
+      "iterations": 16,
+      "real_time": 8.8917036499969981e+02,
+      "cpu_time": 8.8589961981247711e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 2.9562452294023602e+10,
+      "items_per_second": 7.3906130735059004e+09
+    },
+    {
+      "name": "gpuDifferenceMatrix/parallelsave/3/1",
+      "iterations": 22,
+      "real_time": 6.4041449127266378e+02,
+      "cpu_time": 6.4000896290907474e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 4.0920310129657806e+10,
+      "items_per_second": 1.0230077532414452e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/parallelsave/4/1",
+      "iterations": 21,
+      "real_time": 6.7317322819040521e+02,
+      "cpu_time": 6.7279620485714986e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 3.8926148897585716e+10,
+      "items_per_second": 9.7315372243964291e+09
+    },
+    {
+      "name": "gpuDifferenceMatrix/naive/1/1",
+      "iterations": 8,
+      "real_time": 1.7651350797495979e+03,
+      "cpu_time": 1.7628889217500046e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 1.4855936142591471e+10,
+      "items_per_second": 3.7139840356478677e+09
+    },
+    {
+      "name": "gpuDifferenceMatrix/naive/2/1",
+      "iterations": 15,
+      "real_time": 9.2547277753328672e+02,
+      "cpu_time": 9.2499647733335826e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 2.8312935118953590e+10,
+      "items_per_second": 7.0782337797383976e+09
+    },
+    {
+      "name": "gpuDifferenceMatrix/naive/3/1",
+      "iterations": 21,
+      "real_time": 6.7195782085694930e+02,
+      "cpu_time": 6.7160299542857024e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 3.8995307385857880e+10,
+      "items_per_second": 9.7488268464644699e+09
+    },
+    {
+      "name": "gpuDifferenceMatrix/naive/4/1",
+      "iterations": 20,
+      "real_time": 7.0892629159970966e+02,
+      "cpu_time": 7.0056403824999052e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 3.7383256659050117e+10,
+      "items_per_second": 9.3458141647625294e+09
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/1/2",
+      "iterations": 4,
+      "real_time": 3.4175763639996148e+03,
+      "cpu_time": 3.3819904664999285e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 3.0975090565649948e+10,
+      "items_per_second": 7.7437726414124870e+09
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/1/4",
+      "iterations": 12,
+      "real_time": 1.1618133813335589e+03,
+      "cpu_time": 1.1500928605833376e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 9.1086089290969131e+10,
+      "items_per_second": 2.2771522322742283e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/1/8",
+      "iterations": 20,
+      "real_time": 7.1808267835003790e+02,
+      "cpu_time": 7.1771655319998899e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.4595937703391623e+11,
+      "items_per_second": 3.6489844258479057e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/1/16",
+      "iterations": 20,
+      "real_time": 7.1551447255005769e+02,
+      "cpu_time": 7.1517301499998212e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.4647848673653134e+11,
+      "items_per_second": 3.6619621684132835e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/1/32",
+      "iterations": 19,
+      "real_time": 7.2476171742126007e+02,
+      "cpu_time": 7.2440097147368999e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.4461253520807123e+11,
+      "items_per_second": 3.6153133802017807e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/2/2",
+      "iterations": 7,
+      "real_time": 2.1356546629997733e+03,
+      "cpu_time": 2.1345280525714379e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.9077575188482559e+10,
+      "items_per_second": 1.2269393797120640e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/2/4",
+      "iterations": 18,
+      "real_time": 7.7925425683335766e+02,
+      "cpu_time": 7.7887383166666450e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3449862703415767e+11,
+      "items_per_second": 3.3624656758539417e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/2/8",
+      "iterations": 24,
+      "real_time": 6.0516522395846550e+02,
+      "cpu_time": 6.0475445858332932e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.7322313131415372e+11,
+      "items_per_second": 4.3305782828538429e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/2/16",
+      "iterations": 24,
+      "real_time": 5.9718304400000000e+02,
+      "cpu_time": 5.9673069100000475e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.7555232632068387e+11,
+      "items_per_second": 4.3888081580170967e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/2/32",
+      "iterations": 23,
+      "real_time": 6.3586864521747214e+02,
+      "cpu_time": 6.2561887395652423e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.6744613270615594e+11,
+      "items_per_second": 4.1861533176538986e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/3/2",
+      "iterations": 8,
+      "real_time": 1.7356958461250542e+03,
+      "cpu_time": 1.7025925061249723e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 6.1528205143122299e+10,
+      "items_per_second": 1.5382051285780575e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/3/4",
+      "iterations": 20,
+      "real_time": 7.1636831470023026e+02,
+      "cpu_time": 7.1575928194999960e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.4635850855695642e+11,
+      "items_per_second": 3.6589627139239105e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/3/8",
+      "iterations": 23,
+      "real_time": 5.9608071021743262e+02,
+      "cpu_time": 5.9561996313044324e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.7587970094457306e+11,
+      "items_per_second": 4.3969925236143265e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/3/16",
+      "iterations": 24,
+      "real_time": 5.9870795404155308e+02,
+      "cpu_time": 5.9822612779167150e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.7511348322198511e+11,
+      "items_per_second": 4.3778370805496277e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/3/32",
+      "iterations": 21,
+      "real_time": 6.6042028819044515e+02,
+      "cpu_time": 6.5887667842857161e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.5899403396982837e+11,
+      "items_per_second": 3.9748508492457092e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/4/4",
+      "iterations": 18,
+      "real_time": 7.7450485627802357e+02,
+      "cpu_time": 7.7376309811112753e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3538699538363715e+11,
+      "items_per_second": 3.3846748845909286e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/4/8",
+      "iterations": 23,
+      "real_time": 6.0285578439114670e+02,
+      "cpu_time": 6.0216399030435275e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.7396832537105423e+11,
+      "items_per_second": 4.3492081342763557e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/4/16",
+      "iterations": 24,
+      "real_time": 5.9822772129155055e+02,
+      "cpu_time": 5.9738245258334166e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.7536079364062863e+11,
+      "items_per_second": 4.3840198410157158e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/4/32",
+      "iterations": 22,
+      "real_time": 6.4813919577268689e+02,
+      "cpu_time": 6.4622548254543619e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.6210666991862936e+11,
+      "items_per_second": 4.0526667479657341e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/6/8",
+      "iterations": 18,
+      "real_time": 7.6847770338887733e+02,
+      "cpu_time": 7.6795339811112876e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.3641122137054570e+11,
+      "items_per_second": 3.4102805342636425e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/6/16",
+      "iterations": 23,
+      "real_time": 6.0169350939142294e+02,
+      "cpu_time": 6.0139714708696806e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.7419015287887793e+11,
+      "items_per_second": 4.3547538219719482e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/6/32",
+      "iterations": 23,
+      "real_time": 6.0878541347831390e+02,
+      "cpu_time": 6.0092738321738739e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.7432632280979556e+11,
+      "items_per_second": 4.3581580702448891e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largebest/8/16",
+      "iterations": 16,
+      "real_time": 9.0199881618764266e+02,
+      "cpu_time": 8.9245102174999147e+02,
+      "time_unit": "ms",
+      "bytes_per_second": 1.1738174806117981e+11,
+      "items_per_second": 2.9345437015294952e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largewarpreduce/1/2",
+      "iterations": 4,
+      "real_time": 3.1165089389996865e+03,
+      "cpu_time": 3.0822472477498195e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 3.3987364598501209e+10,
+      "items_per_second": 8.4968411496253023e+09
+    },
+    {
+      "name": "gpuDifferenceMatrix/largewarpreduce/2/2",
+      "iterations": 8,
+      "real_time": 1.7232674766246419e+03,
+      "cpu_time": 1.6925660327500509e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 6.1892687768164627e+10,
+      "items_per_second": 1.5473171942041157e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largewarpreduce/3/2",
+      "iterations": 10,
+      "real_time": 1.3575702000001911e+03,
+      "cpu_time": 1.3351410841000870e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 7.8461716323117050e+10,
+      "items_per_second": 1.9615429080779263e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largetwodiffs/1/2",
+      "iterations": 3,
+      "real_time": 4.3555791969993152e+03,
+      "cpu_time": 4.2970085739998467e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 2.4379160336300446e+10,
+      "items_per_second": 6.0947900840751114e+09
+    },
+    {
+      "name": "gpuDifferenceMatrix/largetwodiffs/2/2",
+      "iterations": 6,
+      "real_time": 2.3453257898339266e+03,
+      "cpu_time": 2.3416694129999391e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 4.4736229807005096e+10,
+      "items_per_second": 1.1184057451751274e+10
+    },
+    {
+      "name": "gpuDifferenceMatrix/largetwodiffs/3/2",
+      "iterations": 8,
+      "real_time": 1.6955967511257768e+03,
+      "cpu_time": 1.6768297467500588e+03,
+      "time_unit": "ms",
+      "bytes_per_second": 6.2473522547554558e+10,
+      "items_per_second": 1.5618380636888639e+10
+    }
+  ]
+}
