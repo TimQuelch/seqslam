@@ -160,48 +160,48 @@ void gpuDifferenceMatrix(benchmark::State& state, std::string const& kernel, std
     state.SetBytesProcessed(state.iterations() * (nRows * nCols * 2 + 1) * referenceImages.size() *
                             queryImages.size() * sizeof(PixType));
 }
-BENCHMARK_CAPTURE(gpuDifferenceMatrix, best, "diffMxNDiffs", smallImagesDir)
+BENCHMARK_CAPTURE(gpuDifferenceMatrix, small_best, "diffMxNDiffs", smallImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
         return gpuBenchmarkArgs(b, nImages, smallSize, {1, 256}, {1, 256});
     });
-BENCHMARK_CAPTURE(gpuDifferenceMatrix, warpreduce, "diffMxUnrolledWarpReduce", smallImagesDir)
+BENCHMARK_CAPTURE(gpuDifferenceMatrix, small_warpreduce, "diffMxUnrolledWarpReduce", smallImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
         return gpuBenchmarkArgs(b, nImages, smallSize, {1, 256}, {2, 2});
     });
-BENCHMARK_CAPTURE(gpuDifferenceMatrix, twodiffs, "diffMxTwoDiffs", smallImagesDir)
+BENCHMARK_CAPTURE(gpuDifferenceMatrix, small_twodiffs, "diffMxTwoDiffs", smallImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
         return gpuBenchmarkArgs(b, nImages, smallSize, {1, 256}, {2, 2});
     });
-BENCHMARK_CAPTURE(gpuDifferenceMatrix, continuousindex, "diffMxContinuousIndex", smallImagesDir)
+BENCHMARK_CAPTURE(gpuDifferenceMatrix, small_continuousindex, "diffMxContinuousIndex", smallImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
         return gpuBenchmarkArgs(b, nImages, smallSize, {1, 256}, {1, 1});
     });
-BENCHMARK_CAPTURE(gpuDifferenceMatrix, parallelsave, "diffMxParallelSave", smallImagesDir)
+BENCHMARK_CAPTURE(gpuDifferenceMatrix, small_parallelsave, "diffMxParallelSave", smallImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
         return gpuBenchmarkArgs(b, nImages, smallSize, {1, 256}, {1, 1});
     });
-BENCHMARK_CAPTURE(gpuDifferenceMatrix, naive, "diffMxNaive", smallImagesDir)
+BENCHMARK_CAPTURE(gpuDifferenceMatrix, small_naive, "diffMxNaive", smallImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
         return gpuBenchmarkArgs(b, nImages, smallSize, {1, 256}, {1, 1});
     });
 
-BENCHMARK_CAPTURE(gpuDifferenceMatrix, largebest, "diffMxNDiffs", largeImagesDir)
+BENCHMARK_CAPTURE(gpuDifferenceMatrix, large_best, "diffMxNDiffs", largeImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
         return gpuBenchmarkArgs(b, nImages, largeSize, {1, 256}, {1, 256});
     });
-BENCHMARK_CAPTURE(gpuDifferenceMatrix, largewarpreduce, "diffMxUnrolledWarpReduce", largeImagesDir)
+BENCHMARK_CAPTURE(gpuDifferenceMatrix, large_warpreduce, "diffMxUnrolledWarpReduce", largeImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
         return gpuBenchmarkArgs(b, nImages, largeSize, {1, 256}, {2, 2});
     });
-BENCHMARK_CAPTURE(gpuDifferenceMatrix, largetwodiffs, "diffMxTwoDiffs", largeImagesDir)
+BENCHMARK_CAPTURE(gpuDifferenceMatrix, large_twodiffs, "diffMxTwoDiffs", largeImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
         return gpuBenchmarkArgs(b, nImages, largeSize, {1, 256}, {2, 2});
