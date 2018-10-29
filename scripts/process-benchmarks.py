@@ -2,10 +2,22 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import json
+import argparse
 
-def main():
+argparser = argparse.ArgumentParser(description="Process benchmark results")
+
+argparser.add_argument('-s', '--show', action='store_true', help='Display figures as windows')
+argparser.add_argument('-w', '--write', action='store_true', help='Write figures to files')
+
+def setYAxis(ax):
+    ax.set_ylabel('Data Throughput (GiB/s)')
+    return ax
+
+def main(args):
     with open('benchmarks.json') as b:
         raw = json.load(b)
+
+    figs = []
 
     d = pd.DataFrame(raw['benchmarks'])
 
@@ -40,19 +52,34 @@ def main():
     cpu = dr.loc[('CPU')]
     cpu = cpu.reset_index(level=['Label', 'N Pixels per Thread'], drop=True)
     cpu = cpu.unstack(level='Dataset')
-    cpu.plot(style='o-')
+    ax = cpu.plot(style='o-')
+    ax = setYAxis(ax)
+    figs.append((ax.get_figure(), 'cpu'))
 
     gpu = dr.loc[('GPU')]
     gpu = gpu.unstack(level='N Pixels per Thread')
-    gpu.loc[('Large', 'best')].plot(style='o-')
-    gpu.loc[('Small', 'best')].plot(style='o-')
+    ax = gpu.loc[('Large', 'best')].plot(style='o-')
+    ax = setYAxis(ax)
+    figs.append((ax.get_figure(), 'gpu-large'))
+    ax = gpu.loc[('Small', 'best')].plot(style='o-')
+    ax = setYAxis(ax)
+    figs.append((ax.get_figure(), 'gpu-small'))
 
-    early = dr.loc[('GPU', 'Small', ['naive', 'parallelsave', 'continuousindex', 'twodiffs', 'warpreduce'])]
+    early = dr.loc[('GPU', 'Small',
+                    ['naive', 'parallelsave', 'continuousindex', 'twodiffs', 'warpreduce'])]
     early = early.reset_index(level=['Method', 'Dataset', 'N Pixels per Thread'], drop=True)
     early = early.unstack(level='Label')
-    early.plot(style='o-')
+    ax = early.plot(style='o-')
+    ax = setYAxis(ax)
+    figs.append((ax.get_figure(), 'gpu-early'))
 
-    plt.show()
+    if args.show:
+        plt.show()
+
+    if args.write:
+        for fig, name in figs:
+            fig.savefig(name + '.pdf')
 
 if __name__ == '__main__':
-    main()
+    args = argparser.parse_args()
+    main(args)
