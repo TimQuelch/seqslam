@@ -41,6 +41,12 @@ def main(args):
                                                   'gpuWithCopyAndContext':
                                                   'GPU (with copy and context)',
                                                   'gpuWithCopy': 'GPU (with copy)'})
+    d['Label'] = d['Label'].replace(to_replace={'best': 'Best',
+                                                'continuousindex': 'Continuous index',
+                                                'naive': 'Naive',
+                                                'parallelsave': 'Parallel save',
+                                                'twodiffs': 'Two diffs',
+                                                'warpreduce': 'Warp reduce'})
     d['GiB per Second'] = d['Bytes per Second'] / 2**(10*3)
     d = d.drop(columns=['Time Unit', 'Name'])
 
@@ -58,15 +64,15 @@ def main(args):
 
     gpu = dr.loc[('GPU')]
     gpu = gpu.unstack(level='N Pixels per Thread')
-    ax = gpu.loc[('Large', 'best')].plot(style='o-')
+    ax = gpu.loc[('Large', 'Best')].plot(style='o-')
     ax = setYAxis(ax)
     figs.append((ax.get_figure(), 'gpu-large'))
-    ax = gpu.loc[('Small', 'best')].plot(style='o-')
+    ax = gpu.loc[('Small', 'Best')].plot(style='o-')
     ax = setYAxis(ax)
     figs.append((ax.get_figure(), 'gpu-small'))
 
     early = dr.loc[('GPU', 'Small',
-                    ['naive', 'parallelsave', 'continuousindex', 'twodiffs', 'warpreduce'])]
+                    ['Naive', 'Parallel save', 'Continuous index', 'Two diffs', 'Warp reduce'])]
     early = early.reset_index(level=['Method', 'Dataset', 'N Pixels per Thread'], drop=True)
     early = early.unstack(level='Label')
     ax = early.plot(style='o-')
