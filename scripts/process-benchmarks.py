@@ -24,6 +24,7 @@ def main(args):
     splitNames = d['name'].str.split('/', expand=True)
     splitLabel = splitNames[1].str.split('_', expand=True)
     splitLabel[0] = splitLabel[0].replace(to_replace={'small': 'Small', 'large': 'Large'})
+    splitLabel[1] = splitLabel[1].replace(to_replace={None: '-'})
     d['Method'] = splitNames[0]
     d['Tile size'] = pd.to_numeric(splitNames[2], downcast='integer')
     d['n Pixels per Thread'] = pd.to_numeric(splitNames[3], downcast='integer')
@@ -78,6 +79,9 @@ def main(args):
     ax = early.plot(style='o-')
     ax = setYAxis(ax)
     figs.append((ax.get_figure(), 'gpu-early'))
+
+    maxes = dr[dr.groupby(level=['Method', 'Dataset', 'Label']).idxmax()]
+    print(maxes)
 
     if args.show:
         plt.show()
