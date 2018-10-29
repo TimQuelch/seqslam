@@ -80,6 +80,17 @@ def main(args):
     ax = setYAxis(ax)
     figs.append((ax.get_figure(), 'gpu-early'))
 
+    copies = dr.loc[(['GPU', 'GPU (with copy and context)', 'GPU (with copy)'],
+                     'Small',
+                     slice(None),
+                     slice(None),
+                     8)]
+    copies = copies.reset_index(level=['Dataset', 'Label', 'N Pixels per Thread'], drop=True)
+    copies = copies.unstack(level='Method')
+    ax = copies.plot(style='o-')
+    ax = setYAxis(ax)
+    figs.append((ax.get_figure(), 'gpu-copies-and-context'))
+
     maxes = dr[dr.groupby(level=['Method', 'Dataset', 'Label']).idxmax()]
     print(maxes)
 
