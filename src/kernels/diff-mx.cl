@@ -18,6 +18,76 @@ void warpReduce(local volatile float* diffs,
     }
 }
 
+kernel void diffMxPreload(global float const* query,
+                          global float const* reference,
+                          unsigned int tileSize,
+                          unsigned int nPerThread,
+                          global float* diffMxOutput,
+                          local float* diffs,
+                          local float* qvals,
+                          local float* rvals) {
+    const unsigned tx = get_group_id(1);
+    const unsigned ty = get_group_id(2);
+    const unsigned pi = get_local_id(0);
+    const unsigned offset = get_local_size(0);
+    const unsigned nPix = offset * nPerThread;
+
+    for (unsigned i = 0; i < nPerThread * tileSize; i++) {
+        qvals[pi + i * offset] = query[(tx * tileSize) * nPix + pi + i * offset];
+        rvals[pi + i * offset] = reference[(ty * tileSize) * nPix + pi + i * offset];
+    }
+    barrier(CLK_LOCAL_MEM_FENCE); // Sync threads
+
+    // Load initial sums of differences into local memory
+    for (unsigned i = 0; i < tileSize; i++) {
+        for (unsigned j = 0; j < tileSize; j++) {
+            const unsigned imageIndex = (i + j * tileSize) * offset;
+            diffs[pi + imageIndex] = 0; // Initialise sum to 0
+
+            // Sum as many differences as specifed
+            for (unsigned n = 0; n < nPerThread; n++) {
+                diffs[pi + imageIndex] +=
+                    fabs(qvals[pi + n * offset + i * nPix] -
+                         rvals[pi + n * offset + j * nPix]);
+            }
+        }
+    }
+    barrier(CLK_LOCAL_MEM_FENCE); // Sync threads
+
+    // Perform parallel reduction until down to a single warp
+    for (unsigned int s = get_local_size(0) / 2; s > WARP_SIZE; s >>= 1) {
+        if (pi < s) {
+            for (unsigned int i = 0; i < tileSize; i++) {
+                for (unsigned int j = 0; j < tileSize; j++) {
+                    const unsigned int imageIndex = (i + j * tileSize) * offset;
+                    diffs[imageIndex + pi] += diffs[imageIndex + pi + s];
+                }
+            }
+        }
+        barrier(CLK_LOCAL_MEM_FENCE); // Sync threads each iteration
+    }
+
+    // Reduce the final warp
+    if (pi < WARP_SIZE) {
+        warpReduce(diffs, tileSize, offset, pi);
+    }
+
+    // Only sync if there are more values than are in a warp
+    if (tileSize * tileSize > WARP_SIZE) {
+        barrier(CLK_LOCAL_MEM_FENCE);
+    }
+
+    // Save SAD the values to global memory in parallel
+    if (pi < tileSize * tileSize) {
+        const unsigned int i = pi % tileSize;
+        const unsigned int j = pi / tileSize;
+        const unsigned int imageIndex = (i + j * tileSize) * offset;
+        diffMxOutput[tx * tileSize + i +
+                     (ty * tileSize + j) * get_global_size(1) * tileSize] =
+            diffs[imageIndex];
+    }
+}
+
 kernel void diffMxNDiffs(global float const* query,
                          global float const* reference,
                          unsigned int tileSize,

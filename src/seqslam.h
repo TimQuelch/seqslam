@@ -34,7 +34,8 @@ namespace seqslam {
 
     namespace opencl {
         using namespace std::literals::string_literals;
-        auto const kernelNames = std::vector{"diffMxNDiffs"s,
+        auto const kernelNames = std::vector{"diffMxPreload"s,
+                                             "diffMxNDiffs"s,
                                              "diffMxUnrolledWarpReduce"s,
                                              "diffMxTwoDiffs"s,
                                              "diffMxContinuousIndex"s,

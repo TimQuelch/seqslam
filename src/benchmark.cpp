@@ -156,7 +156,12 @@ void gpuDifferenceMatrix(benchmark::State& state, std::string const& kernel, std
                             nRows * nCols);
     state.SetBytesProcessed(state.items_processed() * sizeof(PixType));
 }
-BENCHMARK_CAPTURE(gpuDifferenceMatrix, best, "diffMxNDiffs", smallImagesDir)
+BENCHMARK_CAPTURE(gpuDifferenceMatrix, best, "diffMxPreload", smallImagesDir)
+    ->Unit(benchmark::kMillisecond)
+    ->Apply([](auto b) {
+        return gpuBenchmarkArgs(b, nImages, smallSize, {1, 256}, {1, 256});
+    });
+BENCHMARK_CAPTURE(gpuDifferenceMatrix, ndiffs, "diffMxNDiffs", smallImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
         return gpuBenchmarkArgs(b, nImages, smallSize, {1, 256}, {1, 256});
@@ -187,7 +192,12 @@ BENCHMARK_CAPTURE(gpuDifferenceMatrix, naive, "diffMxNaive", smallImagesDir)
         return gpuBenchmarkArgs(b, nImages, smallSize, {1, 256}, {1, 1});
     });
 
-BENCHMARK_CAPTURE(gpuDifferenceMatrix, largebest, "diffMxNDiffs", largeImagesDir)
+BENCHMARK_CAPTURE(gpuDifferenceMatrix, largebest, "diffMxPreload", largeImagesDir)
+    ->Unit(benchmark::kMillisecond)
+    ->Apply([](auto b) {
+        return gpuBenchmarkArgs(b, nImages, largeSize, {1, 256}, {1, 256});
+    });
+BENCHMARK_CAPTURE(gpuDifferenceMatrix, largendiffs, "diffMxNDiffs", largeImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
         return gpuBenchmarkArgs(b, nImages, largeSize, {1, 256}, {1, 256});

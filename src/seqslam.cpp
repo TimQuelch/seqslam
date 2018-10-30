@@ -29,7 +29,9 @@ namespace seqslam {
         }
 
         auto localMemoryRequired(std::size_t nPix, std::size_t tileSize, std::size_t nPerThread) {
-            return nPix * tileSize * tileSize * sizeof(PixType) / nPerThread;
+            auto const diffBuffer = nPix * tileSize * tileSize * sizeof(PixType) / nPerThread;
+            auto const valBuffers = nPix * tileSize * sizeof(PixType);
+            return diffBuffer + 2 * valBuffers;
         }
     } // namespace
 
@@ -217,6 +219,8 @@ namespace seqslam {
             context.setKernelArg(kernelName, 4, buffers.diffMx);
             context.setKernelLocalArg(
                 kernelName, 5, d.nElems() * tileSize * tileSize * sizeof(PixType) / nPerThread);
+            context.setKernelLocalArg(kernelName, 6, d.nElems() * tileSize * sizeof(PixType));
+            context.setKernelLocalArg(kernelName, 7, d.nElems() * tileSize * sizeof(PixType));
         }
 
         auto generateDiffMx(std::vector<Mx> const& referenceMxs,
