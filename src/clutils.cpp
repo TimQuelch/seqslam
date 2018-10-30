@@ -137,11 +137,15 @@ namespace clutils {
     }
 
     void Context::setKernelArg(std::string const& kernelName, unsigned index, Buffer const& arg) {
-        kernels_.at(kernelName).setArg(index, arg.buffer());
+        try {
+            kernels_.at(kernelName).setArg(index, arg.buffer());
+        } catch (cl::Error& e) { throw clErrorToException(e); }
     }
 
     void
     Context::setKernelLocalArg(std::string const& kernelName, unsigned index, std::size_t size) {
-        kernels_.at(kernelName).setArg(index, cl::Local(size));
+        try {
+            kernels_.at(kernelName).setArg(index, cl::Local(size));
+        } catch (cl::Error& e) { throw clErrorToException(e); }
     };
 } // namespace clutils
