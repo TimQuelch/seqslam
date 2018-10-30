@@ -1,8 +1,12 @@
 import pandas as pd
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import json
 import argparse
+
+matplotlib.rc('text', usetex=True)
+matplotlib.rc('text.latex', preamble=r'\usepackage{sfmath}')
 
 argparser = argparse.ArgumentParser(description="Process benchmark results")
 
@@ -10,7 +14,7 @@ argparser.add_argument('-s', '--show', action='store_true', help='Display figure
 argparser.add_argument('-w', '--write', action='store_true', help='Write figures to files')
 
 def setYAxis(ax):
-    ax.set_ylabel('Data Throughput (GiB/s)')
+    ax.set_ylabel('Throughput ($\mathrm{GiBs^{-1}}$)')
     return ax
 
 def main(args):
@@ -31,10 +35,13 @@ def main(args):
     d['Dataset'] = splitLabel[0]
     d['Label'] = splitLabel[1]
 
+    tsizeName = '$t_{size}$'
+    nloadName = '$n_{load}$'
     d = d.rename(columns=lambda s: s.replace('_', ' '))
     d = d.rename(columns=lambda s: s.title())
     d = d.rename(columns=lambda s: s.replace('Per', 'per'))
     d = d.rename(columns=lambda s: s.replace('Cpu', 'CPU'))
+    d = d.rename(columns={'Tile Size': tsizeName, 'N Pixels per Thread': nloadName})
 
     d['Method'] = d['Method'].replace(to_replace={'DifferenceMatrix': ''}, regex=True)
     d['Method'] = d['Method'].replace(to_replace={'cpu': 'CPU',
@@ -51,20 +58,20 @@ def main(args):
     d['GiB per Second'] = d['Bytes per Second'] / 2**(10*3)
     d = d.drop(columns=['Time Unit', 'Name'])
 
-    d = d.set_index(['Method', 'Dataset', 'Label', 'Tile Size', 'N Pixels per Thread'])
+    d = d.set_index(['Method', 'Dataset', 'Label', tsizeName, nloadName])
     d = d.sort_index()
 
     dr = d['GiB per Second']
 
     cpu = dr.loc[('CPU')]
-    cpu = cpu.reset_index(level=['Label', 'N Pixels per Thread'], drop=True)
+    cpu = cpu.reset_index(level=['Label', nloadName], drop=True)
     cpu = cpu.unstack(level='Dataset')
     ax = cpu.plot(style='o-')
     ax = setYAxis(ax)
     figs.append((ax.get_figure(), 'cpu'))
 
     gpu = dr.loc[('GPU')]
-    gpu = gpu.unstack(level='N Pixels per Thread')
+    gpu = gpu.unstack(level=nloadName)
     ax = gpu.loc[('Large', 'Best')].plot(style='o-')
     ax = setYAxis(ax)
     figs.append((ax.get_figure(), 'gpu-large'))
@@ -74,7 +81,7 @@ def main(args):
 
     early = dr.loc[('GPU', 'Small',
                     ['Naive', 'Parallel save', 'Continuous index', 'Two diffs', 'Warp reduce'])]
-    early = early.reset_index(level=['Method', 'Dataset', 'N Pixels per Thread'], drop=True)
+    early = early.reset_index(level=['Method', 'Dataset', nloadName], drop=True)
     early = early.unstack(level='Label')
     ax = early.plot(style='o-')
     ax = setYAxis(ax)
@@ -85,14 +92,17 @@ def main(args):
                      slice(None),
                      slice(None),
                      8)]
-    copies = copies.reset_index(level=['Dataset', 'Label', 'N Pixels per Thread'], drop=True)
+    copies = copies.reset_index(level=['Dataset', 'Label', nloadName], drop=True)
     copies = copies.unstack(level='Method')
     ax = copies.plot(style='o-')
     ax = setYAxis(ax)
     figs.append((ax.get_figure(), 'gpu-copies-and-context'))
 
     maxes = dr[dr.groupby(level=['Method', 'Dataset', 'Label']).idxmax()]
-    print(maxes)
+    print('Small dataset')
+    print(maxes.loc[(slice(None), 'Small')])
+    print('Large dataset')
+    print(maxes.loc[(slice(None), 'Large')])
 
     if args.show:
         plt.show()
