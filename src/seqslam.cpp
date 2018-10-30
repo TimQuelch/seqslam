@@ -24,7 +24,7 @@ namespace seqslam {
             return Dims{static_cast<int>(mx.rows), static_cast<int>(mx.cols)};
         }
 
-        auto operator==(Dims const& one, Dims const& two) {
+        [[maybe_unused]] auto operator==(Dims const& one, Dims const& two) {
             return one.rows == two.rows && one.cols == two.cols;
         }
 
