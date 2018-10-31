@@ -5,9 +5,6 @@ import numpy as np
 import json
 import argparse
 
-matplotlib.rc('text', usetex=True)
-matplotlib.rc('text.latex', preamble=r'\usepackage{sfmath}')
-
 argparser = argparse.ArgumentParser(description="Process benchmark results")
 
 argparser.add_argument('-s', '--show', action='store_true', help='Display figures as windows')
