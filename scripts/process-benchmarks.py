@@ -12,6 +12,7 @@ argparser.add_argument('-w', '--write', action='store_true', help='Write figures
 
 def setYAxis(ax):
     ax.set_ylabel('Throughput ($\mathrm{GiBs^{-1}}$)')
+    ax.set_ylim(bottom=0)
     return ax
 
 def main(args):
