@@ -10,9 +10,9 @@ argparser = argparse.ArgumentParser(description="Process benchmark results")
 argparser.add_argument('-s', '--show', action='store_true', help='Display figures as windows')
 argparser.add_argument('-w', '--write', action='store_true', help='Write figures to files')
 
-def setYAxis(ax):
+def setYAxis(ax, top=None):
     ax.set_ylabel('Throughput ($\mathrm{GiBs^{-1}}$)')
-    ax.set_ylim(bottom=0)
+    ax.set_ylim(bottom=0, top=top)
     return ax
 
 def main(args):
@@ -70,12 +70,13 @@ def main(args):
 
     gpu = dr.loc[('GPU')]
     gpu = gpu.unstack(level=nloadName)
-    ax = gpu.loc[('Large', 'Best')].plot(style='o-')
-    ax = setYAxis(ax)
-    figs.append((ax.get_figure(), 'gpu-large'))
-    ax = gpu.loc[('Small', 'Best')].plot(style='o-')
-    ax = setYAxis(ax)
-    figs.append((ax.get_figure(), 'gpu-small'))
+    ax1 = gpu.loc[('Large', 'Best')].plot(style='o-')
+    ax2 = gpu.loc[('Small', 'Best')].plot(style='o-')
+    ymax = max(ax1.get_ylim()[1], ax2.get_ylim()[1])
+    ax1 = setYAxis(ax1, top=ymax)
+    ax2 = setYAxis(ax2, top=ymax)
+    figs.append((ax1.get_figure(), 'gpu-large'))
+    figs.append((ax2.get_figure(), 'gpu-small'))
 
     early = dr.loc[('GPU', 'Small',
                     ['Naive', 'Parallel save', 'Continuous index', 'Two diffs', 'Warp reduce'])]
