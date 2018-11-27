@@ -268,27 +268,4 @@ BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMxDyn, float, 32)->Arg(nSqrImages);
 BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMxDyn, float, 64)->Arg(nSqrImages);
 BENCHMARK_TEMPLATE(sqrCacheOptimisedSadMxDyn, float, 128)->Arg(nSqrImages);
 
-template <typename T, int TileSize>
-void sqrCacheOptimisedThreadSadMx(benchmark::State& state) {
-    auto n = state.range(0);
-    auto a = genVecMx<T>(n);
-    auto b = genVecMx<T>(n);
-
-    for (auto _ : state) {
-#pragma omp parallel for
-        for (auto tx = 0; tx < n / TileSize; tx++) {
-            for (auto ty = 0; ty < n / TileSize; ty++) {
-                for (auto i = 0u; i < TileSize; i++) {
-                    for (auto j = 0u; j < TileSize; j++) {
-                        auto d = (a[tx * TileSize + i] - b[ty * TileSize + j]).cwiseAbs().sum();
-                        benchmark::DoNotOptimize(&d);
-                    }
-                }
-            }
-        }
-    }
-    state.SetItemsProcessed(state.iterations() * n * n * rows * cols);
-}
-BENCHMARK_TEMPLATE(sqrCacheOptimisedThreadSadMx, float, 16)->Arg(nSqrImages);
-
 BENCHMARK_MAIN();
