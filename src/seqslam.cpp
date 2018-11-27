@@ -36,7 +36,7 @@ namespace seqslam {
     auto readImages(std::filesystem::path const& dir) -> std::vector<cv::Mat> {
         std::vector<cv::Mat> images;
         for (auto const& imagePath : std::filesystem::directory_iterator(dir)) {
-            images.push_back(cv::imread(imagePath.path().string(), CV_LOAD_IMAGE_GRAYSCALE));
+            images.push_back(cv::imread(imagePath.path().string(), cv::IMREAD_GRAYSCALE));
         }
         return images;
     }
