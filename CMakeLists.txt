@@ -4,6 +4,9 @@ project(seqslam-benchmark VERSION 0.1.0)
 
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake OPTIONAL)
+include(${CMAKE_BINARY_DIR}/conan_paths.cmake OPTIONAL)
+
 find_package(Eigen3 REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(OpenCL REQUIRED)
@@ -33,8 +36,8 @@ target_link_libraries(seqslam
     Eigen3::Eigen
     fmt::fmt
     clutils
-    PRIVATE
     opencv_core
+    PRIVATE
     opencv_imgproc
     opencv_highgui
     stdc++fs)
@@ -47,14 +50,14 @@ add_executable(demo src/demo.cpp)
 target_link_libraries(demo PRIVATE seqslam fmt::fmt)
 
 add_executable(seqslam-benchmark src/benchmark.cpp)
-target_link_libraries(seqslam-benchmark PRIVATE seqslam benchmark)
+target_link_libraries(seqslam-benchmark PRIVATE seqslam benchmark::benchmark)
 
 add_executable(seqslam-test src/test.cpp)
-target_link_libraries(seqslam-test PRIVATE seqslam fmt)
+target_link_libraries(seqslam-test PRIVATE seqslam fmt::fmt)
 
 add_executable(sad-benchmark src/sad-benchmark.cpp)
 target_compile_features(sad-benchmark PRIVATE cxx_std_17)
-target_link_libraries(sad-benchmark PRIVATE benchmark Eigen3::Eigen)
+target_link_libraries(sad-benchmark PRIVATE benchmark::benchmark Eigen3::Eigen)
 
 configure_file(src/kernels/diff-mx.cl ./kernels/diff-mx.cl COPYONLY)
 
