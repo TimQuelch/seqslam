@@ -3,6 +3,8 @@
 
 #include <algorithm>
 #include <cassert>
+#include <limits>
+#include <numeric>
 
 #include <opencv2/core.hpp>
 #include <opencv2/core/eigen.hpp>
@@ -31,6 +33,82 @@ namespace seqslam {
 
         auto localMemoryRequired(std::size_t nPix, std::size_t tileSize, std::size_t nPerThread) {
             return nPix * tileSize * tileSize * sizeof(PixType) / nPerThread;
+        }
+
+        auto calcTrajectoryQueryIndexOffsets(unsigned seqLength) -> std::vector<int> {
+            auto qi = std::vector<int>(seqLength);
+            std::iota(qi.begin(), qi.end(), -1 * std::floor(static_cast<int>(seqLength) / 2));
+            return qi;
+        }
+
+        auto calcTrajectoryReferenceIndexOffsets(std::vector<int> const& qi,
+                                                 float vMin,
+                                                 float vMax,
+                                                 unsigned nSteps) -> std::vector<std::vector<int>> {
+            auto const seqLength = qi.size();
+            auto const uniqueVs =
+                [trajMin = qi.front() * vMin, trajMax = qi.front() * vMax, seqLength]() {
+                    auto uniqueStarts = std::vector<float>();
+                    std::generate_n(std::back_inserter(uniqueStarts),
+                                    trajMin - trajMax + 1,
+                                    [n = trajMin]() mutable { return n--; });
+                    assert(uniqueStarts.front() == trajMin);
+                    assert(uniqueStarts.back() == trajMax);
+
+                    auto uniqueVs = std::vector<float>();
+                    std::transform(uniqueStarts.begin(),
+                                   uniqueStarts.end(),
+                                   std::back_inserter(uniqueVs),
+                                   [seqLength](auto val) {
+                                       return -1 * val /
+                                              std::floor(static_cast<float>(seqLength) / 2.0f);
+                                   });
+                    return uniqueVs;
+                }();
+
+            auto const vs = [&uniqueVs, vMin, vMax, vStep = (vMax - vMin) / nSteps]() {
+                auto vs = std::vector<float>{};
+                auto diffs = std::vector<float>(uniqueVs.size());
+
+                for (auto v = vMin; v < vMax; v += vStep) {
+                    std::transform(uniqueVs.begin(),
+                                   uniqueVs.end(),
+                                   diffs.begin(),
+                                   [v](auto vecVal) { return vecVal - v; });
+                    auto const closest = std::min_element(diffs.begin(), diffs.end());
+                    if (std::find(vs.begin(), vs.end(), *closest) != vs.end()) {
+                        vs.push_back(*closest);
+                    }
+                }
+                return vs;
+            }();
+
+            auto ri = std::vector<std::vector<int>>();
+            ri.reserve(vs.size());
+            std::transform(vs.begin(), vs.end(), ri.begin(), [&qi](auto v) {
+                auto traj = std::vector<int>();
+                traj.reserve(qi.size());
+                std::transform(
+                    qi.begin(), qi.end(), traj.begin(), [v](auto q) { return std::round(q * v); });
+                return traj;
+            });
+
+            return ri;
+        }
+
+        auto calcTrajectoryScore(Mx const& diffMx,
+                                 unsigned r,
+                                 unsigned q,
+                                 std::vector<int> const& qTrajectory,
+                                 std::vector<int> const& rTrajectory) -> float {
+            assert(qTrajectory.size() == rTrajectory.size());
+
+            auto score = 0.0f;
+            for (auto i = 0u; i < qTrajectory.size(); q++) {
+                score += diffMx(r + rTrajectory[i], q + qTrajectory[i]);
+            }
+
+            return score;
         }
     } // namespace detail
     using namespace detail;
@@ -140,6 +218,29 @@ namespace seqslam {
                 }
             }
             return mx;
+        }
+
+        auto sequenceSearch(Mx const& diffMx,
+                            int sequenceLength,
+                            float vMin,
+                            float vMax,
+                            unsigned trajectorySteps) {
+            auto mx = std::make_unique<Mx>(diffMx.rows(), diffMx.cols());
+            auto const qi = calcTrajectoryQueryIndexOffsets(sequenceLength);
+            auto const ri = calcTrajectoryReferenceIndexOffsets(qi, vMin, vMax, trajectorySteps);
+
+            for (auto r = 0u; r < diffMx.rows(); ++r) {
+                for (auto q = 0u; q < diffMx.cols(); ++q) {
+                    auto best = std::numeric_limits<float>::min();
+                    for (auto t = 0u; t < trajectorySteps; ++t) {
+                        auto const score = calcTrajectoryScore(diffMx, r, q, qi, ri[t]);
+                        if (score > best) {
+                            best = score;
+                        }
+                    }
+                    (*mx)(r, q) = best;
+                }
+            }
         }
     } // namespace cpu
 
