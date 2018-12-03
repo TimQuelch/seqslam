@@ -75,6 +75,9 @@ target_link_libraries(eigen-benchmark PRIVATE benchmark::benchmark Eigen3::Eigen
 
 configure_file(src/kernels/diff-mx.cl ./kernels/diff-mx.cl COPYONLY)
 
+enable_testing()
+add_subdirectory(test)
+
 if(CLANG_TIDY_EXE AND RUN_CLANG_TIDY)
     set_target_properties(
         seqslam
