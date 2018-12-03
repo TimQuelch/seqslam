@@ -30,6 +30,11 @@ else()
 endif()
 
 add_library(seqslam src/seqslam.cpp)
+target_include_directories(
+    seqslam
+    PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
+    $<INSTALL_INTERFACE:include/>)
 target_compile_features(seqslam PUBLIC cxx_std_17)
 target_link_libraries(seqslam
     PUBLIC
@@ -43,6 +48,11 @@ target_link_libraries(seqslam
     stdc++fs)
 
 add_library(clutils src/clutils.cpp)
+target_include_directories(
+    clutils
+    PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
+    $<INSTALL_INTERFACE:include/>)
 target_compile_features(clutils PUBLIC cxx_std_17)
 target_link_libraries(clutils PUBLIC OpenCL::OpenCL stdc++fs PRIVATE fmt::fmt)
 
