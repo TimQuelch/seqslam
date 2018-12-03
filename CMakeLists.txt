@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(seqslam-benchmark VERSION 0.1.0)
+project(seqslam VERSION 0.1.0)
 
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 
