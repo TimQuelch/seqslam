@@ -1,4 +1,5 @@
 #include "seqslam.h"
+#include "seqslam-detail.h"
 
 #include <algorithm>
 #include <cassert>
@@ -9,7 +10,7 @@
 #include <opencv2/imgproc.hpp>
 
 namespace seqslam {
-    namespace {
+    namespace detail {
         struct Dims {
             int rows;
             int cols;
@@ -31,7 +32,8 @@ namespace seqslam {
         auto localMemoryRequired(std::size_t nPix, std::size_t tileSize, std::size_t nPerThread) {
             return nPix * tileSize * tileSize * sizeof(PixType) / nPerThread;
         }
-    } // namespace
+    } // namespace detail
+    using namespace detail;
 
     auto readImages(std::filesystem::path const& dir) -> std::vector<cv::Mat> {
         std::vector<cv::Mat> images;
