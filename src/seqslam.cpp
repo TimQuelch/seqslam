@@ -66,28 +66,30 @@ namespace seqslam {
                     return uniqueVs;
                 }();
 
-            auto const vs = [&uniqueVs, vMin, vMax, vStep = (vMax - vMin) / nSteps]() {
+            auto const vs = [&uniqueVs, vMin, vMax, vStep = (vMax - vMin) / (nSteps - 1)]() {
+                static_assert(std::is_same_v<decltype(vStep), float>);
+
                 auto vs = std::vector<float>{};
                 auto diffs = std::vector<float>(uniqueVs.size());
 
-                for (auto v = vMin; v < vMax; v += vStep) {
+                for (auto v = vMin; v <= vMax; v += vStep) {
                     std::transform(uniqueVs.begin(),
                                    uniqueVs.end(),
                                    diffs.begin(),
-                                   [v](auto vecVal) { return vecVal - v; });
-                    auto const closest = std::min_element(diffs.begin(), diffs.end());
-                    if (std::find(vs.begin(), vs.end(), *closest) != vs.end()) {
-                        vs.push_back(*closest);
+                                   [v](auto vecVal) { return std::abs(vecVal - v); });
+                    auto const closest =
+                        std::min_element(diffs.begin(), diffs.end()) - diffs.begin();
+                    if (std::find(vs.begin(), vs.end(), uniqueVs[closest]) == vs.end()) {
+                        vs.push_back(uniqueVs[closest]);
                     }
                 }
                 return vs;
             }();
 
             auto ri = std::vector<std::vector<int>>();
+            auto traj = std::vector<int>(qi.size());
             ri.reserve(vs.size());
-            std::transform(vs.begin(), vs.end(), ri.begin(), [&qi](auto v) {
-                auto traj = std::vector<int>();
-                traj.reserve(qi.size());
+            std::transform(vs.begin(), vs.end(), std::back_inserter(ri), [&qi, &traj](auto v) {
                 std::transform(
                     qi.begin(), qi.end(), traj.begin(), [v](auto q) { return std::round(q * v); });
                 return traj;
@@ -99,12 +101,12 @@ namespace seqslam {
         auto calcTrajectoryScore(Mx const& diffMx,
                                  unsigned r,
                                  unsigned q,
-                                 std::vector<int> const& qTrajectory,
-                                 std::vector<int> const& rTrajectory) -> float {
+                                 std::vector<int> const& rTrajectory,
+                                 std::vector<int> const& qTrajectory) -> float {
             assert(qTrajectory.size() == rTrajectory.size());
 
             auto score = 0.0f;
-            for (auto i = 0u; i < qTrajectory.size(); q++) {
+            for (auto i = 0u; i < qTrajectory.size(); i++) {
                 score += diffMx(r + rTrajectory[i], q + qTrajectory[i]);
             }
 
@@ -221,26 +223,30 @@ namespace seqslam {
         }
 
         auto sequenceSearch(Mx const& diffMx,
-                            int sequenceLength,
+                            unsigned sequenceLength,
                             float vMin,
                             float vMax,
-                            unsigned trajectorySteps) {
+                            unsigned trajectorySteps) -> std::unique_ptr<Mx> {
             auto mx = std::make_unique<Mx>(diffMx.rows(), diffMx.cols());
             auto const qi = calcTrajectoryQueryIndexOffsets(sequenceLength);
             auto const ri = calcTrajectoryReferenceIndexOffsets(qi, vMin, vMax, trajectorySteps);
 
-            for (auto r = 0u; r < diffMx.rows(); ++r) {
-                for (auto q = 0u; q < diffMx.cols(); ++q) {
-                    auto best = std::numeric_limits<float>::min();
-                    for (auto t = 0u; t < trajectorySteps; ++t) {
-                        auto const score = calcTrajectoryScore(diffMx, r, q, qi, ri[t]);
-                        if (score > best) {
+            auto [qMin, qMax] = std::minmax_element(qi.begin(), qi.end());
+            auto [rMin, rMax] = std::minmax_element(ri.back().begin(), ri.back().end());
+
+            for (auto r = -*rMin; r < diffMx.rows() - *rMax; ++r) {
+                for (auto q = -*qMin; q < diffMx.cols() - *qMax; ++q) {
+                    auto best = std::numeric_limits<float>::max();
+                    for (auto const& traj : ri) {
+                        auto const score = calcTrajectoryScore(diffMx, r, q, traj, qi);
+                        if (score < best) {
                             best = score;
                         }
                     }
                     (*mx)(r, q) = best;
                 }
             }
+            return mx;
         }
     } // namespace cpu
 
