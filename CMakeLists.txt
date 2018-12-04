@@ -69,6 +69,10 @@ add_executable(sad-benchmark src/sad-benchmark.cpp)
 target_compile_features(sad-benchmark PRIVATE cxx_std_17)
 target_link_libraries(sad-benchmark PRIVATE benchmark::benchmark Eigen3::Eigen)
 
+add_executable(eigen-benchmark src/eigen-benchmark.cpp)
+target_compile_features(eigen-benchmark PRIVATE cxx_std_17)
+target_link_libraries(eigen-benchmark PRIVATE benchmark::benchmark Eigen3::Eigen)
+
 configure_file(src/kernels/diff-mx.cl ./kernels/diff-mx.cl COPYONLY)
 
 if(CLANG_TIDY_EXE AND RUN_CLANG_TIDY)
