@@ -25,3 +25,23 @@ TEST_CASE("Query offsets calculated correctly", "[trajectory]") {
     REQUIRE(qi3.front() == -4);
     REQUIRE(qi3.back() == 4);
 }
+
+TEST_CASE("Reference offsets calculated correctly", "[trajectory]") {
+    auto const vMax = 5.0;
+    auto const seqLength = 5u;
+    auto const nTraj = 3u;
+
+    auto const qi = seqslam::detail::calcTrajectoryQueryIndexOffsets(seqLength);
+    auto const ri = seqslam::detail::calcTrajectoryReferenceIndexOffsets(qi, 0, vMax, nTraj);
+
+    REQUIRE(ri.size() == 3);
+
+    for (auto const& traj : ri) {
+        REQUIRE(traj.size() == qi.size());
+    }
+
+    for (auto i = 0u; i < qi.size(); i++) {
+        REQUIRE(ri.front()[i] == 0);
+        REQUIRE(ri.back()[i] == std::round(vMax * qi[i]));
+    }
+}
