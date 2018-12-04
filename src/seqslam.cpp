@@ -226,8 +226,8 @@ namespace seqslam {
                             unsigned sequenceLength,
                             float vMin,
                             float vMax,
-                            unsigned trajectorySteps) -> std::unique_ptr<Mx> {
-            auto mx = std::make_unique<Mx>(diffMx.rows(), diffMx.cols());
+                            unsigned trajectorySteps) -> Mx {
+            auto mx = Mx(diffMx.rows(), diffMx.cols());
             auto const qi = calcTrajectoryQueryIndexOffsets(sequenceLength);
             auto const ri = calcTrajectoryReferenceIndexOffsets(qi, vMin, vMax, trajectorySteps);
 
@@ -243,7 +243,7 @@ namespace seqslam {
                             best = score;
                         }
                     }
-                    (*mx)(r, q) = best;
+                    mx(r, q) = best;
                 }
             }
             return mx;

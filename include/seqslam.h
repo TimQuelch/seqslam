@@ -30,6 +30,12 @@ namespace seqslam {
         auto generateDiffMx(std::vector<Mx> const& referenceMxs,
                             std::vector<Mx> const& queryMxs,
                             std::size_t tileSize = 32) -> Mx;
+
+        auto sequenceSearch(Mx const& diffMx,
+                            unsigned sequenceLength,
+                            float vMin,
+                            float vMax,
+                            unsigned trajectorySteps) -> Mx;
     } // namespace cpu
 
     namespace opencl {
