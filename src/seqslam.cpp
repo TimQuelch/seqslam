@@ -101,15 +101,15 @@ namespace seqslam {
     namespace cpu {
         auto generateDiffMx(std::vector<Mx> const& referenceMxs,
                             std::vector<Mx> const& queryMxs,
-                            std::size_t tileSize) -> std::unique_ptr<Mx> {
-            auto mx = std::make_unique<Mx>(referenceMxs.size(), queryMxs.size());
+                            std::size_t tileSize) -> Mx {
+            Mx mx = Mx(referenceMxs.size(), queryMxs.size());
             for (auto tr = 0u; tr < referenceMxs.size() / tileSize; tr++) {
                 for (auto tq = 0u; tq < queryMxs.size() / tileSize; tq++) {
                     for (auto i = 0u; i < tileSize; i++) {
                         for (auto j = 0u; j < tileSize; j++) {
                             auto const r = tr * tileSize + i;
                             auto const q = tq * tileSize + j;
-                            (*mx)(r, q) = (referenceMxs[r] - queryMxs[q]).cwiseAbs().sum();
+                            mx(r, q) = (referenceMxs[r] - queryMxs[q]).cwiseAbs().sum();
                         }
                     }
                 }
@@ -121,7 +121,7 @@ namespace seqslam {
                     for (auto j = 0u; j < qrem; j++) {
                         auto const r = tr * tileSize + i;
                         auto const q = queryMxs.size() - qrem + j;
-                        (*mx)(r, q) = (referenceMxs[r] - queryMxs[q]).cwiseAbs().sum();
+                        mx(r, q) = (referenceMxs[r] - queryMxs[q]).cwiseAbs().sum();
                     }
                 }
             }
@@ -130,13 +130,13 @@ namespace seqslam {
                     for (auto j = 0u; j < tileSize; j++) {
                         auto const r = referenceMxs.size() - rrem + i;
                         auto const q = tq * tileSize + j;
-                        (*mx)(r, q) = (referenceMxs[r] - queryMxs[q]).cwiseAbs().sum();
+                        mx(r, q) = (referenceMxs[r] - queryMxs[q]).cwiseAbs().sum();
                     }
                 }
             }
             for (auto r = referenceMxs.size() - rrem; r < referenceMxs.size(); r++) {
                 for (auto q = queryMxs.size() - qrem; q < queryMxs.size(); q++) {
-                    (*mx)(r, q) = (referenceMxs[r] - queryMxs[q]).cwiseAbs().sum();
+                    mx(r, q) = (referenceMxs[r] - queryMxs[q]).cwiseAbs().sum();
                 }
             }
             return mx;
@@ -225,7 +225,7 @@ namespace seqslam {
                             std::vector<Mx> const& queryMxs,
                             std::size_t tileSize,
                             std::size_t nPerThread,
-                            std::string const& kernelName) -> std::unique_ptr<Mx> {
+                            std::string const& kernelName) -> Mx {
             auto context = createDiffMxContext();
             return generateDiffMx(
                 context, referenceMxs, queryMxs, tileSize, nPerThread, kernelName);
@@ -236,7 +236,7 @@ namespace seqslam {
                             std::vector<Mx> const& queryMxs,
                             std::size_t tileSize,
                             std::size_t nPerThread,
-                            std::string const& kernelName) -> std::unique_ptr<Mx> {
+                            std::string const& kernelName) -> Mx {
             assert(!referenceMxs.empty());
             assert(!queryMxs.empty());
             assert(dims(referenceMxs[0]) == dims(queryMxs[0]));
@@ -261,7 +261,7 @@ namespace seqslam {
                             std::size_t nPix,
                             std::size_t tileSize,
                             std::size_t nPerThread,
-                            std::string const& kernelName) -> std::unique_ptr<Mx> {
+                            std::string const& kernelName) -> Mx {
             context.runKernel(kernelName,
                               {nPix / nPerThread, querySize / tileSize, referenceSize / tileSize},
                               {nPix / nPerThread, 1, 1});
@@ -269,9 +269,9 @@ namespace seqslam {
             auto buffer = std::make_unique<PixType[]>(referenceSize * querySize);
             outBuffer.readBuffer(buffer.get());
 
-            return std::make_unique<Mx>(Eigen::Map<Mx>{buffer.get(),
-                                                       static_cast<Eigen::Index>(referenceSize),
-                                                       static_cast<Eigen::Index>(querySize)});
+            return Mx(Eigen::Map<Mx>{buffer.get(),
+                                     static_cast<Eigen::Index>(referenceSize),
+                                     static_cast<Eigen::Index>(querySize)});
         }
     } // namespace opencl
 } // namespace seqslam

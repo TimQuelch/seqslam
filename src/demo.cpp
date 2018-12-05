@@ -18,13 +18,13 @@ int main() {
         convertToEigen(contrastEnhancement(readImages(dataDir / "winter"), 20));
 
     // auto const diffMatrix = cpu::generateDiffMx(referenceImages, queryImages);
-    auto const diffMatrix = opencl::generateDiffMx(referenceImages, queryImages, 4);
+    auto diffMatrix = opencl::generateDiffMx(referenceImages, queryImages, 4);
 
-    *diffMatrix *= 255 / diffMatrix->maxCoeff();
+    diffMatrix *= 255 / diffMatrix.maxCoeff();
 
     auto const diffMatrixIm = [&]() -> cv::Mat {
-        auto im = cv::Mat(diffMatrix->rows(), diffMatrix->cols(), CV_8UC1);
-        cv::eigen2cv(*diffMatrix, im);
+        auto im = cv::Mat(diffMatrix.rows(), diffMatrix.cols(), CV_8UC1);
+        cv::eigen2cv(diffMatrix, im);
         return im;
     }();
 

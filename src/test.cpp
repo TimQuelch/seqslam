@@ -61,7 +61,7 @@ int main() {
     auto const nPix = referenceImages[0].rows() * referenceImages[0].cols();
     auto const nImages = referenceImages.size();
 
-    auto diffMxFns = std::vector<std::pair<std::function<std::unique_ptr<Mx>()>, std::string>>{};
+    auto diffMxFns = std::vector<std::pair<std::function<Mx()>, std::string>>{};
     for (auto tileSize = 1u; tileSize <= 256; tileSize *= 2) {
         diffMxFns.push_back({[&referenceImages, &queryImages, tileSize]() {
                                  return cpu::generateDiffMx(referenceImages, queryImages, tileSize);
@@ -81,7 +81,7 @@ int main() {
         }
     }
 
-    auto diffMxs = std::vector<std::pair<std::unique_ptr<Mx>, std::string>>{};
+    auto diffMxs = std::vector<std::pair<Mx, std::string>>{};
     std::transform(std::cbegin(diffMxFns),
                    std::cend(diffMxFns),
                    std::back_inserter(diffMxs),
@@ -92,7 +92,7 @@ int main() {
     for (auto mx1 = std::cbegin(diffMxs); mx1 != --std::cend(diffMxs); mx1++) {
         for (auto mx2 = mx1 + 1; mx2 != std::cend(diffMxs); mx2++) {
             fmt::print("{} -- {} vs {}\n",
-                       compareDiffMx(*(mx1->first), *(mx2->first)),
+                       compareDiffMx(mx1->first, mx2->first),
                        mx1->second,
                        mx2->second);
         }
