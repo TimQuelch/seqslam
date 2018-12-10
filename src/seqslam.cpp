@@ -241,7 +241,8 @@ namespace seqslam {
                     Vx const window = diffMx.block(start, j, windowSize, 1);
                     auto const mean = window.mean();
                     auto const std = std::sqrt((window.array() - mean).pow(2).sum() / (windowSize));
-                    mx(i, j) = (diffMx(i, j) - mean) / std;
+                    mx(i, j) =
+                        (diffMx(i, j) - mean) / std::max(std, std::numeric_limits<float>::min());
                 }
             }
 
