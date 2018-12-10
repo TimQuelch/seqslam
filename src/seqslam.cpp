@@ -46,25 +46,26 @@ namespace seqslam {
                                                  float vMax,
                                                  unsigned nSteps) -> std::vector<std::vector<int>> {
             auto const seqLength = qi.size();
-            auto const uniqueVs =
-                [trajMin = qi.front() * vMin, trajMax = qi.front() * vMax, seqLength]() {
-                    auto uniqueStarts = std::vector<float>();
-                    std::generate_n(std::back_inserter(uniqueStarts),
-                                    trajMin - trajMax + 1,
-                                    [n = trajMin]() mutable { return n--; });
-                    assert(uniqueStarts.front() == trajMin);
-                    assert(uniqueStarts.back() == trajMax);
+            auto const uniqueVs = [trajMin = std::round(qi.front() * vMin),
+                                   trajMax = std::round(qi.front() * vMax),
+                                   seqLength]() {
+                auto uniqueStarts = std::vector<int>();
+                std::generate_n(std::back_inserter(uniqueStarts),
+                                trajMin - trajMax + 1,
+                                [n = trajMin]() mutable { return n--; });
+                assert(uniqueStarts.front() == trajMin);
+                assert(uniqueStarts.back() == trajMax);
 
-                    auto uniqueVs = std::vector<float>();
-                    std::transform(uniqueStarts.begin(),
-                                   uniqueStarts.end(),
-                                   std::back_inserter(uniqueVs),
-                                   [seqLength](auto val) {
-                                       return -1 * val /
-                                              std::floor(static_cast<float>(seqLength) / 2.0f);
-                                   });
-                    return uniqueVs;
-                }();
+                auto uniqueVs = std::vector<float>();
+                std::transform(uniqueStarts.begin(),
+                               uniqueStarts.end(),
+                               std::back_inserter(uniqueVs),
+                               [seqLength](auto val) {
+                                   return -1 * val /
+                                          std::floor(static_cast<float>(seqLength) / 2.0f);
+                               });
+                return uniqueVs;
+            }();
 
             auto const vs = [&uniqueVs, vMin, vMax, vStep = (vMax - vMin) / (nSteps - 1)]() {
                 static_assert(std::is_same_v<decltype(vStep), float>);
