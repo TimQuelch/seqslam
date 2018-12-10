@@ -3,12 +3,18 @@
 #include <filesystem>
 #include <iostream>
 
-#include <fmt/format.h>
-
 #include <opencv2/core/eigen.hpp>
 #include <opencv2/highgui.hpp>
 
 using namespace seqslam;
+
+cv::Mat mxToIm(Mx const& mx) {
+    Mx scaled = mx.array() - mx.minCoeff();
+    scaled *= 255 / scaled.maxCoeff();
+    auto im = cv::Mat(scaled.rows(), scaled.cols(), CV_8UC1);
+    cv::eigen2cv(scaled, im);
+    return im;
+}
 
 int main() {
     auto const dataDir = std::filesystem::path{"../datasets/nordland_trimmed_resized"};
@@ -17,21 +23,12 @@ int main() {
     auto const queryImages =
         convertToEigen(contrastEnhancement(readImages(dataDir / "winter"), 20));
 
-    // auto const diffMatrix = cpu::generateDiffMx(referenceImages, queryImages);
-    auto diffMatrix = opencl::generateDiffMx(referenceImages, queryImages, 4);
+    auto diffMatrix = cpu::generateDiffMx(referenceImages, queryImages);
+    // auto diffMatrix = opencl::generateDiffMx(referenceImages, queryImages, 4);
+    auto enhanced = cpu::enhanceDiffMx(diffMatrix, 10);
+    auto sequences = cpu::sequenceSearch(enhanced, 15, 0.8, 1.2, 15);
 
-    diffMatrix *= 255 / diffMatrix.maxCoeff();
-
-    auto const diffMatrixIm = [&]() -> cv::Mat {
-        auto im = cv::Mat(diffMatrix.rows(), diffMatrix.cols(), CV_8UC1);
-        cv::eigen2cv(diffMatrix, im);
-        return im;
-    }();
-
-    cv::namedWindow("Difference Matrix", cv::WINDOW_NORMAL);
-    cv::imshow("Difference Matrix", diffMatrixIm);
-    cv::imwrite("diffmx.jpg", diffMatrixIm);
-
-    while (cv::waitKey(0) != 'q')
-        ;
+    cv::imwrite("diffmx.jpg", mxToIm(diffMatrix));
+    cv::imwrite("enhanced.jpg", mxToIm(enhanced));
+    cv::imwrite("sequence.jpg", mxToIm(sequences));
 }
