@@ -253,7 +253,7 @@ namespace seqslam {
                             float vMin,
                             float vMax,
                             unsigned trajectorySteps) -> Mx {
-            auto mx = Mx(diffMx.rows(), diffMx.cols());
+            Mx mx = Mx::Zero(diffMx.rows(), diffMx.cols());
             auto const qi = calcTrajectoryQueryIndexOffsets(sequenceLength);
             auto const ri = calcTrajectoryReferenceIndexOffsets(qi, vMin, vMax, trajectorySteps);
 
@@ -265,9 +265,7 @@ namespace seqslam {
                     auto best = std::numeric_limits<float>::max();
                     for (auto const& traj : ri) {
                         auto const score = calcTrajectoryScore(diffMx, r, q, traj, qi);
-                        if (score < best) {
-                            best = score;
-                        }
+                        best = std::min(score, best);
                     }
                     mx(r, q) = best;
                 }
