@@ -16,6 +16,7 @@
 namespace seqslam {
     using PixType = float;
     using Mx = Eigen::Matrix<PixType, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+    using Vx = Eigen::Matrix<PixType, Eigen::Dynamic, 1>;
 
     auto readImages(std::filesystem::path const& dir) -> std::vector<cv::Mat>;
 
@@ -30,6 +31,8 @@ namespace seqslam {
         auto generateDiffMx(std::vector<Mx> const& referenceMxs,
                             std::vector<Mx> const& queryMxs,
                             std::size_t tileSize = 32) -> Mx;
+
+        auto enhanceDiffMx(Mx const& diffMx, unsigned windowSize) -> Mx;
 
         auto sequenceSearch(Mx const& diffMx,
                             unsigned sequenceLength,

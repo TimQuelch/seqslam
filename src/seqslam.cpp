@@ -222,6 +222,31 @@ namespace seqslam {
             return mx;
         }
 
+        auto enhanceDiffMx(Mx const& diffMx, unsigned windowSize) -> Mx {
+            Mx mx = Mx(diffMx.rows(), diffMx.cols());
+            auto offset = static_cast<unsigned>(std::floor(windowSize / 2.0));
+
+            for (auto j = 0u; j < diffMx.cols(); ++j) {
+                for (auto i = 0u; i < diffMx.rows(); ++i) {
+                    auto const start = [i, offset, rows = diffMx.rows(), windowSize]() -> unsigned {
+                        if (i < offset) {
+                            return 0;
+                        } else if (i > (rows - offset)) {
+                            return rows - windowSize - 1;
+                        } else {
+                            return i - offset;
+                        }
+                    }();
+                    Vx const window = diffMx.block(start, j, windowSize, 1);
+                    auto const mean = window.mean();
+                    auto const std = std::sqrt((window.array() - mean).pow(2).sum() / (windowSize));
+                    mx(i, j) = (diffMx(i, j) - mean) / std;
+                }
+            }
+
+            return mx;
+        }
+
         auto sequenceSearch(Mx const& diffMx,
                             unsigned sequenceLength,
                             float vMin,
