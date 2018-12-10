@@ -62,6 +62,9 @@ target_link_libraries(demo PRIVATE seqslam fmt::fmt)
 add_executable(seqslam-benchmark src/benchmark.cpp)
 target_link_libraries(seqslam-benchmark PRIVATE seqslam benchmark::benchmark)
 
+add_executable(search-benchmark src/search-benchmark.cpp)
+target_link_libraries(search-benchmark PRIVATE seqslam benchmark::benchmark)
+
 add_executable(seqslam-test src/test.cpp)
 target_link_libraries(seqslam-test PRIVATE seqslam fmt::fmt)
 
