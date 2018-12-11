@@ -46,7 +46,7 @@ void queryIndexOffsets(benchmark::State& state) {
         benchmark::ClobberMemory();
     }
 }
-//BENCHMARK(queryIndexOffsets)->RangeMultiplier(2)->Range(1, 1 << 9);
+BENCHMARK(queryIndexOffsets)->RangeMultiplier(2)->Range(1, 1 << 8);
 
 void referenceIndexOffsets(benchmark::State& state) {
     auto qi = detail::calcTrajectoryQueryIndexOffsets(state.range(0));
@@ -54,7 +54,7 @@ void referenceIndexOffsets(benchmark::State& state) {
         auto ri = detail::calcTrajectoryReferenceIndexOffsets(qi, 0, 5, 50);
     }
 }
-//BENCHMARK(referenceIndexOffsets)->RangeMultiplier(2)->Range(1, 1 << 9);
+BENCHMARK(referenceIndexOffsets)->RangeMultiplier(2)->Range(1, 1 << 8);
 
 void diffMxEnhancement(benchmark::State& state) {
     Mx mx = getDiffMx();
