@@ -1,6 +1,8 @@
 #ifndef SEQSLAM_SEQSLAM_DETAIL_H
 #define SEQSLAM_SEQSLAM_DETAIL_H
 
+#include "seqslam.h"
+
 #include <vector>
 
 namespace seqslam::detail {
