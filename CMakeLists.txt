@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 
 project(seqslam VERSION 0.1.0)
 
+message("Build type: ${CMAKE_BUILD_TYPE}")
+
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake OPTIONAL)
@@ -14,8 +16,14 @@ find_package(benchmark REQUIRED)
 find_package(fmt REQUIRED)
 
 include(${CMAKE_SOURCE_DIR}/cmake/warnings.cmake)
-set(optimisations -O3 -march=native)
-add_compile_options(${warnings} ${optimisations})
+set(optimisation_flags_release -O3 -march=native)
+set(optimisation_flags_debug -O0)
+set(debug_flags -g)
+add_compile_options(
+    ${warnings}
+    "$<$<CONFIG:Debug>:${optimisation_flags_debug}>"
+    "$<$<CONFIG:Debug>:${debug_flags}>"
+    "$<$<CONFIG:Release>:${optimisation_flags_release}>")
 
 option(RUN_CLANG_TIDY "Run clang tidy on C++ code" FALSE)
 find_program(CLANG_TIDY_EXE NAMES "clang-tidy")
