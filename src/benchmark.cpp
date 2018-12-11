@@ -67,7 +67,7 @@ void cpuDifferenceMatrix(benchmark::State& state, std::string_view dir) {
 
     for (auto _ : state) {
         auto diffMatrix = cpu::generateDiffMx(referenceImages, queryImages, state.range(0));
-        benchmark::DoNotOptimize(diffMatrix.get());
+        benchmark::DoNotOptimize(diffMatrix.data());
         benchmark::ClobberMemory();
     }
     state.SetItemsProcessed(state.iterations() * referenceImages.size() * queryImages.size() *
@@ -88,7 +88,7 @@ void gpuDifferenceMatrixWithCopyAndContext(benchmark::State& state, std::string_
     for (auto _ : state) {
         auto diffMatrix =
             opencl::generateDiffMx(referenceImages, queryImages, state.range(0), state.range(1));
-        benchmark::DoNotOptimize(diffMatrix.get());
+        benchmark::DoNotOptimize(diffMatrix.data());
         benchmark::ClobberMemory();
     }
     state.SetItemsProcessed(state.iterations() * referenceImages.size() * queryImages.size() *
@@ -115,7 +115,7 @@ void gpuDifferenceMatrixWithCopy(benchmark::State& state, std::string_view dir) 
     for (auto _ : state) {
         auto diffMatrix = opencl::generateDiffMx(
             context, referenceImages, queryImages, state.range(0), state.range(1));
-        benchmark::DoNotOptimize(diffMatrix.get());
+        benchmark::DoNotOptimize(diffMatrix.data());
         benchmark::ClobberMemory();
     }
     state.SetItemsProcessed(state.iterations() * referenceImages.size() * queryImages.size() *
@@ -152,7 +152,7 @@ void gpuDifferenceMatrix(benchmark::State& state, std::string const& kernel, std
                                                  state.range(0),
                                                  state.range(1),
                                                  kernel);
-        benchmark::DoNotOptimize(diffMatrix.get());
+        benchmark::DoNotOptimize(diffMatrix.data());
         benchmark::ClobberMemory();
     }
     state.SetItemsProcessed(state.iterations() * referenceImages.size() * queryImages.size() *
