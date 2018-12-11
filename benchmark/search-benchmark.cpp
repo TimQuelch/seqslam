@@ -75,4 +75,14 @@ void sequenceSearch(benchmark::State& state) {
 }
 BENCHMARK(sequenceSearch)->RangeMultiplier(2)->Range(1 << 2, 1 << 8);
 
+void sequenceSearchVaryingNTrajectories(benchmark::State& state) {
+    Mx mx = cpu::enhanceDiffMx(getDiffMx(), 10);
+    for (auto _ : state) {
+        auto sequences = cpu::sequenceSearch(mx, 30, 0, 5, state.range(0));
+    }
+    state.SetBytesProcessed(mx.rows() * mx.cols() * state.iterations() * sizeof(PixType));
+
+}
+BENCHMARK(sequenceSearchVaryingNTrajectories)->DenseRange(1, 10);
+
 BENCHMARK_MAIN();
