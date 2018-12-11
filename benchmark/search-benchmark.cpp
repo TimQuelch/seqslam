@@ -1,5 +1,5 @@
-#include "seqslam.h"
 #include "seqslam-detail.h"
+#include "seqslam.h"
 
 #include <cassert>
 #include <string_view>
@@ -71,7 +71,6 @@ void sequenceSearch(benchmark::State& state) {
         auto sequences = cpu::sequenceSearch(mx, state.range(0), 0, 5, 1);
     }
     state.SetBytesProcessed(mx.rows() * mx.cols() * state.iterations() * sizeof(PixType));
-
 }
 BENCHMARK(sequenceSearch)->RangeMultiplier(2)->Range(1 << 2, 1 << 8);
 
@@ -81,7 +80,6 @@ void sequenceSearchVaryingNTrajectories(benchmark::State& state) {
         auto sequences = cpu::sequenceSearch(mx, 30, 0, 5, state.range(0));
     }
     state.SetBytesProcessed(mx.rows() * mx.cols() * state.iterations() * sizeof(PixType));
-
 }
 BENCHMARK(sequenceSearchVaryingNTrajectories)->DenseRange(1, 10);
 
