@@ -19,32 +19,37 @@ namespace seqslam {
             constexpr auto nElems() const { return rows * cols; }
         };
 
-        auto dims(Mx const& mx) {
+        [[nodiscard]] constexpr auto dims(Mx const& mx) noexcept {
             return Dims{static_cast<int>(mx.rows()), static_cast<int>(mx.cols())};
         }
 
-        auto dims(cv::Mat const& mx) {
+        [[nodiscard]] constexpr auto dims(cv::Mat const& mx) noexcept {
             return Dims{static_cast<int>(mx.rows), static_cast<int>(mx.cols)};
         }
 
-        [[maybe_unused]] auto operator==(Dims const& one, Dims const& two) {
+        [[maybe_unused]] [[nodiscard]] constexpr auto operator==(Dims const& one,
+                                                                 Dims const& two) noexcept {
             return one.rows == two.rows && one.cols == two.cols;
         }
 
-        auto localMemoryRequired(std::size_t nPix, std::size_t tileSize, std::size_t nPerThread) {
+        [[nodiscard]] constexpr auto localMemoryRequired(std::size_t nPix,
+                                                         std::size_t tileSize,
+                                                         std::size_t nPerThread) noexcept {
             return nPix * tileSize * tileSize * sizeof(PixType) / nPerThread;
         }
 
-        auto calcTrajectoryQueryIndexOffsets(unsigned seqLength) -> std::vector<int> {
+        [[nodiscard]] auto calcTrajectoryQueryIndexOffsets(unsigned seqLength) noexcept
+            -> std::vector<int> {
             auto qi = std::vector<int>(seqLength);
             std::iota(qi.begin(), qi.end(), -1 * std::floor(static_cast<int>(seqLength) / 2));
             return qi;
         }
 
-        auto calcTrajectoryReferenceIndexOffsets(std::vector<int> const& qi,
-                                                 float vMin,
-                                                 float vMax,
-                                                 unsigned nSteps) -> std::vector<std::vector<int>> {
+        [[nodiscard]] auto calcTrajectoryReferenceIndexOffsets(std::vector<int> const& qi,
+                                                               float vMin,
+                                                               float vMax,
+                                                               unsigned nSteps) noexcept
+            -> std::vector<std::vector<int>> {
             auto const seqLength = qi.size();
             auto const uniqueVs = [trajMin = std::round(qi.front() * vMin),
                                    trajMax = std::round(qi.front() * vMax),
@@ -99,11 +104,12 @@ namespace seqslam {
             return ri;
         }
 
-        auto calcTrajectoryScore(Mx const& diffMx,
-                                 unsigned r,
-                                 unsigned q,
-                                 std::vector<int> const& rTrajectory,
-                                 std::vector<int> const& qTrajectory) -> float {
+        [[nodiscard]] auto calcTrajectoryScore(Mx const& diffMx,
+                                               unsigned r,
+                                               unsigned q,
+                                               std::vector<int> const& rTrajectory,
+                                               std::vector<int> const& qTrajectory) noexcept
+            -> float {
             assert(qTrajectory.size() == rTrajectory.size());
 
             auto score = 0.0f;
@@ -116,7 +122,8 @@ namespace seqslam {
     } // namespace detail
     using namespace detail;
 
-    auto readImages(std::filesystem::path const& dir) -> std::vector<cv::Mat> {
+    [[nodiscard]] auto readImages(std::filesystem::path const& dir) noexcept
+        -> std::vector<cv::Mat> {
         std::vector<cv::Mat> images;
         for (auto const& imagePath : std::filesystem::directory_iterator(dir)) {
             images.push_back(cv::imread(imagePath.path().string(), cv::IMREAD_GRAYSCALE));
@@ -124,8 +131,8 @@ namespace seqslam {
         return images;
     }
 
-    auto contrastEnhancement(std::vector<cv::Mat> const& images, double threshold)
-        -> std::vector<cv::Mat> {
+    [[nodiscard]] auto contrastEnhancement(std::vector<cv::Mat> const& images,
+                                           double threshold) noexcept -> std::vector<cv::Mat> {
         cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
         clahe->setClipLimit(threshold);
 
@@ -141,7 +148,8 @@ namespace seqslam {
         return contrastEnhanced;
     }
 
-    auto convertToEigen(std::vector<cv::Mat> const& images) -> std::vector<Mx> {
+    [[nodiscard]] auto convertToEigen(std::vector<cv::Mat> const& images) noexcept
+        -> std::vector<Mx> {
         assert(!images.empty());
         auto const d = dims(images[0]);
         std::vector<Mx> res;
@@ -156,7 +164,7 @@ namespace seqslam {
         return res;
     }
 
-    auto convertToCv(std::vector<Mx> const& mxs) -> std::vector<cv::Mat> {
+    [[nodiscard]] auto convertToCv(std::vector<Mx> const& mxs) noexcept -> std::vector<cv::Mat> {
         std::vector<cv::Mat> res;
         res.reserve(mxs.size());
         std::transform(mxs.begin(), mxs.end(), std::back_inserter(res), [](auto const& mx) {
@@ -167,7 +175,8 @@ namespace seqslam {
         return res;
     }
 
-    auto convertToBuffer(std::vector<Mx> const& mxs) -> std::unique_ptr<PixType[]> {
+    [[nodiscard]] auto convertToBuffer(std::vector<Mx> const& mxs) noexcept
+        -> std::unique_ptr<PixType[]> {
         assert(!mxs.empty());
         auto const d = dims(mxs[0]);
         auto buffer = std::make_unique<PixType[]>(mxs.size() * d.nElems());
@@ -180,9 +189,9 @@ namespace seqslam {
     }
 
     namespace cpu {
-        auto generateDiffMx(std::vector<Mx> const& referenceMxs,
-                            std::vector<Mx> const& queryMxs,
-                            std::size_t tileSize) -> Mx {
+        [[nodiscard]] auto generateDiffMx(std::vector<Mx> const& referenceMxs,
+                                          std::vector<Mx> const& queryMxs,
+                                          std::size_t tileSize) noexcept -> Mx {
             Mx mx = Mx(referenceMxs.size(), queryMxs.size());
             for (auto tr = 0u; tr < referenceMxs.size() / tileSize; tr++) {
                 for (auto tq = 0u; tq < queryMxs.size() / tileSize; tq++) {
@@ -223,7 +232,7 @@ namespace seqslam {
             return mx;
         }
 
-        auto enhanceDiffMx(Mx const& diffMx, unsigned windowSize) -> Mx {
+        [[nodiscard]] auto enhanceDiffMx(Mx const& diffMx, unsigned windowSize) noexcept -> Mx {
             Mx mx = Mx(diffMx.rows(), diffMx.cols());
             auto offset = static_cast<unsigned>(std::floor(windowSize / 2.0));
 
@@ -249,11 +258,11 @@ namespace seqslam {
             return mx;
         }
 
-        auto sequenceSearch(Mx const& diffMx,
-                            unsigned sequenceLength,
-                            float vMin,
-                            float vMax,
-                            unsigned trajectorySteps) -> Mx {
+        [[nodiscard]] auto sequenceSearch(Mx const& diffMx,
+                                          unsigned sequenceLength,
+                                          float vMin,
+                                          float vMax,
+                                          unsigned trajectorySteps) noexcept -> Mx {
             Mx mx = Mx::Zero(diffMx.rows(), diffMx.cols());
             auto const qi = calcTrajectoryQueryIndexOffsets(sequenceLength);
             auto const ri = calcTrajectoryReferenceIndexOffsets(qi, vMin, vMax, trajectorySteps);
@@ -276,16 +285,16 @@ namespace seqslam {
     } // namespace cpu
 
     namespace opencl {
-        auto createDiffMxContext() -> clutils::Context {
+        [[nodiscard]] auto createDiffMxContext() -> clutils::Context {
             auto context = clutils::Context{};
             context.addKernels(diffMatrixPath, kernelNames);
             return context;
         }
 
-        auto createBuffers(clutils::Context& context,
-                           std::size_t nReference,
-                           std::size_t nQuery,
-                           std::size_t nPix) -> diffMxBuffers {
+        [[nodiscard]] auto createBuffers(clutils::Context& context,
+                                         std::size_t nReference,
+                                         std::size_t nQuery,
+                                         std::size_t nPix) -> diffMxBuffers {
             auto r = clutils::Buffer{
                 context, nReference * nPix * sizeof(PixType), clutils::Buffer::Access::read};
             auto q = clutils::Buffer{
@@ -295,16 +304,17 @@ namespace seqslam {
             return {std::move(r), std::move(q), std::move(d)};
         }
 
-        auto fitsInLocalMemory(std::size_t nPix, std::size_t tileSize, std::size_t nPerThread)
-            -> bool {
+        [[nodiscard]] auto fitsInLocalMemory(std::size_t nPix,
+                                             std::size_t tileSize,
+                                             std::size_t nPerThread) noexcept -> bool {
             auto const localMemorySize = 48u * 1024u;
             return localMemoryRequired(nPix, tileSize, nPerThread) < localMemorySize;
         }
 
-        auto isValidParameters(std::size_t nImages,
-                               std::size_t nPix,
-                               std::size_t tileSize,
-                               std::size_t nPixPerThread) -> bool {
+        [[nodiscard]] auto isValidParameters(std::size_t nImages,
+                                             std::size_t nPix,
+                                             std::size_t tileSize,
+                                             std::size_t nPixPerThread) noexcept -> bool {
             auto const nThreads = nPix / nPixPerThread;
             bool const fitsInLocal = opencl::fitsInLocalMemory(nPix, tileSize, nPixPerThread);
             bool const tLessThanMax = nThreads <= 1024;
@@ -353,22 +363,22 @@ namespace seqslam {
                 kernelName, 5, d.nElems() * tileSize * tileSize * sizeof(PixType) / nPerThread);
         }
 
-        auto generateDiffMx(std::vector<Mx> const& referenceMxs,
-                            std::vector<Mx> const& queryMxs,
-                            std::size_t tileSize,
-                            std::size_t nPerThread,
-                            std::string_view kernelName) -> Mx {
+        [[nodiscard]] auto generateDiffMx(std::vector<Mx> const& referenceMxs,
+                                          std::vector<Mx> const& queryMxs,
+                                          std::size_t tileSize,
+                                          std::size_t nPerThread,
+                                          std::string_view kernelName) -> Mx {
             auto context = createDiffMxContext();
             return generateDiffMx(
                 context, referenceMxs, queryMxs, tileSize, nPerThread, kernelName);
         }
 
-        auto generateDiffMx(clutils::Context& context,
-                            std::vector<Mx> const& referenceMxs,
-                            std::vector<Mx> const& queryMxs,
-                            std::size_t tileSize,
-                            std::size_t nPerThread,
-                            std::string_view kernelName) -> Mx {
+        [[nodiscard]] auto generateDiffMx(clutils::Context& context,
+                                          std::vector<Mx> const& referenceMxs,
+                                          std::vector<Mx> const& queryMxs,
+                                          std::size_t tileSize,
+                                          std::size_t nPerThread,
+                                          std::string_view kernelName) -> Mx {
             assert(!referenceMxs.empty());
             assert(!queryMxs.empty());
             assert(dims(referenceMxs[0]) == dims(queryMxs[0]));
@@ -386,14 +396,14 @@ namespace seqslam {
                                   kernelName);
         }
 
-        auto generateDiffMx(clutils::Context const& context,
-                            clutils::Buffer const& outBuffer,
-                            std::size_t referenceSize,
-                            std::size_t querySize,
-                            std::size_t nPix,
-                            std::size_t tileSize,
-                            std::size_t nPerThread,
-                            std::string_view kernelName) -> Mx {
+        [[nodiscard]] auto generateDiffMx(clutils::Context const& context,
+                                          clutils::Buffer const& outBuffer,
+                                          std::size_t referenceSize,
+                                          std::size_t querySize,
+                                          std::size_t nPix,
+                                          std::size_t tileSize,
+                                          std::size_t nPerThread,
+                                          std::string_view kernelName) -> Mx {
             context.runKernel(kernelName,
                               {nPix / nPerThread, querySize / tileSize, referenceSize / tileSize},
                               {nPix / nPerThread, 1, 1});

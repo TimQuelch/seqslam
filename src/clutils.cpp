@@ -7,7 +7,7 @@
 
 namespace clutils {
     namespace {
-        auto toNdRange(std::vector<std::size_t> const& range) -> cl::NDRange {
+        [[nodiscard]] auto toNdRange(std::vector<std::size_t> const& range) -> cl::NDRange {
             if (range.size() == 1) {
                 return cl::NDRange(range[0]);
             }
@@ -22,7 +22,7 @@ namespace clutils {
                 range.size())};
         }
 
-        auto toClAccess(Buffer::Access val) -> cl_mem_flags {
+        [[nodiscard]] auto toClAccess(Buffer::Access val) noexcept -> cl_mem_flags {
             switch (val) {
             case Buffer::Access::read:
                 return CL_MEM_READ_ONLY;
@@ -34,7 +34,7 @@ namespace clutils {
             return {};
         }
 
-        auto clErrorToException(cl::Error const& e) {
+        [[nodiscard]] auto clErrorToException(cl::Error const& e) noexcept {
             return std::runtime_error{
                 fmt::format("OpenCL error in {}. Error code {}", e.what(), e.err())};
         }
