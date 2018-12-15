@@ -12,6 +12,12 @@
 namespace clutils {
     class Context;
 
+    namespace detail {
+        [[nodiscard]] auto compileClSource(std::filesystem::path const& sourceFile,
+                                           cl::Context& context,
+                                           std::vector<cl::Device> const& devices) -> cl::Program;
+    }
+
     class Buffer {
     public:
         enum class Access { read, write, readwrite };
@@ -39,21 +45,28 @@ namespace clutils {
         Context();
         Context(unsigned platformId, unsigned deviceId);
 
+        template <typename StringContainer>
         void addKernels(std::filesystem::path const& sourceFile,
-                        std::vector<std::string> const& kernelNames);
+                        StringContainer const& kernelNames) {
+            auto const program = detail::compileClSource(sourceFile, context_, devices_);
+            for (auto name : kernelNames) {
+                kernels_.insert(
+                    {std::string{name}, cl::Kernel{program, std::string{name}.c_str()}});
+            }
+        }
 
-        void runKernel(std::string const& kernelName,
+        void runKernel(std::string_view kernelName,
                        std::vector<std::size_t> const& globalDims,
                        std::vector<std::size_t> const& localDims) const;
 
         template <typename T>
-        void setKernelArg(std::string const& kernelName, unsigned index, T const& arg) {
-            kernels_.at(kernelName).setArg(index, arg);
+        void setKernelArg(std::string_view kernelName, unsigned index, T const& arg) {
+            kernels_.at(std::string{kernelName}).setArg(index, arg);
         }
 
-        void setKernelArg(std::string const& kernelName, unsigned index, Buffer const& arg);
+        void setKernelArg(std::string_view kernelName, unsigned index, Buffer const& arg);
 
-        void setKernelLocalArg(std::string const& kernelName, unsigned index, std::size_t size);
+        void setKernelLocalArg(std::string_view kernelName, unsigned index, std::size_t size);
 
         auto& context() noexcept { return context_; }
         auto const& context() const noexcept { return context_; }

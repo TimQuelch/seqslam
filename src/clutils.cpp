@@ -40,6 +40,25 @@ namespace clutils {
         }
     } // namespace
 
+    namespace detail {
+        [[nodiscard]] auto compileClSource(std::filesystem::path const& sourceFile,
+                                           cl::Context& context,
+                                           std::vector<cl::Device> const& devices) -> cl::Program {
+            auto const program = [&context, &sourceFile]() {
+                auto filestream = std::ifstream{sourceFile};
+                auto const sourceString = std::string{std::istreambuf_iterator<char>{filestream},
+                                                      std::istreambuf_iterator<char>{}};
+                auto const source = cl::Program::Sources{
+                    std::pair{sourceString.c_str(), std::strlen(sourceString.c_str())}};
+                return cl::Program{context, source};
+            }();
+
+            program.build(devices, "-cl-mad-enable -cl-fast-relaxed-math -cl-no-signed-zeros");
+
+            return program;
+        }
+    } // namespace detail
+
     Buffer::Buffer(Context const& context, std::size_t size, Access access)
         : size_{size}, buffer_{context.context(), toClAccess(access) | CL_MEM_ALLOC_HOST_PTR, size},
           queue_{context.queue()} {}
@@ -93,25 +112,7 @@ namespace clutils {
         devices_.push_back(device);
     }
 
-    void Context::addKernels(std::filesystem::path const& sourceFile,
-                             std::vector<std::string> const& kernelNames) {
-        auto const program = [this, &sourceFile]() {
-            auto filestream = std::ifstream{sourceFile};
-            auto const sourceString = std::string{std::istreambuf_iterator<char>{filestream},
-                                                  std::istreambuf_iterator<char>{}};
-            auto const source = cl::Program::Sources{
-                std::pair{sourceString.c_str(), std::strlen(sourceString.c_str())}};
-            return cl::Program{context_, source};
-        }();
-
-        program.build(devices_, "-cl-mad-enable -cl-fast-relaxed-math -cl-no-signed-zeros");
-
-        for (auto name : kernelNames) {
-            kernels_.insert({name, cl::Kernel{program, name.c_str()}});
-        }
-    }
-
-    void Context::runKernel(std::string const& kernelName,
+    void Context::runKernel(std::string_view kernelName,
                             std::vector<std::size_t> const& globalDims,
                             std::vector<std::size_t> const& localDims) const {
         constexpr auto maxWorkgroupSize = 1024u;
@@ -130,22 +131,23 @@ namespace clutils {
         }
 
         try {
-            queue_.enqueueNDRangeKernel(
-                kernels_.at(kernelName), {0, 0, 0}, toNdRange(globalDims), toNdRange(localDims));
+            queue_.enqueueNDRangeKernel(kernels_.at(std::string{kernelName}),
+                                        {0, 0, 0},
+                                        toNdRange(globalDims),
+                                        toNdRange(localDims));
             queue_.finish();
         } catch (cl::Error& e) { throw clErrorToException(e); }
     }
 
-    void Context::setKernelArg(std::string const& kernelName, unsigned index, Buffer const& arg) {
+    void Context::setKernelArg(std::string_view kernelName, unsigned index, Buffer const& arg) {
         try {
-            kernels_.at(kernelName).setArg(index, arg.buffer());
+            kernels_.at(std::string{kernelName}).setArg(index, arg.buffer());
         } catch (cl::Error& e) { throw clErrorToException(e); }
     }
 
-    void
-    Context::setKernelLocalArg(std::string const& kernelName, unsigned index, std::size_t size) {
+    void Context::setKernelLocalArg(std::string_view kernelName, unsigned index, std::size_t size) {
         try {
-            kernels_.at(kernelName).setArg(index, cl::Local(size));
+            kernels_.at(std::string{kernelName}).setArg(index, cl::Local(size));
         } catch (cl::Error& e) { throw clErrorToException(e); }
     };
 } // namespace clutils

@@ -322,7 +322,7 @@ namespace seqslam {
                        std::vector<Mx> const& queryMxs,
                        std::size_t tileSize,
                        std::size_t nPerThread,
-                       std::string const& kernelName) {
+                       std::string_view kernelName) {
             assert(!referenceMxs.empty());
             assert(!queryMxs.empty());
             assert(dims(referenceMxs[0]) == dims(queryMxs[0]));
@@ -357,7 +357,7 @@ namespace seqslam {
                             std::vector<Mx> const& queryMxs,
                             std::size_t tileSize,
                             std::size_t nPerThread,
-                            std::string const& kernelName) -> Mx {
+                            std::string_view kernelName) -> Mx {
             auto context = createDiffMxContext();
             return generateDiffMx(
                 context, referenceMxs, queryMxs, tileSize, nPerThread, kernelName);
@@ -368,7 +368,7 @@ namespace seqslam {
                             std::vector<Mx> const& queryMxs,
                             std::size_t tileSize,
                             std::size_t nPerThread,
-                            std::string const& kernelName) -> Mx {
+                            std::string_view kernelName) -> Mx {
             assert(!referenceMxs.empty());
             assert(!queryMxs.empty());
             assert(dims(referenceMxs[0]) == dims(queryMxs[0]));
@@ -393,7 +393,7 @@ namespace seqslam {
                             std::size_t nPix,
                             std::size_t tileSize,
                             std::size_t nPerThread,
-                            std::string const& kernelName) -> Mx {
+                            std::string_view kernelName) -> Mx {
             context.runKernel(kernelName,
                               {nPix / nPerThread, querySize / tileSize, referenceSize / tileSize},
                               {nPix / nPerThread, 1, 1});

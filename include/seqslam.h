@@ -42,14 +42,14 @@ namespace seqslam {
     } // namespace cpu
 
     namespace opencl {
-        using namespace std::literals::string_literals;
-        auto const kernelNames = std::vector{"diffMxNDiffs"s,
-                                             "diffMxUnrolledWarpReduce"s,
-                                             "diffMxTwoDiffs"s,
-                                             "diffMxContinuousIndex"s,
-                                             "diffMxParallelSave"s,
-                                             "diffMxNaive"s};
-        auto const diffMatrixPath = std::filesystem::path{"kernels/diff-mx.cl"};
+        using namespace std::string_view_literals;
+        constexpr auto kernelNames = std::array{"diffMxNDiffs"sv,
+                                                "diffMxUnrolledWarpReduce"sv,
+                                                "diffMxTwoDiffs"sv,
+                                                "diffMxContinuousIndex"sv,
+                                                "diffMxParallelSave"sv,
+                                                "diffMxNaive"sv};
+        constexpr auto diffMatrixPath = "kernels/diff-mx.cl"sv;
 
         auto createDiffMxContext() -> clutils::Context;
 
@@ -77,20 +77,20 @@ namespace seqslam {
                        std::vector<Mx> const& queryMxs,
                        std::size_t tileSize,
                        std::size_t nPerThread,
-                       std::string const& kernelName = kernelNames[0]);
+                       std::string_view kernelName = kernelNames[0]);
 
         auto generateDiffMx(std::vector<Mx> const& referenceMxs,
                             std::vector<Mx> const& queryMxs,
                             std::size_t tileSize = 4,
                             std::size_t nPerThread = 4,
-                            std::string const& kernelName = kernelNames[0]) -> Mx;
+                            std::string_view kernelName = kernelNames[0]) -> Mx;
 
         auto generateDiffMx(clutils::Context& context,
                             std::vector<Mx> const& referenceMxs,
                             std::vector<Mx> const& queryMxs,
                             std::size_t tileSize = 4,
                             std::size_t nPerThread = 4,
-                            std::string const& kernelName = kernelNames[0]) -> Mx;
+                            std::string_view kernelName = kernelNames[0]) -> Mx;
 
         auto generateDiffMx(clutils::Context const& context,
                             clutils::Buffer const& outBuffer,
@@ -99,7 +99,7 @@ namespace seqslam {
                             std::size_t nPix,
                             std::size_t tileSize = 4,
                             std::size_t nPerThread = 4,
-                            std::string const& kernelName = kernelNames[0]) -> Mx;
+                            std::string_view kernelName = kernelNames[0]) -> Mx;
     } // namespace opencl
 } // namespace seqslam
 
