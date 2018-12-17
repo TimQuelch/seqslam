@@ -32,12 +32,6 @@ namespace seqslam {
             return one.rows == two.rows && one.cols == two.cols;
         }
 
-        [[nodiscard]] constexpr auto localMemoryRequired(std::size_t nPix,
-                                                         std::size_t tileSize,
-                                                         std::size_t nPerThread) noexcept {
-            return nPix * tileSize * tileSize * sizeof(PixType) / nPerThread;
-        }
-
         [[nodiscard]] auto calcTrajectoryQueryIndexOffsets(unsigned seqLength) noexcept
             -> std::vector<int> {
             auto qi = std::vector<int>(seqLength);
@@ -285,90 +279,94 @@ namespace seqslam {
     } // namespace cpu
 
     namespace opencl {
-        [[nodiscard]] auto createDiffMxContext() -> clutils::Context {
-            auto context = clutils::Context{};
-            context.addKernels(diffMatrixPath, kernelNames);
-            return context;
-        }
-
-        [[nodiscard]] auto createBuffers(clutils::Context& context,
-                                         std::size_t nReference,
-                                         std::size_t nQuery,
-                                         std::size_t nPix) -> diffMxBuffers {
-            auto r = clutils::Buffer{
-                context, nReference * nPix * sizeof(PixType), clutils::Buffer::Access::read};
-            auto q = clutils::Buffer{
-                context, nQuery * nPix * sizeof(PixType), clutils::Buffer::Access::read};
-            auto d = clutils::Buffer{
-                context, nReference * nQuery * sizeof(PixType), clutils::Buffer::Access::write};
-            return {std::move(r), std::move(q), std::move(d)};
-        }
-
-        [[nodiscard]] auto fitsInLocalMemory(std::size_t nPix,
-                                             std::size_t tileSize,
-                                             std::size_t nPerThread) noexcept -> bool {
-            auto const localMemorySize = 48u * 1024u;
-            return localMemoryRequired(nPix, tileSize, nPerThread) < localMemorySize;
-        }
-
-        [[nodiscard]] auto isValidParameters(std::size_t nImages,
-                                             std::size_t nPix,
-                                             std::size_t tileSize,
-                                             std::size_t nPixPerThread) noexcept -> bool {
-            auto const nThreads = nPix / nPixPerThread;
-            bool const fitsInLocal = opencl::fitsInLocalMemory(nPix, tileSize, nPixPerThread);
-            bool const tLessThanMax = nThreads <= 1024;
-            bool const tMoreThanWarp = nThreads > 32;
-            bool const tMoreThanTiles = nThreads > tileSize * tileSize;
-            bool const tilesCorrectly = nImages % tileSize == 0u;
-            bool const initialReduceCorrectly = nPix % nPixPerThread == 0u;
-            return fitsInLocal && tLessThanMax && tMoreThanWarp && tMoreThanTiles &&
-                   tilesCorrectly && initialReduceCorrectly;
-        }
-
-        void writeArgs(clutils::Context& context,
-                       diffMxBuffers const& buffers,
-                       std::vector<Mx> const& referenceMxs,
-                       std::vector<Mx> const& queryMxs,
-                       std::size_t tileSize,
-                       std::size_t nPerThread,
-                       std::string_view kernelName) {
-            assert(!referenceMxs.empty());
-            assert(!queryMxs.empty());
-            assert(dims(referenceMxs[0]) == dims(queryMxs[0]));
-            auto const d = dims(referenceMxs[0]);
-            auto const rbuf = convertToBuffer(referenceMxs);
-            auto const qbuf = convertToBuffer(queryMxs);
-            buffers.reference.writeBuffer(rbuf.get());
-            buffers.query.writeBuffer(qbuf.get());
-
-            if (!fitsInLocalMemory(d.nElems(), tileSize, nPerThread)) {
-                throw std::runtime_error{fmt::format(
-                    "Allocation of GPU local memory is too large with parameters number pixels per "
-                    "image = {}, tile size = {}, and number of pixels per thread = {}. Requesting "
-                    "memory allocation of {}, where max is {}",
-                    d.nElems(),
-                    tileSize,
-                    nPerThread,
-                    localMemoryRequired(d.nElems(), tileSize, nPerThread),
-                    48 * 1024)};
+        namespace diffmxcalc {
+            [[nodiscard]] auto createContext() -> clutils::Context {
+                auto context = clutils::Context{};
+                context.addKernels(kernels.first, kernels.second);
+                return context;
             }
 
-            context.setKernelArg(kernelName, 0, buffers.query);
-            context.setKernelArg(kernelName, 1, buffers.reference);
-            context.setKernelArg(kernelName, 2, static_cast<unsigned int>(tileSize));
-            context.setKernelArg(kernelName, 3, static_cast<unsigned int>(nPerThread));
-            context.setKernelArg(kernelName, 4, buffers.diffMx);
-            context.setKernelLocalArg(
-                kernelName, 5, d.nElems() * tileSize * tileSize * sizeof(PixType) / nPerThread);
-        }
+            [[nodiscard]] auto createBuffers(clutils::Context& context,
+                                             std::size_t nReference,
+                                             std::size_t nQuery,
+                                             std::size_t nPix) -> diffMxBuffers {
+                auto r = clutils::Buffer{
+                    context, nReference * nPix * sizeof(PixType), clutils::Buffer::Access::read};
+                auto q = clutils::Buffer{
+                    context, nQuery * nPix * sizeof(PixType), clutils::Buffer::Access::read};
+                auto d = clutils::Buffer{
+                    context, nReference * nQuery * sizeof(PixType), clutils::Buffer::Access::write};
+                return {std::move(r), std::move(q), std::move(d)};
+            }
+
+            [[nodiscard]] constexpr auto localMemoryRequired(std::size_t nPix,
+                                                             std::size_t tileSize,
+                                                             std::size_t nPerThread) noexcept {
+                return nPix * tileSize * tileSize * sizeof(PixType) / nPerThread;
+            }
+
+            [[nodiscard]] auto isValidParameters(std::size_t nImages,
+                                                 std::size_t nPix,
+                                                 std::size_t tileSize,
+                                                 std::size_t nPixPerThread) noexcept -> bool {
+                auto const nThreads = nPix / nPixPerThread;
+                bool const fitsInLocal =
+                    localMemoryRequired(nPix, tileSize, nPixPerThread) < localMemorySize;
+                bool const tLessThanMax = nThreads <= 1024;
+                bool const tMoreThanWarp = nThreads > 32;
+                bool const tMoreThanTiles = nThreads > tileSize * tileSize;
+                bool const tilesCorrectly = nImages % tileSize == 0u;
+                bool const initialReduceCorrectly = nPix % nPixPerThread == 0u;
+                return fitsInLocal && tLessThanMax && tMoreThanWarp && tMoreThanTiles &&
+                       tilesCorrectly && initialReduceCorrectly;
+            }
+
+            void writeArgs(clutils::Context& context,
+                           diffMxBuffers const& buffers,
+                           std::vector<Mx> const& referenceMxs,
+                           std::vector<Mx> const& queryMxs,
+                           std::size_t tileSize,
+                           std::size_t nPerThread,
+                           std::string_view kernelName) {
+                assert(!referenceMxs.empty());
+                assert(!queryMxs.empty());
+                assert(dims(referenceMxs[0]) == dims(queryMxs[0]));
+                auto const d = dims(referenceMxs[0]);
+                auto const rbuf = convertToBuffer(referenceMxs);
+                auto const qbuf = convertToBuffer(queryMxs);
+                buffers.reference.writeBuffer(rbuf.get());
+                buffers.query.writeBuffer(qbuf.get());
+
+                if (localMemoryRequired(d.nElems(), tileSize, nPerThread) > localMemorySize) {
+                    throw std::runtime_error{
+                        fmt::format("Allocation of GPU local memory is too large with parameters "
+                                    "number pixels per "
+                                    "image = {}, tile size = {}, and number of pixels per thread = "
+                                    "{}. Requesting "
+                                    "memory allocation of {}, where max is {}",
+                                    d.nElems(),
+                                    tileSize,
+                                    nPerThread,
+                                    localMemoryRequired(d.nElems(), tileSize, nPerThread),
+                                    48 * 1024)};
+                }
+
+                context.setKernelArg(kernelName, 0, buffers.query);
+                context.setKernelArg(kernelName, 1, buffers.reference);
+                context.setKernelArg(kernelName, 2, static_cast<unsigned int>(tileSize));
+                context.setKernelArg(kernelName, 3, static_cast<unsigned int>(nPerThread));
+                context.setKernelArg(kernelName, 4, buffers.diffMx);
+                context.setKernelLocalArg(
+                    kernelName, 5, d.nElems() * tileSize * tileSize * sizeof(PixType) / nPerThread);
+            }
+        } // namespace diffmxcalc
 
         [[nodiscard]] auto generateDiffMx(std::vector<Mx> const& referenceMxs,
                                           std::vector<Mx> const& queryMxs,
                                           std::size_t tileSize,
                                           std::size_t nPerThread,
                                           std::string_view kernelName) -> Mx {
-            auto context = createDiffMxContext();
+            auto context = diffmxcalc::createContext();
             return generateDiffMx(
                 context, referenceMxs, queryMxs, tileSize, nPerThread, kernelName);
         }
@@ -383,7 +381,8 @@ namespace seqslam {
             assert(!queryMxs.empty());
             assert(dims(referenceMxs[0]) == dims(queryMxs[0]));
             auto const d = dims(referenceMxs[0]);
-            auto bufs = createBuffers(context, referenceMxs.size(), queryMxs.size(), d.nElems());
+            auto bufs = diffmxcalc::createBuffers(
+                context, referenceMxs.size(), queryMxs.size(), d.nElems());
             writeArgs(context, bufs, referenceMxs, queryMxs, tileSize, nPerThread, kernelName);
 
             return generateDiffMx(context,

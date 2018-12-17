@@ -70,7 +70,7 @@ int main() {
     }
     for (auto tileSize = 1u; tileSize <= 512; tileSize++) {
         for (auto nPerThread = 1u; nPerThread <= 512; nPerThread++) {
-            if (opencl::isValidParameters(nImages, nPix, tileSize, nPerThread)) {
+            if (opencl::diffmxcalc::isValidParameters(nImages, nPix, tileSize, nPerThread)) {
                 diffMxFns.push_back(
                     {[&referenceImages, &queryImages, tileSize, nPerThread]() {
                          return opencl::generateDiffMx(

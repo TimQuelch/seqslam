@@ -24,7 +24,7 @@ namespace {
             for (auto nPixPerThread = nPixPerThreadRange.first;
                  nPixPerThread <= nPixPerThreadRange.second;
                  nPixPerThread++) {
-                if (opencl::isValidParameters(nImages, nPix, tileSize, nPixPerThread)) {
+                if (opencl::diffmxcalc::isValidParameters(nImages, nPix, tileSize, nPixPerThread)) {
                     b->Args({static_cast<long>(tileSize), static_cast<long>(nPixPerThread)});
                 }
             }
@@ -110,7 +110,7 @@ BENCHMARK_CAPTURE(gpuDifferenceMatrixWithCopyAndContext, large, largeImagesDir)
 void gpuDifferenceMatrixWithCopy(benchmark::State& state, std::string_view dir) {
     auto const [referenceImages, queryImages, nRows, nCols] = loadImages(dir);
 
-    auto context = opencl::createDiffMxContext();
+    auto context = opencl::diffmxcalc::createContext();
 
     for (auto _ : state) {
         auto diffMatrix = opencl::generateDiffMx(
@@ -137,10 +137,10 @@ BENCHMARK_CAPTURE(gpuDifferenceMatrixWithCopy, large, largeImagesDir)
 void gpuDifferenceMatrix(benchmark::State& state, std::string const& kernel, std::string_view dir) {
     auto const [referenceImages, queryImages, nRows, nCols] = loadImages(dir);
 
-    auto context = opencl::createDiffMxContext();
-    auto bufs =
-        opencl::createBuffers(context, referenceImages.size(), queryImages.size(), nRows * nCols);
-    opencl::writeArgs(
+    auto context = opencl::diffmxcalc::createContext();
+    auto bufs = opencl::diffmxcalc::createBuffers(
+        context, referenceImages.size(), queryImages.size(), nRows * nCols);
+    opencl::diffmxcalc::writeArgs(
         context, bufs, referenceImages, queryImages, state.range(0), state.range(1), kernel);
 
     for (auto _ : state) {
