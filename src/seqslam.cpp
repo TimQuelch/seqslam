@@ -339,17 +339,15 @@ namespace seqslam {
                 buffers.query.writeBuffer(qbuf.get());
 
                 if (localMemoryRequired(d.nElems(), tileSize, nPerThread) > localMemorySize) {
-                    throw std::runtime_error{
-                        fmt::format("Allocation of GPU local memory is too large with parameters "
-                                    "number pixels per "
-                                    "image = {}, tile size = {}, and number of pixels per thread = "
-                                    "{}. Requesting "
-                                    "memory allocation of {}, where max is {}",
-                                    d.nElems(),
-                                    tileSize,
-                                    nPerThread,
-                                    localMemoryRequired(d.nElems(), tileSize, nPerThread),
-                                    48 * 1024)};
+                    throw std::runtime_error{fmt::format(
+                        "Allocation of GPU local memory is too large with parameters number pixels "
+                        "per image = {}, tile size = {}, and number of pixels per thread = {}. "
+                        "Requesting memory allocation of {}, where max is {}",
+                        d.nElems(),
+                        tileSize,
+                        nPerThread,
+                        localMemoryRequired(d.nElems(), tileSize, nPerThread),
+                        48 * 1024)};
                 }
 
                 context.setKernelArg(kernelName, 0, buffers.query);
@@ -361,6 +359,57 @@ namespace seqslam {
                     kernelName, 5, d.nElems() * tileSize * tileSize * sizeof(PixType) / nPerThread);
             }
         } // namespace diffmxcalc
+
+        namespace diffmxenhance {
+            [[nodiscard]] auto createContext() -> clutils::Context {
+                auto context = clutils::Context{};
+                context.addKernels(kernels.first, kernels.second);
+                return context;
+            }
+
+            [[nodiscard]] auto createBuffers(clutils::Context& context,
+                                             std::size_t nReference,
+                                             std::size_t nQuery) -> diffMxEnhanceBuffers {
+                auto din = clutils::Buffer{
+                    context, nReference * nQuery * sizeof(PixType), clutils::Buffer::Access::read};
+                auto dout = clutils::Buffer{
+                    context, nReference * nQuery * sizeof(PixType), clutils::Buffer::Access::write};
+                return {std::move(din), std::move(dout)};
+            }
+
+            [[nodiscard]] constexpr auto localMemoryRequired(std::size_t nReference) noexcept {
+                return nReference * sizeof(PixType);
+            }
+
+            [[nodiscard]] auto isValidParameters(std::size_t nReference) noexcept -> bool {
+                bool const fitsInLocal = localMemoryRequired(nReference) < localMemorySize;
+                return fitsInLocal;
+            }
+
+            void writeArgs(clutils::Context& context,
+                           diffMxEnhanceBuffers const& buffers,
+                           Mx const& diffMx,
+                           int windowSize,
+                           std::string_view kernelName) {
+                auto in = std::make_unique<PixType[]>(diffMx.rows() * diffMx.cols());
+                Eigen::Map<Mx>{in.get(), diffMx.rows(), diffMx.cols()} = diffMx;
+                buffers.in.writeBuffer(in.get());
+
+                if (localMemoryRequired(diffMx.rows()) > localMemorySize) {
+                    throw std::runtime_error{fmt::format(
+                        "Allocation of GPU local memory is too large with parameters number "
+                        "reference images = {}.Requesting memory allocation of {}, where max is {}",
+                        diffMx.rows(),
+                        localMemoryRequired(diffMx.rows()),
+                        localMemorySize)};
+                }
+
+                context.setKernelArg(kernelName, 0, buffers.in);
+                context.setKernelArg(kernelName, 1, static_cast<int>(windowSize));
+                context.setKernelArg(kernelName, 2, buffers.out);
+                context.setKernelLocalArg(kernelName, 3, diffMx.rows() * sizeof(PixType));
+            }
+        } // namespace diffmxenhance
 
         [[nodiscard]] auto generateDiffMx(std::vector<Mx> const& referenceMxs,
                                           std::vector<Mx> const& queryMxs,

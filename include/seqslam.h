@@ -85,6 +85,31 @@ namespace seqslam {
                            std::string_view kernelName = defaultKernel);
         } // namespace diffmxcalc
 
+        namespace diffmxenhance {
+            constexpr auto kernels =
+                std::pair{"kernels/enhancement.cl"sv, std::array{"enhanceDiffMx"sv}};
+            constexpr auto defaultKernel = kernels.second[0];
+
+            auto createContext() -> clutils::Context;
+
+            struct diffMxEnhanceBuffers {
+                clutils::Buffer in;
+                clutils::Buffer out;
+            };
+            [[nodiscard]] auto createBuffers(clutils::Context& context,
+                                             std::size_t nReference,
+                                             std::size_t nQuery) -> diffMxEnhanceBuffers;
+
+
+            [[nodiscard]] auto isValidParameters(std::size_t nReference) noexcept -> bool;
+
+            void writeArgs(clutils::Context& context,
+                           diffMxEnhanceBuffers const& buffers,
+                           Mx const& diffMx,
+                           int windowSize,
+                           std::string_view kernelName = defaultKernel);
+        } // namespace diffmxenhance
+
         [[nodiscard]] auto generateDiffMx(std::vector<Mx> const& referenceMxs,
                                           std::vector<Mx> const& queryMxs,
                                           std::size_t tileSize = 4,
