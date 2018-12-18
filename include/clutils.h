@@ -2,6 +2,7 @@
 #define CLUTILS_CLUTILS_H
 
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
