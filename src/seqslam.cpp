@@ -116,10 +116,10 @@ namespace seqslam {
     } // namespace detail
     using namespace detail;
 
-    [[nodiscard]] auto readImages(std::filesystem::path const& dir) noexcept
+    [[nodiscard]] auto readImages(boost::filesystem::path const& dir) noexcept
         -> std::vector<cv::Mat> {
         std::vector<cv::Mat> images;
-        for (auto const& imagePath : std::filesystem::directory_iterator(dir)) {
+        for (auto const& imagePath : boost::filesystem::directory_iterator(dir)) {
             images.push_back(cv::imread(imagePath.path().string(), cv::IMREAD_GRAYSCALE));
         }
         return images;
@@ -282,7 +282,7 @@ namespace seqslam {
         namespace diffmxcalc {
             [[nodiscard]] auto createContext() -> clutils::Context {
                 auto context = clutils::Context{};
-                context.addKernels(kernels.first, kernels.second);
+                context.addKernels(std::string{kernels.first}, kernels.second);
                 return context;
             }
 

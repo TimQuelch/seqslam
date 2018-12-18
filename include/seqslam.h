@@ -3,7 +3,6 @@
 
 #include "clutils.h"
 
-#include <filesystem>
 #include <memory>
 #include <vector>
 
@@ -13,12 +12,14 @@
 
 #include <opencv2/core.hpp>
 
+#include <boost/filesystem.hpp>
+
 namespace seqslam {
     using PixType = float;
     using Mx = Eigen::Matrix<PixType, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
     using Vx = Eigen::Matrix<PixType, Eigen::Dynamic, 1>;
 
-    [[nodiscard]] auto readImages(std::filesystem::path const& dir) noexcept
+    [[nodiscard]] auto readImages(boost::filesystem::path const& dir) noexcept
         -> std::vector<cv::Mat>;
 
     [[nodiscard]] auto contrastEnhancement(std::vector<cv::Mat> const& images,

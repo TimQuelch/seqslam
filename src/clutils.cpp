@@ -41,7 +41,7 @@ namespace clutils {
     } // namespace
 
     namespace detail {
-        [[nodiscard]] auto compileClSource(std::filesystem::path const& sourceFile,
+        [[nodiscard]] auto compileClSource(boost::filesystem::path const& sourceFile,
                                            cl::Context& context,
                                            std::vector<cl::Device> const& devices) -> cl::Program {
             auto const program = [&context, &sourceFile]() {

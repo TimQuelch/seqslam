@@ -1,10 +1,11 @@
 #ifndef CLUTILS_CLUTILS_H
 #define CLUTILS_CLUTILS_H
 
-#include <filesystem>
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+#include <boost/filesystem.hpp>
 
 #define __CL_ENABLE_EXCEPTIONS
 #include <CL/cl.hpp>
@@ -13,7 +14,7 @@ namespace clutils {
     class Context;
 
     namespace detail {
-        [[nodiscard]] auto compileClSource(std::filesystem::path const& sourceFile,
+        [[nodiscard]] auto compileClSource(boost::filesystem::path const& sourceFile,
                                            cl::Context& context,
                                            std::vector<cl::Device> const& devices) -> cl::Program;
     }
@@ -46,7 +47,7 @@ namespace clutils {
         Context(unsigned platformId, unsigned deviceId);
 
         template <typename StringContainer>
-        void addKernels(std::filesystem::path const& sourceFile,
+        void addKernels(boost::filesystem::path const& sourceFile,
                         StringContainer const& kernelNames) {
             auto const program = detail::compileClSource(sourceFile, context_, devices_);
             for (auto name : kernelNames) {

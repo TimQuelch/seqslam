@@ -1,7 +1,6 @@
 #include "seqslam.h"
 
 #include <cassert>
-#include <filesystem>
 #include <functional>
 #include <memory>
 
@@ -11,8 +10,8 @@
 using namespace seqslam;
 using namespace std::literals::string_view_literals;
 
-const auto smallImagesDir = std::filesystem::path{"../datasets/nordland_trimmed_resized"};
-const auto largeImagesDir = std::filesystem::path{"../datasets/nordland_trimmed"};
+auto const smallImagesDir = boost::filesystem::path{"../datasets/nordland_trimmed_resized"};
+auto const largeImagesDir = boost::filesystem::path{"../datasets/nordland_trimmed"};
 
 struct DiffMxComparison {
     float max;

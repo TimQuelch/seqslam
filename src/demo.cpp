@@ -1,8 +1,5 @@
 #include "seqslam.h"
 
-#include <filesystem>
-#include <iostream>
-
 #include <opencv2/core/eigen.hpp>
 #include <opencv2/highgui.hpp>
 
@@ -17,7 +14,7 @@ cv::Mat mxToIm(Mx const& mx) {
 }
 
 int main() {
-    auto const dataDir = std::filesystem::path{"../datasets/nordland_trimmed_resized"};
+    auto const dataDir = boost::filesystem::path{"../datasets/nordland_trimmed_resized"};
     auto const referenceImages =
         convertToEigen(contrastEnhancement(readImages(dataDir / "summer"), 20));
     auto const queryImages =

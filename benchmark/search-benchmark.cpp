@@ -17,7 +17,7 @@ constexpr auto nImages = 3576u;
 
 namespace {
     auto loadImages(std::string_view path) {
-        auto const dataDir = std::filesystem::path{path};
+        auto const dataDir = boost::filesystem::path{std::string{path}};
         auto referenceImages =
             convertToEigen(contrastEnhancement(readImages(dataDir / "summer"), 20));
         auto queryImages = convertToEigen(contrastEnhancement(readImages(dataDir / "winter"), 20));

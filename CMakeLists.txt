@@ -10,6 +10,7 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake OPTIONAL)
 include(${CMAKE_BINARY_DIR}/conan_paths.cmake OPTIONAL)
 
 find_package(Eigen3 REQUIRED)
+find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(OpenCV REQUIRED)
 find_package(OpenCL REQUIRED)
 find_package(benchmark REQUIRED)
@@ -48,12 +49,12 @@ target_link_libraries(seqslam
     PUBLIC
     Eigen3::Eigen
     fmt::fmt
+    Boost::filesystem
     clutils
     opencv_core
     PRIVATE
     opencv_imgproc
-    opencv_highgui
-    stdc++fs)
+    opencv_highgui)
 
 add_library(clutils src/clutils.cpp)
 target_include_directories(
@@ -62,7 +63,7 @@ target_include_directories(
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
     $<INSTALL_INTERFACE:include/>)
 target_compile_features(clutils PUBLIC cxx_std_17)
-target_link_libraries(clutils PUBLIC OpenCL::OpenCL stdc++fs PRIVATE fmt::fmt)
+target_link_libraries(clutils PUBLIC OpenCL::OpenCL Boost::filesystem PRIVATE fmt::fmt)
 
 add_executable(demo src/demo.cpp)
 target_link_libraries(demo PRIVATE seqslam fmt::fmt)
