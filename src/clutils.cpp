@@ -149,5 +149,5 @@ namespace clutils {
         try {
             kernels_.at(std::string{kernelName}).setArg(index, cl::Local(size));
         } catch (cl::Error& e) { throw clErrorToException(e); }
-    };
+    }
 } // namespace clutils

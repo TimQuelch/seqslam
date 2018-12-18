@@ -19,7 +19,7 @@ namespace seqslam {
             constexpr auto nElems() const { return rows * cols; }
         };
 
-        [[nodiscard]] constexpr auto dims(Mx const& mx) noexcept {
+        [[nodiscard]] auto dims(Mx const& mx) noexcept {
             return Dims{static_cast<int>(mx.rows()), static_cast<int>(mx.cols())};
         }
 
@@ -55,21 +55,22 @@ namespace seqslam {
                 assert(uniqueStarts.front() == trajMin);
                 assert(uniqueStarts.back() == trajMax);
 
-                auto uniqueVs = std::vector<float>();
+                auto uniqueVelocities = std::vector<float>();
                 std::transform(uniqueStarts.begin(),
                                uniqueStarts.end(),
-                               std::back_inserter(uniqueVs),
+                               std::back_inserter(uniqueVelocities),
                                [seqLength](auto val) {
                                    return -1 * val /
                                           std::floor(static_cast<float>(seqLength) / 2.0f);
                                });
-                return uniqueVs;
+                return uniqueVelocities;
             }();
 
-            auto const vs = [&uniqueVs, vMin, vMax, vStep = (vMax - vMin) / (nSteps - 1)]() {
-                static_assert(std::is_same_v<decltype(vStep), float>);
-
-                auto vs = std::vector<float>{};
+            auto const vs = [&uniqueVs,
+                             vMin,
+                             vMax,
+                             vStep = (vMax - vMin) / static_cast<float>((nSteps - 1))]() {
+                auto vels = std::vector<float>{};
                 auto diffs = std::vector<float>(uniqueVs.size());
 
                 for (auto v = vMin; v <= vMax; v += vStep) {
@@ -79,11 +80,11 @@ namespace seqslam {
                                    [v](auto vecVal) { return std::abs(vecVal - v); });
                     auto const closest =
                         std::min_element(diffs.begin(), diffs.end()) - diffs.begin();
-                    if (std::find(vs.begin(), vs.end(), uniqueVs[closest]) == vs.end()) {
-                        vs.push_back(uniqueVs[closest]);
+                    if (std::find(vels.begin(), vels.end(), uniqueVs[closest]) == vels.end()) {
+                        vels.push_back(uniqueVs[closest]);
                     }
                 }
-                return vs;
+                return vels;
             }();
 
             auto ri = std::vector<std::vector<int>>();
