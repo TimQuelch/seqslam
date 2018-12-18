@@ -175,7 +175,10 @@ BENCHMARK_CAPTURE(gpuDifferenceMatrix, small_twodiffs, "diffMxTwoDiffs", smallIm
     ->Apply([](auto b) {
         return gpuBenchmarkArgs(b, nImages, smallSize, {1, 256}, {2, 2});
     });
-BENCHMARK_CAPTURE(gpuDifferenceMatrix, small_continuousindex, "diffMxContinuousIndex", smallImagesDir)
+BENCHMARK_CAPTURE(gpuDifferenceMatrix,
+                  small_continuousindex,
+                  "diffMxContinuousIndex",
+                  smallImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
         return gpuBenchmarkArgs(b, nImages, smallSize, {1, 256}, {1, 1});
