@@ -5,27 +5,35 @@ kernel void enhanceDiffMx(global float const* diffMx,
                           local float* diffVec) {
     const int offset = floor(windowSize / 2.0);
     const int rBase = nPixPerThread * get_global_id(0);
+    const int nRef = get_global_size(0);
     const int q = get_global_id(1);
 
     for (int i = 0; i < nPixPerThread; ++i) {
-        diffVec[rBase + i] = diffMx[q * get_global_size(0) + rBase + i];
+        diffVec[rBase + i] = diffMx[q * nRef + rBase + i];
     }
 
-    const int start =
-        max(min(q - offset, 0),
-            min(max(q - offset, 0), (int)get_global_size(0) - windowSize - 1));
+    const int start = max(min(rBase - offset, 0),
+                          min(max(rBase - offset, 0), nRef - windowSize - 1));
+
+    const int end = min(rBase - offset + windowSize + (int)nPixPerThread, nRef);
 
     float sum = 0;
-    for (int i = 0; i < windowSize + nPixPerThread - 1; i++) {
-        sum += diffVec[start + i];
+    for (int i = start; i < end; i++) {
+        sum += diffVec[i];
     }
 
     for (int i = 0; i < nPixPerThread; i++) {
+        const int tShift = (rBase + i - offset) < 0 ? (rBase + i - offset) : 0;
+        const int bShift = (rBase - offset + windowSize + i - nRef) > 0
+                               ? (rBase - offset + windowSize + i - nRef)
+                               : 0;
         float mean = sum;
-        for (int j = 0; j < i; j++) {
+        for (int j = 0; j < i + tShift; j++) {
             mean -= diffVec[start + j];
         }
-        for (int j = windowSize + i; j < windowSize + nPixPerThread - 1; j++) {
+        for (int j = windowSize + i + bShift;
+             j < windowSize + nPixPerThread - 1;
+             j++) {
             mean -= diffVec[start + j];
         }
         mean /= windowSize;
@@ -35,7 +43,7 @@ kernel void enhanceDiffMx(global float const* diffMx,
             std += pown(diffVec[start + i + j] - mean, 2);
         }
 
-        diffMxOut[q * get_global_size(0) + rBase + i] =
+        diffMxOut[q * nRef + rBase + i] =
             (diffVec[rBase + i] - mean) / max(std / windowSize, FLT_MIN);
     }
 }
