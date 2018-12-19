@@ -62,8 +62,8 @@ void diffMxEnhancement(benchmark::State& state) {
     for (auto _ : state) {
         auto enhanced = cpu::enhanceDiffMx(mx, windowSize);
     }
-    state.SetBytesProcessed(mx.rows() * mx.cols() * windowSize * state.iterations() *
-                            sizeof(PixType));
+    state.SetItemsProcessed(mx.rows() * mx.cols() * state.iterations());
+    state.SetBytesProcessed(state.items_processed() * windowSize * sizeof(PixType));
 }
 BENCHMARK(diffMxEnhancement)->RangeMultiplier(2)->Range(1 << 2, 1 << 8);
 
@@ -83,8 +83,8 @@ void gpuDiffMxEnhancement(benchmark::State& state) {
         benchmark::DoNotOptimize(enhanced.data());
         benchmark::ClobberMemory();
     }
-    state.SetBytesProcessed(mx.rows() * mx.cols() * windowSize * state.iterations() *
-                            sizeof(PixType));
+    state.SetItemsProcessed(mx.rows() * mx.cols() * state.iterations());
+    state.SetBytesProcessed(state.items_processed() * windowSize * sizeof(PixType));
 }
 BENCHMARK(gpuDiffMxEnhancement)->RangeMultiplier(2)->Range(1 << 2, 1 << 8);
 
