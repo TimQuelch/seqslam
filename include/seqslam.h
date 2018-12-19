@@ -100,13 +100,13 @@ namespace seqslam {
                                              std::size_t nReference,
                                              std::size_t nQuery) -> diffMxEnhanceBuffers;
 
-
             [[nodiscard]] auto isValidParameters(std::size_t nReference) noexcept -> bool;
 
             void writeArgs(clutils::Context& context,
                            diffMxEnhanceBuffers const& buffers,
                            Mx const& diffMx,
                            int windowSize,
+                           unsigned nPixPerThread,
                            std::string_view kernelName = defaultKernel);
         } // namespace diffmxenhance
 
@@ -133,6 +133,27 @@ namespace seqslam {
                                           std::size_t tileSize = 4,
                                           std::size_t nPerThread = 4,
                                           std::string_view kernelName = diffmxcalc::defaultKernel)
+            -> Mx;
+
+        [[nodiscard]] auto enhanceDiffMx(Mx const& diffMx,
+                                         unsigned windowSize,
+                                         unsigned nPixPerThread,
+                                         std::string_view kernelName = diffmxenhance::defaultKernel)
+            -> Mx;
+
+        [[nodiscard]] auto enhanceDiffMx(clutils::Context& context,
+                                         Mx const& diffMx,
+                                         unsigned windowSize,
+                                         unsigned nPixPerThread,
+                                         std::string_view kernelName = diffmxenhance::defaultKernel)
+            -> Mx;
+
+        [[nodiscard]] auto enhanceDiffMx(clutils::Context const& context,
+                                         clutils::Buffer const& outBuffer,
+                                         std::size_t nReference,
+                                         std::size_t nQuery,
+                                         unsigned nPixPerThread,
+                                         std::string_view kernelName = diffmxenhance::defaultKernel)
             -> Mx;
     } // namespace opencl
 } // namespace seqslam

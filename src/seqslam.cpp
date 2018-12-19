@@ -381,15 +381,19 @@ namespace seqslam {
                 return nReference * sizeof(PixType);
             }
 
-            [[nodiscard]] auto isValidParameters(std::size_t nReference) noexcept -> bool {
+            [[nodiscard]] auto isValidParameters(std::size_t nReference,
+                                                 unsigned nPixPerThread) noexcept -> bool {
+                auto const nThreads = nReference / nPixPerThread;
                 bool const fitsInLocal = localMemoryRequired(nReference) < localMemorySize;
-                return fitsInLocal;
+                bool const tLessThanMax = nThreads <= 1024;
+                return fitsInLocal && tLessThanMax;
             }
 
             void writeArgs(clutils::Context& context,
                            diffMxEnhanceBuffers const& buffers,
                            Mx const& diffMx,
                            int windowSize,
+                           unsigned nPixPerThread,
                            std::string_view kernelName) {
                 auto in = std::make_unique<PixType[]>(diffMx.rows() * diffMx.cols());
                 Eigen::Map<Mx>{in.get(), diffMx.rows(), diffMx.cols()} = diffMx;
@@ -406,8 +410,9 @@ namespace seqslam {
 
                 context.setKernelArg(kernelName, 0, buffers.in);
                 context.setKernelArg(kernelName, 1, static_cast<int>(windowSize));
-                context.setKernelArg(kernelName, 2, buffers.out);
-                context.setKernelLocalArg(kernelName, 3, diffMx.rows() * sizeof(PixType));
+                context.setKernelArg(kernelName, 2, static_cast<unsigned>(nPixPerThread));
+                context.setKernelArg(kernelName, 3, buffers.out);
+                context.setKernelLocalArg(kernelName, 4, diffMx.rows() * sizeof(PixType));
             }
         } // namespace diffmxenhance
 
@@ -463,6 +468,43 @@ namespace seqslam {
             return Mx(Eigen::Map<Mx>{buffer.get(),
                                      static_cast<Eigen::Index>(referenceSize),
                                      static_cast<Eigen::Index>(querySize)});
+        }
+
+        [[nodiscard]] auto enhanceDiffMx(Mx const& diffMx,
+                                         unsigned windowSize,
+                                         unsigned nPixPerThread,
+                                         std::string_view kernelName) -> Mx {
+            auto context = diffmxenhance::createContext();
+            return enhanceDiffMx(context, diffMx, windowSize, nPixPerThread, kernelName);
+        }
+
+        [[nodiscard]] auto enhanceDiffMx(clutils::Context& context,
+                                         Mx const& diffMx,
+                                         unsigned windowSize,
+                                         unsigned nPixPerThread,
+                                         std::string_view kernelName) -> Mx {
+            assert(windowSize < diffMx.rows());
+            auto bufs = diffmxenhance::createBuffers(context, diffMx.rows(), diffMx.cols());
+            diffmxenhance::writeArgs(context, bufs, diffMx, windowSize, nPixPerThread, kernelName);
+
+            return enhanceDiffMx(
+                context, bufs.out, diffMx.rows(), diffMx.cols(), nPixPerThread, kernelName);
+        }
+
+        [[nodiscard]] auto enhanceDiffMx(clutils::Context const& context,
+                                         clutils::Buffer const& outBuffer,
+                                         std::size_t nReference,
+                                         std::size_t nQuery,
+                                         unsigned nPixPerThread,
+                                         std::string_view kernelName) -> Mx {
+            context.runKernel(kernelName, {nReference / nPixPerThread, nQuery}, {nReference / nPixPerThread, 1});
+
+            auto buffer = std::make_unique<PixType[]>(nReference * nQuery);
+            outBuffer.readBuffer(buffer.get());
+
+            return Mx(Eigen::Map<Mx>{buffer.get(),
+                                     static_cast<Eigen::Index>(nReference),
+                                     static_cast<Eigen::Index>(nQuery)});
         }
     } // namespace opencl
 } // namespace seqslam
