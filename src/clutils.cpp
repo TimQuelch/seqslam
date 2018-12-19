@@ -1,6 +1,7 @@
 #include "clutils.h"
 
 #include <numeric>
+#include <stdexcept>
 
 #include <fmt/format.h>
 #include <fstream>
@@ -33,11 +34,6 @@ namespace clutils {
             }
             return {};
         }
-
-        [[nodiscard]] auto clErrorToException(cl::Error const& e) noexcept {
-            return std::runtime_error{
-                fmt::format("OpenCL error in {}. Error code {}", e.what(), e.err())};
-        }
     } // namespace
 
     namespace detail {
@@ -57,6 +53,11 @@ namespace clutils {
 
             return program;
         }
+
+        [[nodiscard]] auto clErrorToException(cl::Error const& e) noexcept -> std::runtime_error {
+            return std::runtime_error{
+                fmt::format("OpenCL error in {}. Error code {}", e.what(), e.err())};
+        }
     } // namespace detail
 
     Buffer::Buffer(Context const& context, std::size_t size, Access access)
@@ -69,7 +70,7 @@ namespace clutils {
         try {
             queue_.enqueueReadBuffer(
                 buffer_, static_cast<cl_bool>(true), offset, size, destination);
-        } catch (cl::Error& e) { throw clErrorToException(e); }
+        } catch (cl::Error& e) { throw detail::clErrorToException(e); }
     }
 
     void Buffer::writeBuffer(void const* source) const { writeBuffer(source, 0, size_); }
@@ -77,7 +78,7 @@ namespace clutils {
     void Buffer::writeBuffer(void const* source, std::size_t offset, std::size_t size) const {
         try {
             queue_.enqueueWriteBuffer(buffer_, static_cast<cl_bool>(true), offset, size, source);
-        } catch (cl::Error& e) { throw clErrorToException(e); }
+        } catch (cl::Error& e) { throw detail::clErrorToException(e); }
     }
 
     Context::Context() : Context{0, 0} {}
@@ -136,18 +137,18 @@ namespace clutils {
                                         toNdRange(globalDims),
                                         toNdRange(localDims));
             queue_.finish();
-        } catch (cl::Error& e) { throw clErrorToException(e); }
+        } catch (cl::Error& e) { throw detail::clErrorToException(e); }
     }
 
     void Context::setKernelArg(std::string_view kernelName, unsigned index, Buffer const& arg) {
         try {
             kernels_.at(std::string{kernelName}).setArg(index, arg.buffer());
-        } catch (cl::Error& e) { throw clErrorToException(e); }
+        } catch (cl::Error& e) { throw detail::clErrorToException(e); }
     }
 
     void Context::setKernelLocalArg(std::string_view kernelName, unsigned index, std::size_t size) {
         try {
             kernels_.at(std::string{kernelName}).setArg(index, cl::Local(size));
-        } catch (cl::Error& e) { throw clErrorToException(e); }
+        } catch (cl::Error& e) { throw detail::clErrorToException(e); }
     }
 } // namespace clutils

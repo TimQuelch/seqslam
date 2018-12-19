@@ -16,7 +16,9 @@ namespace clutils {
         [[nodiscard]] auto compileClSource(std::filesystem::path const& sourceFile,
                                            cl::Context& context,
                                            std::vector<cl::Device> const& devices) -> cl::Program;
-    }
+
+        [[nodiscard]] auto clErrorToException(cl::Error const& e) noexcept -> std::runtime_error;
+    } // namespace detail
 
     class Buffer {
     public:
@@ -50,8 +52,10 @@ namespace clutils {
                         StringContainer const& kernelNames) {
             auto const program = detail::compileClSource(sourceFile, context_, devices_);
             for (auto name : kernelNames) {
-                kernels_.insert(
-                    {std::string{name}, cl::Kernel{program, std::string{name}.c_str()}});
+                try {
+                    kernels_.insert(
+                        {std::string{name}, cl::Kernel{program, std::string{name}.c_str()}});
+                } catch (cl::Error& e) { throw detail::clErrorToException(e); }
             }
         }
 
