@@ -2,6 +2,8 @@
 #define CLUTILS_CLUTILS_H
 
 #include <filesystem>
+#include <map>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -17,6 +19,22 @@ namespace clutils {
                                            cl::Context& context,
                                            std::vector<cl::Device> const& devices) -> cl::Program;
     }
+
+    class Error : std::runtime_error {
+    public:
+        Error(std::string_view where, int code);
+
+        [[nodiscard]] auto where() const noexcept { return where_; }
+        [[nodiscard]] auto error() const noexcept { return error_; }
+        [[nodiscard]] auto code() const noexcept { return code_; }
+
+    private:
+        static std::map<int, std::string> errorCodes_;
+
+        std::string where_;
+        std::string error_;
+        int code_;
+    };
 
     class Buffer {
     public:
