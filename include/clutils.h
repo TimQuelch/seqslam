@@ -20,10 +20,13 @@ namespace clutils {
                                            std::vector<cl::Device> const& devices) -> cl::Program;
     } // namespace detail
 
-    class Error : std::runtime_error {
+    class Error : std::exception {
     public:
         Error(std::string_view where, int code);
 
+        [[nodiscard]] virtual auto what() const noexcept -> char const* override {
+            return what_.c_str();
+        }
         [[nodiscard]] auto where() const noexcept { return where_; }
         [[nodiscard]] auto error() const noexcept { return error_; }
         [[nodiscard]] auto code() const noexcept { return code_; }
@@ -31,6 +34,7 @@ namespace clutils {
     private:
         static std::map<int, std::string> errorCodes_;
 
+        std::string what_;
         std::string where_;
         std::string error_;
         int code_;

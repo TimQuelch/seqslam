@@ -150,7 +150,7 @@ namespace clutils {
     }
 
     Error::Error(std::string_view where, int code)
-        : std::runtime_error{fmt::format(
+        : what_{fmt::format(
               "OpenCL error in {}. Error code {} ({})", where, code, errorCodes_[code])},
           where_{where}, error_{errorCodes_[code]}, code_{code} {}
 
