@@ -108,8 +108,10 @@ namespace clutils {
         }
 
         auto const device = allDevices[deviceId];
-        context_ = cl::Context{device};
-        queue_ = cl::CommandQueue{context_};
+        try {
+            context_ = cl::Context{device};
+            queue_ = cl::CommandQueue{context_};
+        } catch (cl::Error& e) { throw detail::clErrorToException(e); }
         devices_.push_back(device);
     }
 
