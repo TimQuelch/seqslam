@@ -152,7 +152,9 @@ namespace clutils {
     Error::Error(std::string_view where, int code)
         : what_{fmt::format(
               "OpenCL error in {}. Error code {} ({})", where, code, errorCodes_[code])},
-          where_{where}, error_{errorCodes_[code]}, code_{code} {}
+          where_{where}, error_{errorCodes_[code]}, code_{code} {
+        fmt::print("{}\n", what_);
+    }
 
     std::map<int, std::string> Error::errorCodes_ = {
         {0, "CL_SUCCESS"},
