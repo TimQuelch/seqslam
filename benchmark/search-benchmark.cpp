@@ -21,7 +21,7 @@ namespace {
                               std::pair<unsigned, unsigned> windowSizeRange,
                               std::pair<std::size_t, std::size_t> nPixPerThreadRange) {
         for (auto windowSize = windowSizeRange.first; windowSize <= windowSizeRange.second;
-             windowSize++) {
+             windowSize *= 2) {
             for (auto nPixPerThread = nPixPerThreadRange.first;
                  nPixPerThread <= nPixPerThreadRange.second;
                  nPixPerThread++) {
