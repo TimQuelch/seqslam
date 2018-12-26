@@ -16,6 +16,22 @@ using namespace std::literals::string_view_literals;
 [[maybe_unused]] constexpr auto nImages = 3576u;
 
 namespace {
+    auto gpuEnhanceParameters(benchmark::internal::Benchmark* b,
+                              std::size_t nReference,
+                              std::pair<unsigned, unsigned> windowSizeRange,
+                              std::pair<std::size_t, std::size_t> nPixPerThreadRange) {
+        for (auto windowSize = windowSizeRange.first; windowSize <= windowSizeRange.second;
+             windowSize++) {
+            for (auto nPixPerThread = nPixPerThreadRange.first;
+                 nPixPerThread <= nPixPerThreadRange.second;
+                 nPixPerThread++) {
+                if (opencl::diffmxenhance::isValidParameters(nReference, nPixPerThread)) {
+                    b->Args({static_cast<long>(windowSize), static_cast<long>(nPixPerThread)});
+                }
+            }
+        }
+    }
+
     auto loadImages(std::string_view path) {
         auto const dataDir = std::filesystem::path{path};
         auto referenceImages =
@@ -86,7 +102,9 @@ void gpuDiffMxEnhancement(benchmark::State& state) {
     state.SetItemsProcessed(mx.rows() * mx.cols() * state.iterations());
     state.SetBytesProcessed(state.items_processed() * windowSize * sizeof(PixType));
 }
-BENCHMARK(gpuDiffMxEnhancement)->RangeMultiplier(2)->Range(1 << 2, 1 << 8);
+BENCHMARK(gpuDiffMxEnhancement)->Apply([](auto b) {
+    return gpuEnhanceParameters(b, nImages, {1 << 2, 1 << 8}, {1, 10});
+});
 
 void sequenceSearch(benchmark::State& state) {
     Mx mx = cpu::enhanceDiffMx(getDiffMx(), 10);

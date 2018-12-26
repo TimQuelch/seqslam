@@ -100,7 +100,8 @@ namespace seqslam {
                                              std::size_t nReference,
                                              std::size_t nQuery) -> diffMxEnhanceBuffers;
 
-            [[nodiscard]] auto isValidParameters(std::size_t nReference) noexcept -> bool;
+            [[nodiscard]] auto isValidParameters(std::size_t nReference,
+                                                 unsigned nPixPerThread) noexcept -> bool;
 
             void writeArgs(clutils::Context& context,
                            diffMxEnhanceBuffers const& buffers,
