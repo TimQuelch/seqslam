@@ -103,7 +103,7 @@ void gpuDiffMxEnhancement(benchmark::State& state) {
     state.SetBytesProcessed(state.items_processed() * windowSize * sizeof(PixType));
 }
 BENCHMARK(gpuDiffMxEnhancement)->Apply([](auto b) {
-    return gpuEnhanceParameters(b, nImages, {1 << 2, 1 << 12}, {1, 30});
+    return gpuEnhanceParameters(b, nImages, {1 << 2, 1 << 9}, {1, 30});
 });
 
 void sequenceSearch(benchmark::State& state) {
