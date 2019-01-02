@@ -86,7 +86,7 @@ BENCHMARK(diffMxEnhancement)->RangeMultiplier(2)->Range(1 << 2, 1 << 8);
 void gpuDiffMxEnhancement(benchmark::State& state) {
     Mx mx = getDiffMx();
     auto const windowSize = state.range(0);
-    auto const nPixPerThread = 4u;
+    auto const nPixPerThread = state.range(1);
 
     auto context = opencl::diffmxenhance::createContext();
     auto bufs = opencl::diffmxenhance::createBuffers(context, mx.rows(), mx.cols());
