@@ -23,10 +23,9 @@ kernel void enhanceDiffMx(global float const* diffMx,
     }
 
     for (int i = 0; i < nPixPerThread; i++) {
-        const int tShift = (rBase + i - offset) < 0 ? (rBase + i - offset) : 0;
-        const int bShift = (rBase - offset + windowSize + i - nRef) > 0
-                               ? (rBase - offset + windowSize + i - nRef)
-                               : 0;
+        const int tShift = max(rBase + i - offset, 0);
+        const int bShift = min(rBase - offset + windowSize + i - nRef, 0);
+
         float mean = sum;
         for (int j = 0; j < i + tShift; j++) {
             mean -= diffVec[start + j];
