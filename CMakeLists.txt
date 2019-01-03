@@ -14,6 +14,7 @@ find_package(OpenCV REQUIRED)
 find_package(OpenCL REQUIRED)
 find_package(benchmark REQUIRED)
 find_package(fmt REQUIRED)
+find_package(nlohmann_json REQUIRED)
 
 include(${CMAKE_SOURCE_DIR}/cmake/warnings.cmake)
 set(optimisation_flags_release -O3 -march=native)
@@ -62,13 +63,20 @@ target_include_directories(
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
     $<INSTALL_INTERFACE:include/>)
 target_compile_features(clutils PUBLIC cxx_std_17)
-target_link_libraries(clutils PUBLIC OpenCL::OpenCL stdc++fs PRIVATE fmt::fmt)
+target_link_libraries(clutils
+    PUBLIC
+    OpenCL::OpenCL
+    stdc++fs
+    PRIVATE
+    fmt::fmt
+    nlohmann_json::nlohmann_json)
 
 add_executable(demo src/demo.cpp)
 target_link_libraries(demo PRIVATE seqslam fmt::fmt)
 
 configure_file(src/kernels/diff-mx.cl ./kernels/diff-mx.cl COPYONLY)
 configure_file(src/kernels/enhancement.cl ./kernels/enhancement.cl COPYONLY)
+configure_file(clconfig.json clconfig.json COPYONLY)
 
 enable_testing()
 add_subdirectory(test)
