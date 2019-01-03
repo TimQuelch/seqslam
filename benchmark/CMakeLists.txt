@@ -6,6 +6,9 @@ include(${CMAKE_BINARY_DIR}/conan_paths.cmake OPTIONAL)
 add_executable(diffmx-benchmark diffmx-benchmark.cpp)
 target_link_libraries(diffmx-benchmark PRIVATE seqslam benchmark::benchmark)
 
+add_executable(enhance-benchmark enhance-benchmark.cpp)
+target_link_libraries(enhance-benchmark PRIVATE seqslam benchmark::benchmark)
+
 add_executable(search-benchmark search-benchmark.cpp)
 target_link_libraries(search-benchmark PRIVATE seqslam benchmark::benchmark)
 

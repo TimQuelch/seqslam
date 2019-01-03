@@ -9,29 +9,9 @@
 using namespace seqslam;
 using namespace std::literals::string_view_literals;
 
-[[maybe_unused]] constexpr auto smallImagesDir = "../datasets/nordland_trimmed_resized"sv;
-[[maybe_unused]] constexpr auto largeImagesDir = "../datasets/nordland_trimmed"sv;
-[[maybe_unused]] constexpr auto smallSize = 16u * 32u;
-[[maybe_unused]] constexpr auto largeSize = 32u * 64u;
-[[maybe_unused]] constexpr auto nImages = 3576u;
+constexpr auto smallImagesDir = "../datasets/nordland_trimmed_resized"sv;
 
 namespace {
-    auto gpuEnhanceParameters(benchmark::internal::Benchmark* b,
-                              std::size_t nReference,
-                              std::pair<unsigned, unsigned> windowSizeRange,
-                              std::pair<std::size_t, std::size_t> nPixPerThreadRange) {
-        for (auto windowSize = windowSizeRange.first; windowSize <= windowSizeRange.second;
-             windowSize *= 2) {
-            for (auto nPixPerThread = nPixPerThreadRange.first;
-                 nPixPerThread <= nPixPerThreadRange.second;
-                 nPixPerThread++) {
-                if (opencl::diffmxenhance::isValidParameters(nReference, nPixPerThread)) {
-                    b->Args({static_cast<long>(windowSize), static_cast<long>(nPixPerThread)});
-                }
-            }
-        }
-    }
-
     auto loadImages(std::string_view path) {
         auto const dataDir = std::filesystem::path{path};
         auto referenceImages =
@@ -49,7 +29,7 @@ namespace {
     }
 
     auto getDiffMx() {
-        static auto const diffMx = [imgs = loadImages(largeImagesDir)]() {
+        static auto const diffMx = [imgs = loadImages(smallImagesDir)]() {
             auto mx = cpu::generateDiffMx(std::get<0>(imgs), std::get<1>(imgs));
             mx.array() -= mx.minCoeff();
             mx /= mx.maxCoeff();
@@ -75,40 +55,6 @@ void referenceIndexOffsets(benchmark::State& state) {
     }
 }
 BENCHMARK(referenceIndexOffsets)->RangeMultiplier(2)->Range(1, 1 << 8);
-
-void diffMxEnhancement(benchmark::State& state) {
-    Mx mx = getDiffMx();
-    auto const windowSize = state.range(0);
-    for (auto _ : state) {
-        auto enhanced = cpu::enhanceDiffMx(mx, windowSize);
-    }
-    state.SetItemsProcessed(mx.rows() * mx.cols() * state.iterations());
-    state.SetBytesProcessed(state.items_processed() * windowSize * sizeof(PixType));
-}
-BENCHMARK(diffMxEnhancement)->RangeMultiplier(2)->Range(1 << 2, 1 << 8);
-
-void gpuDiffMxEnhancement(benchmark::State& state) {
-    Mx mx = getDiffMx();
-    auto const windowSize = state.range(0);
-    auto const nPixPerThread = state.range(1);
-
-    auto context = opencl::diffmxenhance::createContext();
-    auto bufs = opencl::diffmxenhance::createBuffers(context, mx.rows(), mx.cols());
-    opencl::diffmxenhance::writeArgs(
-        context, bufs, mx, windowSize, nPixPerThread, opencl::diffmxenhance::defaultKernel);
-
-    for (auto _ : state) {
-        auto enhanced =
-            opencl::enhanceDiffMx(context, bufs.out, mx.rows(), mx.cols(), nPixPerThread);
-        benchmark::DoNotOptimize(enhanced.data());
-        benchmark::ClobberMemory();
-    }
-    state.SetItemsProcessed(mx.rows() * mx.cols() * state.iterations());
-    state.SetBytesProcessed(state.items_processed() * windowSize * sizeof(PixType));
-}
-BENCHMARK(gpuDiffMxEnhancement)->Apply([](auto b) {
-    return gpuEnhanceParameters(b, nImages, {1 << 2, 1 << 9}, {1, 30});
-});
 
 void sequenceSearch(benchmark::State& state) {
     Mx mx = cpu::enhanceDiffMx(getDiffMx(), 10);
