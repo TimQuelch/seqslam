@@ -386,7 +386,8 @@ namespace seqslam {
                 auto const nThreads = nReference / nPixPerThread;
                 bool const fitsInLocal = localMemoryRequired(nReference) < localMemorySize;
                 bool const tLessThanMax = nThreads <= 1024;
-                return fitsInLocal && tLessThanMax;
+                bool const tilesCorrectly = nReference % nPixPerThread == 0u;
+                return fitsInLocal && tLessThanMax && tilesCorrectly;
             }
 
             void writeArgs(clutils::Context& context,
