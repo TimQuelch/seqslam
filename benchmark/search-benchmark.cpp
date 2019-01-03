@@ -49,9 +49,13 @@ namespace {
     }
 
     auto getDiffMx() {
-        static auto const imgs = loadImages(largeImagesDir);
-        static auto const mx = cpu::generateDiffMx(std::get<0>(imgs), std::get<1>(imgs));
-        return mx;
+        static auto const diffMx = [imgs = loadImages(largeImagesDir)]() {
+            auto mx = cpu::generateDiffMx(std::get<0>(imgs), std::get<1>(imgs));
+            mx.array() -= mx.minCoeff();
+            mx /= mx.maxCoeff();
+            return mx;
+        }();
+        return diffMx;
     }
 } // namespace
 
