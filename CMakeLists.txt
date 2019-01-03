@@ -68,6 +68,7 @@ add_executable(demo src/demo.cpp)
 target_link_libraries(demo PRIVATE seqslam fmt::fmt)
 
 configure_file(src/kernels/diff-mx.cl ./kernels/diff-mx.cl COPYONLY)
+configure_file(src/kernels/enhancement.cl ./kernels/enhancement.cl COPYONLY)
 
 enable_testing()
 add_subdirectory(test)
