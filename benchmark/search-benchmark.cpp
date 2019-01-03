@@ -49,9 +49,13 @@ namespace {
     }
 
     auto getDiffMx() {
-        static auto const imgs = loadImages(largeImagesDir);
-        static auto const mx = cpu::generateDiffMx(std::get<0>(imgs), std::get<1>(imgs));
-        return mx;
+        static auto const diffMx = [imgs = loadImages(largeImagesDir)]() {
+            auto mx = cpu::generateDiffMx(std::get<0>(imgs), std::get<1>(imgs));
+            mx.array() -= mx.minCoeff();
+            mx /= mx.maxCoeff();
+            return mx;
+        }();
+        return diffMx;
     }
 } // namespace
 
@@ -86,7 +90,7 @@ BENCHMARK(diffMxEnhancement)->RangeMultiplier(2)->Range(1 << 2, 1 << 8);
 void gpuDiffMxEnhancement(benchmark::State& state) {
     Mx mx = getDiffMx();
     auto const windowSize = state.range(0);
-    auto const nPixPerThread = 4u;
+    auto const nPixPerThread = state.range(1);
 
     auto context = opencl::diffmxenhance::createContext();
     auto bufs = opencl::diffmxenhance::createBuffers(context, mx.rows(), mx.cols());
