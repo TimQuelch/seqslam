@@ -34,6 +34,37 @@ namespace clutils {
             }
             return {};
         }
+
+        [[nodiscard]] auto getSpecifiedDevice(unsigned platformId, unsigned deviceId) {
+            auto const platforms = []() {
+                auto p = std::vector<cl::Platform>{};
+                cl::Platform::get(&p);
+                return p;
+            }();
+
+            if (platformId > platforms.size() - 1) {
+                throw std::runtime_error{fmt::format("Requested OpenCL platform does not exist. "
+                                                     "Requested {}, when only {} available",
+                                                     platformId,
+                                                     platforms.size())};
+            }
+
+            auto const platform = platforms[platformId];
+
+            auto const allDevices = [&platform]() {
+                auto d = std::vector<cl::Device>{};
+                platform.getDevices(CL_DEVICE_TYPE_ALL, &d);
+                return d;
+            }();
+
+            if (deviceId > allDevices.size() - 1) {
+                throw std::runtime_error{fmt::format(
+                    "Requested OpenCL device does not exist. Requested {}, when only {} available",
+                    deviceId,
+                    allDevices.size())};
+            }
+            return allDevices[deviceId];
+        }
     } // namespace
 
     namespace detail {
@@ -79,30 +110,7 @@ namespace clutils {
     Context::Context() : Context{0, 0} {}
 
     Context::Context(unsigned platformId, unsigned deviceId) {
-        // Query the available platforms and get specified platform
-        auto const platforms = []() {
-            auto p = std::vector<cl::Platform>{};
-            cl::Platform::get(&p);
-            return p;
-        }();
-
-        if (platformId > platforms.size() - 1) {
-            throw std::runtime_error{"Requested OpenCL platform does not exist"};
-        }
-
-        auto const platform = platforms[platformId];
-
-        auto const allDevices = [&platform]() {
-            auto d = std::vector<cl::Device>{};
-            platform.getDevices(CL_DEVICE_TYPE_ALL, &d);
-            return d;
-        }();
-
-        if (deviceId > allDevices.size() - 1) {
-            throw std::runtime_error{"Requested OpenCL device does not exist"};
-        }
-
-        auto const device = allDevices[deviceId];
+        auto const device = getSpecifiedDevice(platformId, deviceId);
         try {
             context_ = cl::Context{device};
             queue_ = cl::CommandQueue{context_};
