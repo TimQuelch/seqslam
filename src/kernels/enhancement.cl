@@ -6,43 +6,52 @@ kernel void enhanceDiffMx(global float const* diffMx,
     const int offset = floor(windowSize / 2.0);
     const int rBase = nPixPerThread * get_global_id(0);
     const int nRef = get_global_size(0);
+    const int nQue = get_global_size(1);
     const int q = get_global_id(1);
 
     for (int i = 0; i < nPixPerThread; ++i) {
-        diffVec[rBase + i] = diffMx[q * nRef + rBase + i];
+        diffVec[rBase + i] = diffMx[(rBase + i) * nQue + q];
     }
-
-    const int start = max(min(rBase - offset, 0),
-                          min(max(rBase - offset, 0), nRef - windowSize - 1));
-
-    const int end = min(rBase - offset + windowSize + (int)nPixPerThread, nRef);
+    barrier(CLK_LOCAL_MEM_FENCE); // Sync threads
 
     float sum = 0;
-    for (int i = start; i < end; i++) {
-        sum += diffVec[i];
+    for (int i = rBase; i < rBase + windowSize + nPixPerThread; i++) {
+        if (i >= 0 && i < nRef) {
+            sum += diffVec[i];
+        }
     }
 
     for (int i = 0; i < nPixPerThread; i++) {
-        const int tShift = max(rBase + i - offset, 0);
-        const int bShift = min(rBase - offset + windowSize + i - nRef, 0);
+
+        const int topCut = -min(rBase - offset + i, 0);
+        const int botCut = max(rBase - offset + windowSize + i, nRef) - nRef;
+        const int cut = topCut + botCut;
 
         float mean = sum;
-        for (int j = 0; j < i + tShift; j++) {
-            mean -= diffVec[start + j];
+        for (int j = rBase - offset; j < rBase - offset + windowSize + i; j++) {
+            if (j >= 0 && j < nRef) {
+                mean -= diffVec[j];
+            }
         }
-        for (int j = windowSize + i + bShift;
-             j < windowSize + nPixPerThread - 1;
+        for (int j = rBase - offset + windowSize + i;
+             j <= rBase - offset + windowSize + nPixPerThread;
              j++) {
-            mean -= diffVec[start + j];
+            if (j >= 0 && j < nRef) {
+                mean -= diffVec[j];
+            }
         }
-        mean /= windowSize;
+        mean /= (windowSize - cut);
 
         float std = 0;
-        for (int j = 0; j < windowSize; j++) {
-            std += pown(diffVec[start + i + j] - mean, 2);
+        for (int j = rBase - offset + i; j < rBase - offset + windowSize + i;
+             j++) {
+            if (j >= 0 && j < nRef) {
+                std += pown(diffVec[j] - mean, 2);
+            }
         }
 
-        diffMxOut[q * nRef + rBase + i] =
-            (diffVec[rBase + i] - mean) / max(std / windowSize, FLT_MIN);
+        diffMxOut[(rBase + i) * nQue + q] =
+            (diffVec[rBase + i] - mean) /
+            max(std / (windowSize - cut), FLT_MIN);
     }
 }
