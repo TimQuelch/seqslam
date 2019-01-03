@@ -14,6 +14,8 @@
 namespace clutils {
     class Context;
 
+    constexpr auto const defaultConfig = std::string_view{"clconfig.json"};
+
     namespace detail {
         [[nodiscard]] auto compileClSource(std::filesystem::path const& sourceFile,
                                            cl::Context& context,
@@ -65,6 +67,7 @@ namespace clutils {
     class Context {
     public:
         Context();
+        Context(std::filesystem::path const& configFile);
         Context(unsigned platformId, unsigned deviceId);
 
         template <typename StringContainer>
