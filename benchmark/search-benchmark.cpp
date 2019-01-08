@@ -9,7 +9,7 @@
 using namespace seqslam;
 using namespace std::literals::string_view_literals;
 
-constexpr auto smallImagesDir = "../datasets/nordland_trimmed_resized"sv;
+constexpr auto smallImagesDir = "datasets/nordland_trimmed_resized"sv;
 
 namespace {
     auto loadImages(std::string_view path) {

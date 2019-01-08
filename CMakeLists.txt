@@ -52,6 +52,7 @@ target_link_libraries(seqslam
     clutils
     opencv_core
     PRIVATE
+    utils
     opencv_imgproc
     opencv_highgui
     stdc++fs)
@@ -68,8 +69,18 @@ target_link_libraries(clutils
     OpenCL::OpenCL
     stdc++fs
     PRIVATE
+    utils
     fmt::fmt
     nlohmann_json::nlohmann_json)
+
+add_library(utils src/utils.cpp)
+target_include_directories(
+    utils
+    PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
+    $<INSTALL_INTERFACE:include/>)
+target_compile_features(utils PUBLIC cxx_std_17)
+target_link_libraries(utils PUBLIC stdc++fs)
 
 add_executable(demo src/demo.cpp)
 target_link_libraries(demo PRIVATE seqslam fmt::fmt)

@@ -1,6 +1,8 @@
 #include "seqslam.h"
 #include "seqslam-detail.h"
 
+#include "utils.h"
+
 #include <algorithm>
 #include <cassert>
 #include <limits>
@@ -114,13 +116,21 @@ namespace seqslam {
 
             return score;
         }
+
+        [[nodiscard]] auto findOrThrow(std::filesystem::path const& suffix) {
+            if (auto path = utils::traverseUpUntilMatch(suffix)) {
+                return *path;
+            } else {
+                throw std::runtime_error{fmt::format("{} not found", suffix.string())};
+            }
+        }
     } // namespace detail
     using namespace detail;
 
     [[nodiscard]] auto readImages(std::filesystem::path const& dir) noexcept
         -> std::vector<cv::Mat> {
         std::vector<cv::Mat> images;
-        for (auto const& imagePath : std::filesystem::directory_iterator(dir)) {
+        for (auto const& imagePath : std::filesystem::directory_iterator(findOrThrow(dir))) {
             images.push_back(cv::imread(imagePath.path().string(), cv::IMREAD_GRAYSCALE));
         }
         return images;
@@ -283,7 +293,7 @@ namespace seqslam {
         namespace diffmxcalc {
             [[nodiscard]] auto createContext() -> clutils::Context {
                 auto context = clutils::Context{};
-                context.addKernels(kernels.first, kernels.second);
+                context.addKernels(findOrThrow(kernels.first), kernels.second);
                 return context;
             }
 
@@ -363,7 +373,7 @@ namespace seqslam {
         namespace diffmxenhance {
             [[nodiscard]] auto createContext() -> clutils::Context {
                 auto context = clutils::Context{};
-                context.addKernels(kernels.first, kernels.second);
+                context.addKernels(findOrThrow(kernels.first), kernels.second);
                 return context;
             }
 

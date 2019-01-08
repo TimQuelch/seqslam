@@ -8,11 +8,13 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
+#include <catch2/catch.hpp>
+
 using namespace seqslam;
 using namespace std::literals::string_view_literals;
 
-const auto smallImagesDir = std::filesystem::path{"../datasets/nordland_trimmed_resized"};
-const auto largeImagesDir = std::filesystem::path{"../datasets/nordland_trimmed"};
+const auto smallImagesDir = std::filesystem::path{"datasets/nordland_trimmed_resized"};
+const auto largeImagesDir = std::filesystem::path{"datasets/nordland_trimmed"};
 
 struct DiffMxComparison {
     float max;
@@ -47,7 +49,7 @@ namespace fmt {
     };
 } // namespace fmt
 
-int main() {
+TEST_CASE("Difference matrix results consistent with all parameters", "[diffmx]") {
     auto const referenceImages =
         convertToEigen(contrastEnhancement(readImages(largeImagesDir / "summer"), 20));
     auto const queryImages =
@@ -91,10 +93,12 @@ int main() {
 
     for (auto mx1 = std::cbegin(diffMxs); mx1 != --std::cend(diffMxs); mx1++) {
         for (auto mx2 = mx1 + 1; mx2 != std::cend(diffMxs); mx2++) {
-            fmt::print("{} -- {} vs {}\n",
-                       compareDiffMx(mx1->first, mx2->first),
-                       mx1->second,
-                       mx2->second);
+            auto const cmp = compareDiffMx(mx1->first, mx2->first);
+            INFO(fmt::format("{} -- {} vs {}\n", cmp, mx1->second, mx2->second));
+
+            REQUIRE(cmp.max == Approx{0.0});
+            REQUIRE(cmp.mean == Approx{0.0});
+            REQUIRE(cmp.std == Approx{0.0});
         }
     }
 }

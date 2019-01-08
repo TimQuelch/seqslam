@@ -1,5 +1,7 @@
 #include "clutils.h"
 
+#include "utils.h"
+
 #include <fstream>
 #include <numeric>
 #include <stdexcept>
@@ -89,6 +91,11 @@ namespace clutils {
         [[nodiscard]] auto compileClSource(std::filesystem::path const& sourceFile,
                                            cl::Context& context,
                                            std::vector<cl::Device> const& devices) -> cl::Program {
+            if (!std::filesystem::exists(sourceFile)) {
+                throw std::runtime_error{
+                    fmt::format("Kernel file {} not found", sourceFile.string())};
+            }
+
             auto const program = [&context, &sourceFile]() {
                 auto filestream = std::ifstream{sourceFile};
                 auto const sourceString = std::string{std::istreambuf_iterator<char>{filestream},
@@ -126,8 +133,9 @@ namespace clutils {
     }
 
     Context::Context() {
-        if (std::filesystem::exists(defaultConfig)) {
-            auto const config = readJsonConfig(defaultConfig);
+        auto const defaultConfigPath = utils::traverseUpUntilMatch(defaultConfig);
+        if (defaultConfigPath && std::filesystem::exists(*defaultConfigPath)) {
+            auto const config = readJsonConfig(*defaultConfigPath);
             std::tie(context_, queue_, devices_) = constructContextQueueDevices(
                 config["platform"].get<unsigned>(), config["device"].get<unsigned>());
         } else {
