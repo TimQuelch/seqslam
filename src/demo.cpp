@@ -17,7 +17,7 @@ cv::Mat mxToIm(Mx const& mx) {
 }
 
 int main() {
-    auto const dataDir = std::filesystem::path{"../datasets/nordland_trimmed_resized"};
+    auto const dataDir = std::filesystem::path{"datasets/nordland_trimmed_resized"};
     auto const referenceImages =
         convertToEigen(contrastEnhancement(readImages(dataDir / "summer"), 20));
     auto const queryImages =

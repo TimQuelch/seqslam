@@ -9,8 +9,8 @@
 using namespace seqslam;
 using namespace std::literals::string_view_literals;
 
-[[maybe_unused]] constexpr auto smallImagesDir = "../datasets/nordland_trimmed_resized"sv;
-[[maybe_unused]] constexpr auto largeImagesDir = "../datasets/nordland_trimmed"sv;
+[[maybe_unused]] constexpr auto smallImagesDir = "datasets/nordland_trimmed_resized"sv;
+[[maybe_unused]] constexpr auto largeImagesDir = "datasets/nordland_trimmed"sv;
 [[maybe_unused]] constexpr auto smallSize = 16u * 32u;
 [[maybe_unused]] constexpr auto largeSize = 32u * 64u;
 [[maybe_unused]] constexpr auto nImages = 3576u;
