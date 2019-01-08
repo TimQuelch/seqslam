@@ -11,8 +11,8 @@
 using namespace seqslam;
 using namespace std::literals::string_view_literals;
 
-const auto smallImagesDir = std::filesystem::path{"../datasets/nordland_trimmed_resized"};
-const auto largeImagesDir = std::filesystem::path{"../datasets/nordland_trimmed"};
+const auto smallImagesDir = std::filesystem::path{"datasets/nordland_trimmed_resized"};
+const auto largeImagesDir = std::filesystem::path{"datasets/nordland_trimmed"};
 
 struct DiffMxComparison {
     float max;
