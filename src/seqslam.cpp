@@ -243,18 +243,13 @@ namespace seqslam {
 
             for (auto j = 0u; j < diffMx.cols(); ++j) {
                 for (auto i = 0u; i < diffMx.rows(); ++i) {
-                    auto const start = [i, offset, rows = diffMx.rows(), windowSize]() -> unsigned {
-                        if (i < offset) {
-                            return 0;
-                        } else if (i > (rows - offset)) {
-                            return rows - windowSize - 1;
-                        } else {
-                            return i - offset;
-                        }
-                    }();
-                    Vx const window = diffMx.block(start, j, windowSize, 1);
+                    auto const start = std::max(i - offset, 0u);
+                    auto const length =
+                        std::min(windowSize,
+                                 static_cast<unsigned>(diffMx.rows()) - (i - offset + windowSize));
+                    Vx const window = diffMx.block(start, j, length, 1);
                     auto const mean = window.mean();
-                    auto const std = std::sqrt((window.array() - mean).pow(2).sum() / (windowSize));
+                    auto const std = std::sqrt((window.array() - mean).pow(2).sum() / length);
                     mx(i, j) =
                         (diffMx(i, j) - mean) / std::max(std, std::numeric_limits<float>::min());
                 }
