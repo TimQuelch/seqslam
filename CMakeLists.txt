@@ -52,6 +52,7 @@ target_link_libraries(seqslam
     clutils
     opencv_core
     PRIVATE
+    utils
     opencv_imgproc
     opencv_highgui
     stdc++fs)
@@ -68,6 +69,7 @@ target_link_libraries(clutils
     OpenCL::OpenCL
     stdc++fs
     PRIVATE
+    utils
     fmt::fmt
     nlohmann_json::nlohmann_json)
 
