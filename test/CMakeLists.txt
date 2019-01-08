@@ -16,4 +16,5 @@ target_link_libraries(test-trajectory PRIVATE test-main seqslam)
 catch_discover_tests(test-trajectory)
 
 add_executable(diffmx-validation-test diffmx-validation-test.cpp)
-target_link_libraries(diffmx-validation-test PRIVATE seqslam fmt::fmt)
+target_link_libraries(diffmx-validation-test PRIVATE test-main seqslam fmt::fmt)
+catch_discover_tests(diffmx-validation-test)
