@@ -91,6 +91,11 @@ namespace clutils {
         [[nodiscard]] auto compileClSource(std::filesystem::path const& sourceFile,
                                            cl::Context& context,
                                            std::vector<cl::Device> const& devices) -> cl::Program {
+            if (!std::filesystem::exists(sourceFile)) {
+                throw std::runtime_error{
+                    fmt::format("Kernel file {} not found", sourceFile.string())};
+            }
+
             auto const program = [&context, &sourceFile]() {
                 auto filestream = std::ifstream{sourceFile};
                 auto const sourceString = std::string{std::istreambuf_iterator<char>{filestream},
