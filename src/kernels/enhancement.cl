@@ -5,7 +5,7 @@ kernel void enhanceDiffMx(global float const* diffMx,
                           local float* diffVec) {
     const int offset = floor(windowSize / 2.0);
     const int rBase = nPixPerThread * get_global_id(0);
-    const int nRef = get_global_size(0);
+    const int nRef = nPixPerThread * get_global_size(0);
     const int nQue = get_global_size(1);
     const int q = get_global_id(1);
 
@@ -28,7 +28,7 @@ kernel void enhanceDiffMx(global float const* diffMx,
         const int cut = topCut + botCut;
 
         float mean = sum;
-        for (int j = rBase - offset; j < rBase - offset + windowSize + i; j++) {
+        for (int j = rBase - offset; j < rBase - offset + i; j++) {
             if (j >= 0 && j < nRef) {
                 mean -= diffVec[j];
             }
@@ -52,6 +52,6 @@ kernel void enhanceDiffMx(global float const* diffMx,
 
         diffMxOut[(rBase + i) * nQue + q] =
             (diffVec[rBase + i] - mean) /
-            max(std / (windowSize - cut), FLT_MIN);
+            max(sqrt(std / (windowSize - cut)), FLT_MIN);
     }
 }
