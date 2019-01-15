@@ -239,14 +239,20 @@ namespace seqslam {
 
         [[nodiscard]] auto enhanceDiffMx(Mx const& diffMx, unsigned windowSize) noexcept -> Mx {
             Mx mx = Mx(diffMx.rows(), diffMx.cols());
-            auto offset = static_cast<unsigned>(std::floor(windowSize / 2.0));
+            auto offset = static_cast<int>(std::floor(windowSize / 2.0));
 
             for (auto j = 0u; j < diffMx.cols(); ++j) {
-                for (auto i = 0u; i < diffMx.rows(); ++i) {
-                    auto const start = std::max(i - offset, 0u);
-                    auto const length =
-                        std::min(windowSize,
-                                 static_cast<unsigned>(diffMx.rows()) - (i - offset + windowSize));
+                for (auto i = 0; i < diffMx.rows(); ++i) {
+                    auto const start = static_cast<unsigned>(std::max(i - offset, 0));
+                    auto const length = [i, offset, windowSize, rows = diffMx.rows()]() -> int {
+                        if (i < offset) {
+                            return i - offset + windowSize;
+                        } else if (i - offset + windowSize > rows) {
+                            return rows - i - offset + windowSize;
+                        } else {
+                            return windowSize;
+                        }
+                    }();
                     Vx const window = diffMx.block(start, j, length, 1);
                     auto const mean = window.mean();
                     auto const std = std::sqrt((window.array() - mean).pow(2).sum() / length);
