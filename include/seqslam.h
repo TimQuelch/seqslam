@@ -138,14 +138,14 @@ namespace seqslam {
 
         [[nodiscard]] auto enhanceDiffMx(Mx const& diffMx,
                                          unsigned windowSize,
-                                         unsigned nPixPerThread,
+                                         unsigned nPixPerThread = 4,
                                          std::string_view kernelName = diffmxenhance::defaultKernel)
             -> Mx;
 
         [[nodiscard]] auto enhanceDiffMx(clutils::Context& context,
                                          Mx const& diffMx,
                                          unsigned windowSize,
-                                         unsigned nPixPerThread,
+                                         unsigned nPixPerThread = 4,
                                          std::string_view kernelName = diffmxenhance::defaultKernel)
             -> Mx;
 
@@ -153,7 +153,7 @@ namespace seqslam {
                                          clutils::Buffer const& outBuffer,
                                          std::size_t nReference,
                                          std::size_t nQuery,
-                                         unsigned nPixPerThread,
+                                         unsigned nPixPerThread = 4,
                                          std::string_view kernelName = diffmxenhance::defaultKernel)
             -> Mx;
     } // namespace opencl
