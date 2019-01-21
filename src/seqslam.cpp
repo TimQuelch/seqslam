@@ -358,7 +358,7 @@ namespace seqslam {
                         tileSize,
                         nPerThread,
                         localMemoryRequired(d.nElems(), tileSize, nPerThread),
-                        48 * 1024)};
+                        localMemorySize)};
                 }
 
                 context.setKernelArg(kernelName, 0, buffers.query);
