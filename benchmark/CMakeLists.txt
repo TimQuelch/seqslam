@@ -3,19 +3,19 @@ project(seqslam)
 
 include(${CMAKE_BINARY_DIR}/conan_paths.cmake OPTIONAL)
 
-add_executable(diffmx-benchmark diffmx-benchmark.cpp)
-target_link_libraries(diffmx-benchmark PRIVATE seqslam benchmark::benchmark)
+add_executable(benchmark-diffmx benchmark-diffmx.cpp)
+target_link_libraries(benchmark-diffmx PRIVATE seqslam benchmark::benchmark)
 
-add_executable(enhance-benchmark enhance-benchmark.cpp)
-target_link_libraries(enhance-benchmark PRIVATE seqslam benchmark::benchmark)
+add_executable(benchmark-enhance benchmark-enhance.cpp)
+target_link_libraries(benchmark-enhance PRIVATE seqslam benchmark::benchmark)
 
-add_executable(search-benchmark search-benchmark.cpp)
-target_link_libraries(search-benchmark PRIVATE seqslam benchmark::benchmark)
+add_executable(benchmark-search benchmark-search.cpp)
+target_link_libraries(benchmark-search PRIVATE seqslam benchmark::benchmark)
 
-add_executable(sad-benchmark sad-benchmark.cpp)
-target_compile_features(sad-benchmark PRIVATE cxx_std_17)
-target_link_libraries(sad-benchmark PRIVATE benchmark::benchmark Eigen3::Eigen)
+add_executable(benchmark-sad benchmark-sad.cpp)
+target_compile_features(benchmark-sad PRIVATE cxx_std_17)
+target_link_libraries(benchmark-sad PRIVATE benchmark::benchmark Eigen3::Eigen)
 
-add_executable(eigen-benchmark eigen-benchmark.cpp)
-target_compile_features(eigen-benchmark PRIVATE cxx_std_17)
-target_link_libraries(eigen-benchmark PRIVATE benchmark::benchmark Eigen3::Eigen)
+add_executable(benchmark-eigen benchmark-eigen.cpp)
+target_compile_features(benchmark-eigen PRIVATE cxx_std_17)
+target_link_libraries(benchmark-eigen PRIVATE benchmark::benchmark Eigen3::Eigen)
