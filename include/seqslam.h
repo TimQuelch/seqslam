@@ -15,7 +15,7 @@
 
 namespace seqslam {
     using PixType = float;
-    using Mx = Eigen::Matrix<PixType, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+    using Mx = Eigen::Matrix<PixType, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
     using Vx = Eigen::Matrix<PixType, Eigen::Dynamic, 1>;
 
     [[nodiscard]] auto readImages(std::filesystem::path const& dir) noexcept

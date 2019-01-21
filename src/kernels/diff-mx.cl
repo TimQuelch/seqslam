@@ -24,8 +24,8 @@ kernel void diffMxNDiffs(global float const* query,
                          unsigned int nPerThread,
                          global float* diffMxOutput,
                          local float* diffs) {
-    const unsigned tx = get_group_id(1);
-    const unsigned ty = get_group_id(2);
+    const unsigned ty = get_group_id(1);
+    const unsigned tx = get_group_id(2);
     const unsigned pi = get_local_id(0);
     const unsigned offset = get_local_size(0);
     const unsigned nPix = offset * nPerThread;
@@ -74,8 +74,8 @@ kernel void diffMxNDiffs(global float const* query,
         const unsigned int i = pi % tileSize;
         const unsigned int j = pi / tileSize;
         const unsigned int imageIndex = (i + j * tileSize) * offset;
-        diffMxOutput[tx * tileSize + i +
-                     (ty * tileSize + j) * get_global_size(1) * tileSize] =
+        diffMxOutput[ty * tileSize + j +
+                     (tx * tileSize + i) * get_global_size(1) * tileSize] =
             diffs[imageIndex];
     }
 }

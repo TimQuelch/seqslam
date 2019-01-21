@@ -96,7 +96,7 @@ TEST_CASE("Difference matrix enhancement results consistent with all parameters"
                 auto const cmp = compareDiffMx(mx1->first, mx2->first);
                 INFO(fmt::format("{} -- {} vs {}\n", cmp, mx1->second, mx2->second));
 
-                REQUIRE(cmp.max == Approx{0.0f}.margin(1e-5));
+                REQUIRE(cmp.max == Approx{0.0f}.margin(1e-4));
                 REQUIRE(cmp.mean == Approx{0.0f}.margin(1e-5));
                 REQUIRE(cmp.std == Approx{0.0f}.margin(1e-5));
             }
