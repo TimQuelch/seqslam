@@ -18,3 +18,7 @@ catch_discover_tests(test-trajectory)
 add_executable(test-validate-diffmx test-validate-diffmx.cpp)
 target_link_libraries(test-validate-diffmx PRIVATE test-main seqslam fmt::fmt)
 catch_discover_tests(test-validate-diffmx)
+
+add_executable(test-validate-enhance test-validate-enhance.cpp)
+target_link_libraries(test-validate-enhance PRIVATE test-main seqslam fmt::fmt)
+catch_discover_tests(test-validate-enhance)
