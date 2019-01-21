@@ -6,11 +6,10 @@ kernel void enhanceDiffMx(global float const* diffMx,
     const int offset = floor(windowSize / 2.0);
     const int rBase = nPixPerThread * get_global_id(0);
     const int nRef = nPixPerThread * get_global_size(0);
-    const int nQue = get_global_size(1);
     const int q = get_global_id(1);
 
     for (int i = 0; i < nPixPerThread; ++i) {
-        diffVec[rBase + i] = diffMx[(rBase + i) * nQue + q];
+        diffVec[rBase + i] = diffMx[q * nRef + rBase + i];
     }
     barrier(CLK_LOCAL_MEM_FENCE); // Sync threads
 
@@ -34,7 +33,7 @@ kernel void enhanceDiffMx(global float const* diffMx,
             std += pown(diffVec[j] - mean, 2);
         }
 
-        diffMxOut[(rBase + i) * nQue + q] =
+        diffMxOut[q * nRef + rBase + i] =
             (diffVec[rBase + i] - mean) / max(sqrt(std / newSize), FLT_MIN);
     }
 }
