@@ -1,0 +1,26 @@
+kernel void sequenceSearch(global float const* diffMx,
+                           constant int* qOffsets,
+                           constant int* rOffsets,
+                           unsigned int sequenceLength,
+                           unsigned int nTrajectories,
+                           unsigned int nPixPerThread,
+                           global float* sequenceStrengthOut) {
+    const unsigned int rBase = get_global_id(0);
+    const unsigned int q = get_global_id(1);
+    const unsigned int nThreads = get_global_size(0);
+    const unsinged int nRef = nPixPerThread * nThreads;
+
+    for (unsigned int r = rBase; r < nRef; r += nThreads) {
+        float best = FLT_MAX;
+        for (int i = 0; i < nTrajectories; i++) {
+            float score = 0.0f;
+            for (int j = 0; j < sequenceLength; j++) {
+                const int qOffset = qOffsets[j];
+                const int rOffset = rOffsets[i * sequenceLength + j];
+                score += diffMx[(q + qOffset) * nRef + r + rOffset];
+            }
+            best = fmin(best, score);
+        }
+        sequenceStrengthOut[q * nRef + r] = best;
+    }
+}

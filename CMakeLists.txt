@@ -87,6 +87,7 @@ target_link_libraries(demo PRIVATE seqslam fmt::fmt)
 
 configure_file(src/kernels/diff-mx.cl ./kernels/diff-mx.cl COPYONLY)
 configure_file(src/kernels/enhancement.cl ./kernels/enhancement.cl COPYONLY)
+configure_file(src/kernels/search.cl ./kernels/search.cl COPYONLY)
 configure_file(clconfig.json clconfig.json COPYONLY)
 
 enable_testing()
