@@ -1,8 +1,48 @@
-kernel void enhanceDiffMx(global float const* diffMx,
-                          int windowSize,
-                          unsigned int nPixPerThread,
-                          global float* diffMxOut,
-                          local float* diffVec) {
+kernel void enhanceDiffMxSequential(global float const* diffMx,
+                                    int windowSize,
+                                    unsigned int nPixPerThread,
+                                    global float* diffMxOut,
+                                    local float* diffVec) {
+    const int offset = floor(windowSize / 2.0);
+    const int rBase = get_global_id(0);
+    const int nThreads = get_global_size(0);
+    const int nRef = nPixPerThread * nThreads;
+    const int q = get_global_id(1);
+
+    for (int i = rBase; i < nRef; i += nThreads) {
+        diffVec[i] = diffMx[q * nRef + i];
+    }
+    barrier(CLK_LOCAL_MEM_FENCE); // Sync threads
+
+    for (int i = rBase; i < nRef; i += nThreads) {
+        const int topCut = -min(i - offset, 0);
+        const int botCut = max(i - offset + windowSize, nRef) - nRef;
+        const int newSize = windowSize - (topCut + botCut);
+
+        const int start = max(i - offset, 0);
+        const int end = min(i - offset + windowSize, nRef);
+
+        float mean = 0;
+        for (int j = start; j < end; j++) {
+            mean += diffVec[j];
+        }
+        mean /= newSize;
+
+        float std = 0;
+        for (int j = start; j < end; j++) {
+            std += pown(diffVec[j] - mean, 2);
+        }
+
+        diffMxOut[q * nRef + i] =
+            (diffVec[i] - mean) / max(sqrt(std / newSize), FLT_MIN);
+    }
+}
+
+kernel void enhanceDiffMxStrided(global float const* diffMx,
+                                 int windowSize,
+                                 unsigned int nPixPerThread,
+                                 global float* diffMxOut,
+                                 local float* diffVec) {
     const int offset = floor(windowSize / 2.0);
     const int rBase = nPixPerThread * get_global_id(0);
     const int nRef = nPixPerThread * get_global_size(0);

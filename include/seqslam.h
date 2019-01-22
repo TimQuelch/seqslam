@@ -87,7 +87,8 @@ namespace seqslam {
 
         namespace diffmxenhance {
             constexpr auto kernels =
-                std::pair{"kernels/enhancement.cl"sv, std::array{"enhanceDiffMx"sv}};
+                std::pair{"kernels/enhancement.cl"sv,
+                          std::array{"enhanceDiffMxSequential"sv, "enhanceDiffMxStrided"sv}};
             constexpr auto defaultKernel = kernels.second[0];
 
             auto createContext() -> clutils::Context;
