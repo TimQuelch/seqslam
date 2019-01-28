@@ -112,6 +112,37 @@ namespace seqslam {
                            std::string_view kernelName = defaultKernel);
         } // namespace diffmxenhance
 
+        namespace seqsearch {
+            constexpr auto kernels =
+                std::pair{"kernels/search.cl"sv, std::array{"sequenceSearch"sv}};
+            constexpr auto defaultKernel = kernels.second[0];
+
+            auto createContext() -> clutils::Context;
+
+            struct sequenceSearchBuffers {
+                clutils::Buffer in;
+                clutils::Buffer qOffsets;
+                clutils::Buffer rOffsets;
+                clutils::Buffer out;
+            };
+            [[nodiscard]] auto createBuffers(clutils::Context& context,
+                                             unsigned sequenceLength,
+                                             unsigned nTrajectories,
+                                             std::size_t nReference,
+                                             std::size_t nQuery) -> sequenceSearchBuffers;
+
+            [[nodiscard]] auto isValidParameters(std::size_t nReference,
+                                                 unsigned nPixPerThread) noexcept -> bool;
+
+            void writeArgs(clutils::Context& context,
+                           sequenceSearchBuffers const& buffers,
+                           Mx const& diffMx,
+                           std::vector<int> const& qOffsets,
+                           std::vector<std::vector<int>> const& rOffsets,
+                           unsigned nPixPerThread,
+                           std::string_view kernelName);
+        } // namespace seqsearch
+
         [[nodiscard]] auto generateDiffMx(std::vector<Mx> const& referenceMxs,
                                           std::vector<Mx> const& queryMxs,
                                           std::size_t tileSize = 4,
@@ -157,6 +188,23 @@ namespace seqslam {
                                          unsigned nPixPerThread = 4,
                                          std::string_view kernelName = diffmxenhance::defaultKernel)
             -> Mx;
+
+        [[nodiscard]] auto sequenceSearch(Mx const& diffMx,
+                                          unsigned sequenceLength,
+                                          float vMin,
+                                          float vMax,
+                                          unsigned nTrajectories,
+                                          unsigned nPixPerThread = 4,
+                                          std::string_view kernelName = seqsearch::defaultKernel) noexcept -> Mx;
+
+        [[nodiscard]] auto sequenceSearch(clutils::Context context,
+                                          Mx const& diffMx,
+                                          unsigned sequenceLength,
+                                          float vMin,
+                                          float vMax,
+                                          unsigned nTrajectories,
+                                          unsigned nPixPerThread = 4,
+                                          std::string_view kernelName = seqsearch::defaultKernel) noexcept -> Mx;
     } // namespace opencl
 } // namespace seqslam
 
