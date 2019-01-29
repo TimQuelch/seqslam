@@ -59,7 +59,7 @@ namespace seqslam {
                                                           "diffMxNaive"sv}};
             constexpr auto defaultKernel = kernels.second[0];
 
-            auto createContext() -> clutils::Context;
+            [[nodiscard]] auto createContext() -> clutils::Context;
 
             struct diffMxBuffers {
                 clutils::Buffer reference;
@@ -91,7 +91,7 @@ namespace seqslam {
                           std::array{"enhanceDiffMxSequential"sv, "enhanceDiffMxStrided"sv}};
             constexpr auto defaultKernel = kernels.second[0];
 
-            auto createContext() -> clutils::Context;
+            [[nodiscard]] auto createContext() -> clutils::Context;
 
             struct diffMxEnhanceBuffers {
                 clutils::Buffer in;
@@ -117,7 +117,7 @@ namespace seqslam {
                 std::pair{"kernels/search.cl"sv, std::array{"sequenceSearch"sv}};
             constexpr auto defaultKernel = kernels.second[0];
 
-            auto createContext() -> clutils::Context;
+            [[nodiscard]] auto createContext() -> clutils::Context;
 
             struct sequenceSearchBuffers {
                 clutils::Buffer in;
