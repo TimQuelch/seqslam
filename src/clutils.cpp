@@ -76,7 +76,7 @@ namespace clutils {
                 auto queue = cl::CommandQueue{context};
                 auto devices = std::vector<cl::Device>{device};
                 return std::tuple{context, queue, std::move(devices)};
-            } catch (cl::Error& e) { throw Error(e.what(), e.err()); }
+            } catch (cl::Error& e) { throw Error{e.what(), e.err()}; }
         }
 
         [[nodiscard]] auto readJsonConfig(std::filesystem::path const& configFile) {
@@ -104,7 +104,7 @@ namespace clutils {
                     std::pair{sourceString.c_str(), std::strlen(sourceString.c_str())}};
                 try {
                     return cl::Program{context, source};
-                } catch (cl::Error& e) { throw Error(e.what(), e.err()); }
+                } catch (cl::Error& e) { throw Error{e.what(), e.err()}; }
             }();
 
             try {
@@ -140,7 +140,7 @@ namespace clutils {
         try {
             queue_.enqueueReadBuffer(
                 buffer_, static_cast<cl_bool>(true), offset, size, destination);
-        } catch (cl::Error& e) { throw Error(e.what(), e.err()); }
+        } catch (cl::Error& e) { throw Error{e.what(), e.err()}; }
     }
 
     void Buffer::writeBuffer(void const* source) const { writeBuffer(source, 0, size_); }
@@ -148,7 +148,7 @@ namespace clutils {
     void Buffer::writeBuffer(void const* source, std::size_t offset, std::size_t size) const {
         try {
             queue_.enqueueWriteBuffer(buffer_, static_cast<cl_bool>(true), offset, size, source);
-        } catch (cl::Error& e) { throw Error(e.what(), e.err()); }
+        } catch (cl::Error& e) { throw Error{e.what(), e.err()}; }
     }
 
     Context::Context() {
@@ -201,19 +201,19 @@ namespace clutils {
                                         toNdRange(globalDims),
                                         toNdRange(localDims));
             queue_.finish();
-        } catch (cl::Error& e) { throw Error(e.what(), e.err()); }
+        } catch (cl::Error& e) { throw Error{e.what(), e.err()}; }
     }
 
     void Context::setKernelArg(std::string_view kernelName, unsigned index, Buffer const& arg) {
         try {
             kernels_.at(std::string{kernelName}).setArg(index, arg.buffer());
-        } catch (cl::Error& e) { throw Error(e.what(), e.err()); }
+        } catch (cl::Error& e) { throw Error{e.what(), e.err()}; }
     }
 
     void Context::setKernelLocalArg(std::string_view kernelName, unsigned index, std::size_t size) {
         try {
             kernels_.at(std::string{kernelName}).setArg(index, cl::Local(size));
-        } catch (cl::Error& e) { throw Error(e.what(), e.err()); }
+        } catch (cl::Error& e) { throw Error{e.what(), e.err()}; }
     }
 
     Error::Error(std::string_view where, int code)
