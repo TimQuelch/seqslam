@@ -9,9 +9,10 @@ kernel void sequenceSearch(global float const* diffMx,
     const unsigned int q = get_global_id(1);
     const unsigned int nThreads = get_global_size(0);
     const unsigned int nRef = nPixPerThread * nThreads;
+    const unsigned int nQue = get_global_size(1);
 
-    const int minQOffset = -floor((int)sequenceLength / 2.0f);
-    const int maxQOffset = minQOffset + sequenceLength;
+    const int minQOffset = qOffsets[0];
+    const int maxQOffset = qOffsets[sequenceLength - 1];
 
     const int minROffset =
         min(min(rOffsets[0], rOffsets[sequenceLength - 1]),
@@ -24,8 +25,8 @@ kernel void sequenceSearch(global float const* diffMx,
 
     for (unsigned int r = rBase; r < nRef; r += nThreads) {
         float val = 0.0f;
-        if (q > -minQOffset && q < maxQOffset && r > -minROffset &&
-            r < maxROffset) {
+        if (q >= -minQOffset && q < nQue - maxQOffset && r >= -minROffset &&
+            r < nRef - maxROffset) {
             float best = FLT_MAX;
             for (int i = 0; i < nTrajectories; i++) {
                 float score = 0.0f;
