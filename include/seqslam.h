@@ -137,8 +137,10 @@ namespace seqslam {
             void writeArgs(clutils::Context& context,
                            sequenceSearchBuffers const& buffers,
                            Mx const& diffMx,
-                           std::vector<int> const& qOffsets,
-                           std::vector<std::vector<int>> const& rOffsets,
+                           unsigned sequenceLength,
+                           float vMin,
+                           float vMax,
+                           unsigned nTrajectories,
                            unsigned nPixPerThread,
                            std::string_view kernelName);
         } // namespace seqsearch

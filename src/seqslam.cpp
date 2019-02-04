@@ -482,32 +482,27 @@ namespace seqslam {
             void writeArgs(clutils::Context& context,
                            sequenceSearchBuffers const& buffers,
                            Mx const& diffMx,
-                           std::vector<int> const& qOffsets,
-                           std::vector<std::vector<int>> const& rOffsets,
+                           unsigned sequenceLength,
+                           float vMin,
+                           float vMax,
+                           unsigned nTrajectories,
                            unsigned nPixPerThread,
                            std::string_view kernelName) {
-                assert(!qOffsets.empty());
-                assert(!rOffsets.empty());
-                for (auto const& rOffset : rOffsets) {
-                    static_cast<void>(rOffset); // Squash warning in release build
-                    assert(rOffset.size() == qOffsets.size());
-                }
-
-                auto const sequenceLength = qOffsets.size();
-                auto const nTrajectories = rOffsets.size();
+                auto const qi = calcTrajectoryQueryIndexOffsets(sequenceLength);
+                auto const ri = calcTrajectoryReferenceIndexOffsets(qi, vMin, vMax, nTrajectories);
 
                 auto in = std::make_unique<PixType[]>(diffMx.rows() * diffMx.cols());
                 Eigen::Map<Mx>{in.get(), diffMx.rows(), diffMx.cols()} = diffMx;
                 buffers.in.writeBuffer(in.get());
 
-                buffers.qOffsets.writeBuffer(qOffsets.data());
-                buffers.rOffsets.writeBuffer(concatenateROffsets(rOffsets).data());
+                buffers.qOffsets.writeBuffer(qi.data());
+                buffers.rOffsets.writeBuffer(concatenateROffsets(ri).data());
 
                 context.setKernelArg(kernelName, 0, buffers.in);
                 context.setKernelArg(kernelName, 1, buffers.qOffsets);
                 context.setKernelArg(kernelName, 2, buffers.rOffsets);
-                context.setKernelArg(kernelName, 3, static_cast<unsigned>(sequenceLength));
-                context.setKernelArg(kernelName, 4, static_cast<unsigned>(nTrajectories));
+                context.setKernelArg(kernelName, 3, static_cast<unsigned>(qi.size()));
+                context.setKernelArg(kernelName, 4, static_cast<unsigned>(ri.size()));
                 context.setKernelArg(kernelName, 5, static_cast<unsigned>(nPixPerThread));
                 context.setKernelArg(kernelName, 6, buffers.out);
             }
@@ -633,9 +628,15 @@ namespace seqslam {
                                           std::string_view kernelName) -> Mx {
             auto bufs = seqsearch::createBuffers(
                 context, sequenceLength, nTrajectories, diffMx.rows(), diffMx.cols());
-            auto const qi = calcTrajectoryQueryIndexOffsets(sequenceLength);
-            auto const ri = calcTrajectoryReferenceIndexOffsets(qi, vMin, vMax, nTrajectories);
-            seqsearch::writeArgs(context, bufs, diffMx, qi, ri, nPixPerThread, kernelName);
+            seqsearch::writeArgs(context,
+                                 bufs,
+                                 diffMx,
+                                 sequenceLength,
+                                 vMin,
+                                 vMax,
+                                 nTrajectories,
+                                 nPixPerThread,
+                                 kernelName);
 
             return sequenceSearch(
                 context, bufs.out, diffMx.rows(), diffMx.cols(), nPixPerThread, kernelName);
