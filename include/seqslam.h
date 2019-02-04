@@ -195,7 +195,8 @@ namespace seqslam {
                                           float vMax,
                                           unsigned nTrajectories,
                                           unsigned nPixPerThread = 4,
-                                          std::string_view kernelName = seqsearch::defaultKernel) noexcept -> Mx;
+                                          std::string_view kernelName = seqsearch::defaultKernel)
+            -> Mx;
 
         [[nodiscard]] auto sequenceSearch(clutils::Context context,
                                           Mx const& diffMx,
@@ -204,7 +205,16 @@ namespace seqslam {
                                           float vMax,
                                           unsigned nTrajectories,
                                           unsigned nPixPerThread = 4,
-                                          std::string_view kernelName = seqsearch::defaultKernel) noexcept -> Mx;
+                                          std::string_view kernelName = seqsearch::defaultKernel)
+            -> Mx;
+
+        [[nodiscard]] auto sequenceSearch(clutils::Context const& context,
+                                          clutils::Buffer const& outBuffer,
+                                          std::size_t nReference,
+                                          std::size_t nQuery,
+                                          unsigned nPixPerThread = 4,
+                                          std::string_view kernelName = seqsearch::defaultKernel)
+            -> Mx;
     } // namespace opencl
 } // namespace seqslam
 

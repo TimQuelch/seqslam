@@ -494,7 +494,7 @@ namespace seqslam {
                 }
 
                 auto const sequenceLength = qOffsets.size();
-                auto const nTrajectories = rOffsets[0].size();
+                auto const nTrajectories = rOffsets.size();
 
                 auto in = std::make_unique<PixType[]>(diffMx.rows() * diffMx.cols());
                 Eigen::Map<Mx>{in.get(), diffMx.rows(), diffMx.cols()} = diffMx;
@@ -594,7 +594,8 @@ namespace seqslam {
                                          std::size_t nQuery,
                                          unsigned nPixPerThread,
                                          std::string_view kernelName) -> Mx {
-            context.runKernel(kernelName, {nReference / nPixPerThread, nQuery}, {nReference / nPixPerThread, 1});
+            context.runKernel(
+                kernelName, {nReference / nPixPerThread, nQuery}, {nReference / nPixPerThread, 1});
 
             auto buffer = std::make_unique<PixType[]>(nReference * nQuery);
             outBuffer.readBuffer(buffer.get());
@@ -610,9 +611,16 @@ namespace seqslam {
                                           float vMax,
                                           unsigned nTrajectories,
                                           unsigned nPixPerThread,
-                                          std::string_view kernelName) noexcept -> Mx {
-            auto context = createContext();
-            return sequenceSearch(context, diffMx, sequenceLength, vMin, vMax, nTrajectories);
+                                          std::string_view kernelName) -> Mx {
+            auto context = seqsearch::createContext();
+            return sequenceSearch(context,
+                                  diffMx,
+                                  sequenceLength,
+                                  vMin,
+                                  vMax,
+                                  nTrajectories,
+                                  nPixPerThread,
+                                  kernelName);
         }
 
         [[nodiscard]] auto sequenceSearch(clutils::Context context,
@@ -622,12 +630,32 @@ namespace seqslam {
                                           float vMax,
                                           unsigned nTrajectories,
                                           unsigned nPixPerThread,
-                                          std::string_view kernelName) noexcept -> Mx {
+                                          std::string_view kernelName) -> Mx {
             auto bufs = seqsearch::createBuffers(
                 context, sequenceLength, nTrajectories, diffMx.rows(), diffMx.cols());
             auto const qi = calcTrajectoryQueryIndexOffsets(sequenceLength);
             auto const ri = calcTrajectoryReferenceIndexOffsets(qi, vMin, vMax, nTrajectories);
             seqsearch::writeArgs(context, bufs, diffMx, qi, ri, nPixPerThread, kernelName);
+
+            return sequenceSearch(
+                context, bufs.out, diffMx.rows(), diffMx.cols(), nPixPerThread, kernelName);
+        }
+
+        [[nodiscard]] auto sequenceSearch(clutils::Context const& context,
+                                          clutils::Buffer const& outBuffer,
+                                          std::size_t nReference,
+                                          std::size_t nQuery,
+                                          unsigned nPixPerThread,
+                                          std::string_view kernelName) -> Mx {
+            context.runKernel(
+                kernelName, {nReference / nPixPerThread, nQuery}, {nReference / nPixPerThread, 1});
+
+            auto buffer = std::make_unique<PixType[]>(nReference * nQuery);
+            outBuffer.readBuffer(buffer.get());
+
+            return Mx(Eigen::Map<Mx>{buffer.get(),
+                                     static_cast<Eigen::Index>(nReference),
+                                     static_cast<Eigen::Index>(nQuery)});
         }
     } // namespace opencl
 } // namespace seqslam
