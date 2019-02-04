@@ -8,9 +8,9 @@ kernel void sequenceSearch(global float const* diffMx,
     const unsigned int rBase = get_global_id(0);
     const unsigned int q = get_global_id(1);
     const unsigned int nThreads = get_global_size(0);
-    const unsinged int nRef = nPixPerThread * nThreads;
+    const unsigned int nRef = nPixPerThread * nThreads;
 
-    const int minQOffset = -floor((int)sequenceLength / 2);
+    const int minQOffset = -floor((int)sequenceLength / 2.0f);
     const int maxQOffset = minQOffset + sequenceLength;
 
     const int minROffset =
