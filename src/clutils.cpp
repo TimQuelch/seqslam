@@ -102,10 +102,29 @@ namespace clutils {
                                                       std::istreambuf_iterator<char>{}};
                 auto const source = cl::Program::Sources{
                     std::pair{sourceString.c_str(), std::strlen(sourceString.c_str())}};
-                return cl::Program{context, source};
+                try {
+                    return cl::Program{context, source};
+                } catch (cl::Error& e) { throw Error(e.what(), e.err()); }
             }();
 
-            program.build(devices, "-cl-mad-enable -cl-fast-relaxed-math -cl-no-signed-zeros");
+            try {
+                program.build(devices, "-cl-mad-enable -cl-fast-relaxed-math -cl-no-signed-zeros");
+            } catch (cl::Error& e) {
+                if (e.err() == CL_BUILD_PROGRAM_FAILURE) {
+                    for (auto const& dev : devices) {
+                        if (program.getBuildInfo<CL_PROGRAM_BUILD_STATUS>(dev) == CL_BUILD_ERROR) {
+                            auto const devName = dev.getInfo<CL_DEVICE_NAME>();
+                            auto const log = program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(dev);
+                            fmt::print(stderr,
+                                       "OpenCL kernel build log for {} on {}:\n{}\n",
+                                       sourceFile.string(),
+                                       devName,
+                                       log);
+                        }
+                    }
+                }
+                throw Error{e.what(), e.err()};
+            }
 
             return program;
         }
