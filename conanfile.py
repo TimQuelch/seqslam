@@ -6,5 +6,6 @@ class SeqslamBenchmarkConan(ConanFile):
                 "eigen/3.3.5@conan/stable",
                 "catch2/2.5.0@bincrafters/stable",
                 "jsonformoderncpp/3.5.0@vthiery/stable")
-    default_options = {"opencv:openexr": False}
+    default_options = {"opencv:openexr": False,
+                       "opencv:jasper": False}
     generators = ("cmake", "cmake_paths")
