@@ -10,17 +10,34 @@ kernel void sequenceSearch(global float const* diffMx,
     const unsigned int nThreads = get_global_size(0);
     const unsinged int nRef = nPixPerThread * nThreads;
 
+    const int minQOffset = -floor((int)sequenceLength / 2);
+    const int maxQOffset = minQOffset + sequenceLength;
+
+    const int minROffset =
+        min(min(rOffsets[0], rOffsets[sequenceLength - 1]),
+            min(rOffsets[(nTrajectories - 1) * sequenceLength],
+                rOffsets[nTrajectories * sequenceLength - 1]));
+    const int maxROffset =
+        max(max(rOffsets[0], rOffsets[sequenceLength - 1]),
+            max(rOffsets[(nTrajectories - 1) * sequenceLength],
+                rOffsets[nTrajectories * sequenceLength - 1]));
+
     for (unsigned int r = rBase; r < nRef; r += nThreads) {
-        float best = FLT_MAX;
-        for (int i = 0; i < nTrajectories; i++) {
-            float score = 0.0f;
-            for (int j = 0; j < sequenceLength; j++) {
-                const int qOffset = qOffsets[j];
-                const int rOffset = rOffsets[i * sequenceLength + j];
-                score += diffMx[(q + qOffset) * nRef + r + rOffset];
+        float val = 0.0f;
+        if (q > -minQOffset && q < maxQOffset && r > -minROffset &&
+            r < maxROffset) {
+            float best = FLT_MAX;
+            for (int i = 0; i < nTrajectories; i++) {
+                float score = 0.0f;
+                for (int j = 0; j < sequenceLength; j++) {
+                    const int qOffset = qOffsets[j];
+                    const int rOffset = rOffsets[i * sequenceLength + j];
+                    score += diffMx[(q + qOffset) * nRef + r + rOffset];
+                }
+                best = fmin(best, score);
             }
-            best = fmin(best, score);
+            val = best;
         }
-        sequenceStrengthOut[q * nRef + r] = best;
+        sequenceStrengthOut[q * nRef + r] = val;
     }
 }
