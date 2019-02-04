@@ -201,7 +201,7 @@ namespace clutils {
         : what_{fmt::format(
               "OpenCL error in {}. Error code {} ({})", where, code, errorCodes_[code])},
           where_{where}, error_{errorCodes_[code]}, code_{code} {
-        fmt::print("{}\n", what_);
+        fmt::print(stderr, "{}\n", what_);
     }
 
     std::map<int, std::string> Error::errorCodes_ = {
