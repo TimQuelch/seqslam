@@ -22,3 +22,7 @@ catch_discover_tests(test-validate-diffmx)
 add_executable(test-validate-enhance test-validate-enhance.cpp)
 target_link_libraries(test-validate-enhance PRIVATE test-main seqslam fmt::fmt)
 catch_discover_tests(test-validate-enhance)
+
+add_executable(test-validate-search test-validate-search.cpp)
+target_link_libraries(test-validate-search PRIVATE test-main seqslam fmt::fmt)
+catch_discover_tests(test-validate-search)
