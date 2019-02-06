@@ -9,9 +9,34 @@
 using namespace seqslam;
 using namespace std::literals::string_view_literals;
 
-constexpr auto smallImagesDir = "datasets/nordland_trimmed_resized"sv;
-
 namespace {
+    constexpr auto const smallImagesDir = "datasets/nordland_trimmed_resized"sv;
+    constexpr auto const nImages = 3576u;
+    constexpr auto const smallRange = std::pair{0.8f, 1.2f};
+    constexpr auto const largeRange = std::pair{0.0f, 5.0f};
+
+    auto cpuParameters(benchmark::internal::Benchmark* b) {
+        for (auto sequenceLength = 3u; sequenceLength <= 30u; sequenceLength += 3u) {
+            for (auto nTrajectories = 1u; nTrajectories <= 11u; nTrajectories += 2u) {
+                b->Args({static_cast<long>(sequenceLength), static_cast<long>(nTrajectories)});
+            }
+        }
+    }
+
+    auto gpuParameters(benchmark::internal::Benchmark* b) {
+        for (auto sequenceLength = 3u; sequenceLength <= 30u; sequenceLength += 3u) {
+            for (auto nTrajectories = 1u; nTrajectories <= 11u; nTrajectories += 2u) {
+                for (auto nPixPerThread = 1u; nPixPerThread <= 50u; nPixPerThread++) {
+                    if (opencl::seqsearch::isValidParameters(nImages, nPixPerThread)) {
+                        b->Args({static_cast<long>(sequenceLength),
+                                 static_cast<long>(nTrajectories),
+                                 static_cast<long>(nPixPerThread)});
+                    }
+                }
+            }
+        }
+    }
+
     auto loadImages(std::string_view path) {
         auto const dataDir = std::filesystem::path{path};
         auto referenceImages =
@@ -30,7 +55,8 @@ namespace {
 
     auto getDiffMx() {
         static auto const diffMx = [imgs = loadImages(smallImagesDir)]() {
-            auto mx = cpu::generateDiffMx(std::get<0>(imgs), std::get<1>(imgs));
+            auto mx =
+                cpu::enhanceDiffMx(cpu::generateDiffMx(std::get<0>(imgs), std::get<1>(imgs)), 10);
             mx.array() -= mx.minCoeff();
             mx /= mx.maxCoeff();
             return mx;
@@ -56,22 +82,51 @@ void referenceIndexOffsets(benchmark::State& state) {
 }
 BENCHMARK(referenceIndexOffsets)->RangeMultiplier(2)->Range(1, 1 << 8);
 
-void sequenceSearch(benchmark::State& state) {
-    Mx mx = cpu::enhanceDiffMx(getDiffMx(), 10);
-    for (auto _ : state) {
-        auto sequences = cpu::sequenceSearch(mx, state.range(0), 0, 5, 1);
-    }
-    state.SetBytesProcessed(mx.rows() * mx.cols() * state.iterations() * sizeof(PixType));
-}
-BENCHMARK(sequenceSearch)->RangeMultiplier(2)->Range(1 << 2, 1 << 8);
+void cpuSearch(benchmark::State& state, std::pair<float, float> vRange) {
+    Mx const mx = getDiffMx();
+    auto const sequenceLength = state.range(0);
+    auto const nTrajectories = state.range(1);
 
-void sequenceSearchVaryingNTrajectories(benchmark::State& state) {
-    Mx mx = cpu::enhanceDiffMx(getDiffMx(), 10);
     for (auto _ : state) {
-        auto sequences = cpu::sequenceSearch(mx, 30, 0, 5, state.range(0));
+        auto sequences = cpu::sequenceSearch(mx, sequenceLength, vRange.first, vRange.second, nTrajectories);
+        benchmark::DoNotOptimize(sequences.data());
+        benchmark::ClobberMemory();
     }
-    state.SetBytesProcessed(mx.rows() * mx.cols() * state.iterations() * sizeof(PixType));
+    state.SetItemsProcessed(mx.rows() * mx.cols() * state.iterations());
+    state.SetBytesProcessed(state.items_processed() * sizeof(PixType));
 }
-BENCHMARK(sequenceSearchVaryingNTrajectories)->DenseRange(1, 10);
+BENCHMARK_CAPTURE(cpuSearch, small, smallRange)->Apply(cpuParameters);
+BENCHMARK_CAPTURE(cpuSearch, large, largeRange)->Apply(cpuParameters);
+
+void gpuSearch(benchmark::State& state, std::pair<float, float> vRange) {
+    Mx const mx = getDiffMx();
+    auto const sequenceLength = state.range(0);
+    auto const nTrajectories = state.range(1);
+    auto const nPixPerThread = state.range(2);
+
+    auto context = opencl::seqsearch::createContext();
+    auto bufs = opencl::seqsearch::createBuffers(
+        context, sequenceLength, nTrajectories, mx.rows(), mx.cols());
+    opencl::seqsearch::writeArgs(context,
+                                 bufs,
+                                 mx,
+                                 sequenceLength,
+                                 vRange.first,
+                                 vRange.second,
+                                 nTrajectories,
+                                 nPixPerThread,
+                                 opencl::seqsearch::defaultKernel);
+
+    for (auto _ : state) {
+        auto sequences =
+            opencl::sequenceSearch(context, bufs.out, mx.rows(), mx.cols(), nPixPerThread);
+        benchmark::DoNotOptimize(sequences.data());
+        benchmark::ClobberMemory();
+    }
+    state.SetItemsProcessed(mx.rows() * mx.cols() * state.iterations());
+    state.SetBytesProcessed(state.items_processed() * sizeof(PixType));
+}
+BENCHMARK_CAPTURE(gpuSearch, small, smallRange)->Apply(gpuParameters);
+BENCHMARK_CAPTURE(gpuSearch, large, largeRange)->Apply(gpuParameters);
 
 BENCHMARK_MAIN();
