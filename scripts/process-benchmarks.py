@@ -41,7 +41,7 @@ def main(args):
     d = d.rename(columns=lambda s: s.replace('Cpu', 'CPU'))
     d = d.rename(columns={'Tile Size': tsizeName, 'N Pixels per Thread': nloadName})
 
-    d['Method'] = d['Method'].replace(to_replace={'DifferenceMatrix': ''}, regex=True)
+    d['Method'] = d['Method'].str.replace('DifferenceMatrix', '')
     d['Method'] = d['Method'].replace(to_replace={'cpu': 'CPU',
                                                   'gpu': 'GPU',
                                                   'gpuWithCopyAndContext':
