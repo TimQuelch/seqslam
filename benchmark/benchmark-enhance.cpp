@@ -65,7 +65,7 @@ void cpuEnhancement(benchmark::State& state) {
         benchmark::ClobberMemory();
     }
     state.SetItemsProcessed(mx.rows() * mx.cols() * state.iterations());
-    state.SetBytesProcessed(state.items_processed() * windowSize * sizeof(PixType));
+    state.SetBytesProcessed(state.items_processed() * (windowSize + 1) * sizeof(PixType));
 }
 BENCHMARK(cpuEnhancement)->Apply(cpuParameters);
 
@@ -86,7 +86,7 @@ void gpuEnhancement(benchmark::State& state) {
         benchmark::ClobberMemory();
     }
     state.SetItemsProcessed(mx.rows() * mx.cols() * state.iterations());
-    state.SetBytesProcessed(state.items_processed() * windowSize * sizeof(PixType));
+    state.SetBytesProcessed(state.items_processed() * (windowSize + 1) * sizeof(PixType));
 }
 BENCHMARK(gpuEnhancement)->Apply([](auto b) { return gpuParameters(b, nImages); });
 

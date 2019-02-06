@@ -88,12 +88,14 @@ void cpuSearch(benchmark::State& state, std::pair<float, float> vRange) {
     auto const nTrajectories = state.range(1);
 
     for (auto _ : state) {
-        auto sequences = cpu::sequenceSearch(mx, sequenceLength, vRange.first, vRange.second, nTrajectories);
+        auto sequences =
+            cpu::sequenceSearch(mx, sequenceLength, vRange.first, vRange.second, nTrajectories);
         benchmark::DoNotOptimize(sequences.data());
         benchmark::ClobberMemory();
     }
     state.SetItemsProcessed(mx.rows() * mx.cols() * state.iterations());
-    state.SetBytesProcessed(state.items_processed() * sizeof(PixType));
+    state.SetBytesProcessed(state.items_processed() * (sequenceLength * nTrajectories + 1) *
+                            sizeof(PixType));
 }
 BENCHMARK_CAPTURE(cpuSearch, small, smallRange)->Apply(cpuParameters);
 BENCHMARK_CAPTURE(cpuSearch, large, largeRange)->Apply(cpuParameters);
@@ -124,7 +126,8 @@ void gpuSearch(benchmark::State& state, std::pair<float, float> vRange) {
         benchmark::ClobberMemory();
     }
     state.SetItemsProcessed(mx.rows() * mx.cols() * state.iterations());
-    state.SetBytesProcessed(state.items_processed() * sizeof(PixType));
+    state.SetBytesProcessed(state.items_processed() * (sequenceLength * nTrajectories + 1) *
+                            sizeof(PixType));
 }
 BENCHMARK_CAPTURE(gpuSearch, small, smallRange)->Apply(gpuParameters);
 BENCHMARK_CAPTURE(gpuSearch, large, largeRange)->Apply(gpuParameters);
