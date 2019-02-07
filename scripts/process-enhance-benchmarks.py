@@ -5,7 +5,7 @@ import numpy as np
 import json
 import argparse
 
-argparser = argparse.ArgumentParser(description="Process benchmark results")
+argparser = argparse.ArgumentParser(description="Process difference matrix enhancement benchmark results")
 
 argparser.add_argument('-s', '--show', action='store_true', help='Display figures as windows')
 argparser.add_argument('-w', '--write', action='store_true', help='Write figures to files')
@@ -90,6 +90,14 @@ def main(args):
     ax = gpu['Million Items per Second'].plot(style='o-', ax=ax)
     ax = setYAxis(ax, itemRateLabel)
     figs.append((fig, 'gpu-items-2'))
+
+    speedup = dr.loc['GPU'] / dr.loc['CPU'].reset_index(level=[nloadName], drop=True)
+    speedup = speedup.unstack(level=nloadName)
+
+    fig, ax = plt.subplots()
+    ax = speedup['GiB per Second'].plot(style='o-', ax=ax)
+    ax = setYAxis(ax, 'Speedup relative to CPU')
+    figs.append((fig, 'speedup'))
 
     if args.show:
         plt.show()
