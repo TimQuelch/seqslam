@@ -5,7 +5,7 @@ import numpy as np
 import json
 import argparse
 
-argparser = argparse.ArgumentParser(description="Process benchmark results")
+argparser = argparse.ArgumentParser(description="Process diffmx calculation benchmark results")
 
 argparser.add_argument('-s', '--show', action='store_true', help='Display figures as windows')
 argparser.add_argument('-w', '--write', action='store_true', help='Write figures to files')
@@ -16,7 +16,7 @@ def setYAxis(ax, top=None):
     return ax
 
 def main(args):
-    with open('benchmarks.json') as b:
+    with open('benchmarks-diffmx.json') as b:
         raw = json.load(b)
 
     figs = []
@@ -41,7 +41,7 @@ def main(args):
     d = d.rename(columns=lambda s: s.replace('Cpu', 'CPU'))
     d = d.rename(columns={'Tile Size': tsizeName, 'N Pixels per Thread': nloadName})
 
-    d['Method'] = d['Method'].replace(to_replace={'DifferenceMatrix': ''}, regex=True)
+    d['Method'] = d['Method'].str.replace('DifferenceMatrix', '')
     d['Method'] = d['Method'].replace(to_replace={'cpu': 'CPU',
                                                   'gpu': 'GPU',
                                                   'gpuWithCopyAndContext':
