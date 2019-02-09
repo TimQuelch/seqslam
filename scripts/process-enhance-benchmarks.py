@@ -10,6 +10,9 @@ argparser = argparse.ArgumentParser(description="Process difference matrix enhan
 argparser.add_argument('-s', '--show', action='store_true', help='Display figures as windows')
 argparser.add_argument('-w', '--write', action='store_true', help='Write figures to files')
 
+datafile = 'benchmarks-enhance.json'
+fileprefix = 'enhance'
+
 throughputLabel = 'Throughput ($\mathrm{GiBs^{-1}}$)'
 itemRateLabel = 'Million Items per Second'
 
@@ -19,7 +22,7 @@ def setYAxis(ax, label, top=None):
     return ax
 
 def main(args):
-    with open('benchmarks-enhance.json') as b:
+    with open(datafile) as b:
         raw = json.load(b)
 
     figs = []
@@ -84,12 +87,12 @@ def main(args):
     fig, ax = plt.subplots()
     ax = gpu['GiB per Second'].plot(style='o-', ax=ax)
     ax = setYAxis(ax, throughputLabel)
-    figs.append((fig, 'gpu-rate-2'))
+    figs.append((fig, 'gpu-rate'))
 
     fig, ax = plt.subplots()
     ax = gpu['Million Items per Second'].plot(style='o-', ax=ax)
     ax = setYAxis(ax, itemRateLabel)
-    figs.append((fig, 'gpu-items-2'))
+    figs.append((fig, 'gpu-items'))
 
     speedup = dr.loc['GPU'] / dr.loc['CPU'].reset_index(level=[nloadName], drop=True)
     speedup = speedup.unstack(level=nloadName)
@@ -104,7 +107,7 @@ def main(args):
 
     if args.write:
         for fig, name in figs:
-            fig.savefig(name + '.pdf')
+            fig.savefig(fileprefix + '-' + name + '.pdf')
 
 if __name__ == '__main__':
     args = argparser.parse_args()

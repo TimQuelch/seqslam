@@ -10,13 +10,16 @@ argparser = argparse.ArgumentParser(description="Process diffmx calculation benc
 argparser.add_argument('-s', '--show', action='store_true', help='Display figures as windows')
 argparser.add_argument('-w', '--write', action='store_true', help='Write figures to files')
 
+datafile = 'benchmarks-diffmx.json'
+fileprefix = 'diffmx'
+
 def setYAxis(ax, top=None):
     ax.set_ylabel('Throughput ($\mathrm{GiBs^{-1}}$)')
     ax.set_ylim(bottom=0, top=top)
     return ax
 
 def main(args):
-    with open('benchmarks-diffmx.json') as b:
+    with open(datafile) as b:
         raw = json.load(b)
 
     figs = []
@@ -108,7 +111,7 @@ def main(args):
 
     if args.write:
         for fig, name in figs:
-            fig.savefig(name + '.pdf')
+            fig.savefig(fileprefix + '-' + name + '.pdf')
 
 if __name__ == '__main__':
     args = argparser.parse_args()
