@@ -12,6 +12,9 @@ target_link_libraries(benchmark-enhance PRIVATE seqslam benchmark::benchmark)
 add_executable(benchmark-search benchmark-search.cpp)
 target_link_libraries(benchmark-search PRIVATE seqslam benchmark::benchmark)
 
+add_executable(benchmark-seqslam benchmark-seqslam.cpp)
+target_link_libraries(benchmark-seqslam PRIVATE seqslam benchmark::benchmark)
+
 add_executable(benchmark-sad benchmark-sad.cpp)
 target_compile_features(benchmark-sad PRIVATE cxx_std_17)
 target_link_libraries(benchmark-sad PRIVATE benchmark::benchmark Eigen3::Eigen)
