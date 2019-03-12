@@ -380,6 +380,8 @@ namespace seqslam {
                         localMemorySize)};
                 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuseless-cast"
                 context.setKernelArg(kernelName, 0, buffers.query);
                 context.setKernelArg(kernelName, 1, buffers.reference);
                 context.setKernelArg(kernelName, 2, static_cast<unsigned int>(tileSize));
@@ -387,6 +389,7 @@ namespace seqslam {
                 context.setKernelArg(kernelName, 4, buffers.diffMx);
                 context.setKernelLocalArg(
                     kernelName, 5, d.nElems() * tileSize * tileSize * sizeof(PixType) / nPerThread);
+#pragma GCC diagnostic pop
             }
         } // namespace diffmxcalc
 
@@ -439,11 +442,14 @@ namespace seqslam {
                         localMemorySize)};
                 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuseless-cast"
                 context.setKernelArg(kernelName, 0, buffers.in);
                 context.setKernelArg(kernelName, 1, static_cast<int>(windowSize));
                 context.setKernelArg(kernelName, 2, static_cast<unsigned>(nPixPerThread));
                 context.setKernelArg(kernelName, 3, buffers.out);
                 context.setKernelLocalArg(kernelName, 4, diffMx.rows() * sizeof(PixType));
+#pragma GCC diagnostic pop
             }
         } // namespace diffmxenhance
 
@@ -498,6 +504,8 @@ namespace seqslam {
                 buffers.qOffsets.writeBuffer(qi.data());
                 buffers.rOffsets.writeBuffer(concatenateROffsets(ri).data());
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuseless-cast"
                 context.setKernelArg(kernelName, 0, buffers.in);
                 context.setKernelArg(kernelName, 1, buffers.qOffsets);
                 context.setKernelArg(kernelName, 2, buffers.rOffsets);
@@ -505,6 +513,7 @@ namespace seqslam {
                 context.setKernelArg(kernelName, 4, static_cast<unsigned>(ri.size()));
                 context.setKernelArg(kernelName, 5, static_cast<unsigned>(nPixPerThread));
                 context.setKernelArg(kernelName, 6, buffers.out);
+#pragma GCC diagnostic pop
             }
         } // namespace seqsearch
 
