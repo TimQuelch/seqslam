@@ -212,9 +212,23 @@ namespace seqslam {
         return buffer;
     }
 
+    [[nodiscard]] auto generateThresholdRange(Mx const& mx, unsigned nThresholds)
+        -> std::vector<double> {
+        auto const max = mx.maxCoeff();
+        auto const min = mx.minCoeff();
+
+        auto vals = std::vector<double>(nThresholds);
+        std::iota(vals.begin(), vals.end(), 0.0);
+
+        auto const delta = static_cast<double>(max - min) / nThresholds;
+        std::transform(
+            vals.begin(), vals.end(), vals.begin(), [delta](auto v) { return delta * v; });
+
+        return vals;
+    }
+
     [[nodiscard]] auto predict(Mx const& mx, double threshold)
         -> std::vector<std::vector<unsigned>> {
-
         auto allPredictions = std::vector<std::vector<unsigned>>{};
         allPredictions.reserve(mx.cols());
 
@@ -261,6 +275,23 @@ namespace seqslam {
                        static_cast<double>(stats.truePositive + stats.falseNegative);
         stats.precision = static_cast<double>(stats.truePositive) /
                           static_cast<double>(stats.truePositive + stats.falsePositive);
+
+        return stats;
+    }
+
+    [[nodiscard]] auto prCurve(Mx const& mx,
+                               std::vector<std::vector<unsigned>> const& truth,
+                               unsigned nPoints) -> std::vector<predictionStats> {
+        auto const thresholds = generateThresholdRange(mx, nPoints);
+
+        auto stats = std::vector<predictionStats>{};
+        stats.reserve(thresholds.size());
+        std::transform(thresholds.begin(),
+                       thresholds.end(),
+                       std::back_inserter(stats),
+                       [&mx, &truth](auto threshold) {
+                           return analysePredictions(predict(mx, threshold), truth);
+                       });
 
         return stats;
     }

@@ -31,6 +31,9 @@ namespace seqslam {
     [[nodiscard]] auto convertToBuffer(std::vector<Mx> const& mxs) noexcept
         -> std::unique_ptr<PixType[]>;
 
+    [[nodiscard]] auto generateThresholdRange(Mx const& mx, unsigned nThresholds)
+        -> std::vector<double>;
+
     [[nodiscard]] auto predict(Mx const& mx, float threshold) -> std::vector<std::vector<unsigned>>;
 
     struct predictionStats {
@@ -43,6 +46,9 @@ namespace seqslam {
     [[nodiscard]] auto analysePredictions(std::vector<std::vector<unsigned>> const& predictions,
                                           std::vector<std::vector<unsigned>> const& truth)
         -> predictionStats;
+
+    [[nodiscard]] auto prCurve(Mx const& mx, std::vector<std::vector<unsigned>> const& truth, unsigned nPoints)
+        -> std::vector<predictionStats>;
 
     [[nodiscard]] auto nordlandGroundTruth(unsigned n) -> std::vector<std::vector<unsigned>>;
 
