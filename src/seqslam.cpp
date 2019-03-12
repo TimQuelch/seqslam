@@ -212,6 +212,68 @@ namespace seqslam {
         return buffer;
     }
 
+    [[nodiscard]] auto predict(Mx const& mx, double threshold)
+        -> std::vector<std::vector<unsigned>> {
+
+        auto allPredictions = std::vector<std::vector<unsigned>>{};
+        allPredictions.reserve(mx.cols());
+
+        MxBool const mask = mx.array() < threshold;
+        for (auto j = 0u; j < mx.cols(); j++) {
+            auto predictions = std::vector<unsigned>{};
+            for (auto i = 0u; i < mx.rows(); i++) {
+                if (mask(i, j)) {
+                    predictions.push_back(i);
+                }
+            }
+            allPredictions.push_back(predictions);
+        }
+        return allPredictions;
+    }
+
+    [[nodiscard]] auto analysePredictions(std::vector<std::vector<unsigned>> const& predictions,
+                                          std::vector<std::vector<unsigned>> const& truth)
+        -> predictionStats {
+        assert(predictions.size() == truth.size());
+
+        auto stats = predictionStats{};
+        for (auto i = 0; i < static_cast<int>(predictions.size()); i++) {
+            auto tps = std::vector<unsigned>{};
+            auto fps = std::vector<unsigned>{};
+            auto fns = std::vector<unsigned>{};
+            std::set_intersection(predictions[i].begin(),
+                                  predictions[i].end(),
+                                  truth[i].begin(),
+                                  truth[i].end(),
+                                  std::back_inserter(tps));
+            std::set_difference(predictions[i].begin(),
+                                predictions[i].end(),
+                                truth[i].begin(),
+                                truth[i].end(),
+                                std::back_inserter(fps));
+            std::set_difference(
+                truth[i].begin(), truth[i].end(), tps.begin(), tps.end(), std::back_inserter(fns));
+            stats.truePositive += tps.size();
+            stats.falsePositive += fps.size();
+            stats.falseNegative += fps.size();
+        }
+        stats.recall = static_cast<double>(stats.truePositive) /
+                       static_cast<double>(stats.truePositive + stats.falseNegative);
+        stats.precision = static_cast<double>(stats.truePositive) /
+                          static_cast<double>(stats.truePositive + stats.falsePositive);
+
+        return stats;
+    }
+
+    [[nodiscard]] auto nordlandGroundTruth(unsigned n) -> std::vector<std::vector<unsigned>> {
+        auto truth = std::vector<std::vector<unsigned>>{};
+        truth.reserve(n);
+        for (auto i = 0u; i < n; i++) {
+            truth.push_back(std::vector<unsigned>{i});
+        }
+        return truth;
+    }
+
     namespace cpu {
         [[nodiscard]] auto generateDiffMx(std::vector<Mx> const& referenceMxs,
                                           std::vector<Mx> const& queryMxs,
