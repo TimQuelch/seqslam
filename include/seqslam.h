@@ -47,8 +47,9 @@ namespace seqslam {
                                           std::vector<std::vector<unsigned>> const& truth)
         -> predictionStats;
 
-    [[nodiscard]] auto prCurve(Mx const& mx, std::vector<std::vector<unsigned>> const& truth, unsigned nPoints)
-        -> std::vector<predictionStats>;
+    [[nodiscard]] auto prCurve(Mx const& mx,
+                               std::vector<std::vector<unsigned>> const& truth,
+                               unsigned nPoints) -> std::vector<predictionStats>;
 
     void writePrCurveToCsv(std::vector<predictionStats> stats, std::filesystem::path file);
 
