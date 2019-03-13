@@ -53,10 +53,12 @@ auto generateRange(std::tuple<T, T, unsigned> range) {
     assert(range.first < range.second);
     auto ret = std::vector<T>{};
 
-    auto const delta =
-        static_cast<double>(std::get<1>(range) - std::get<0>(range)) / std::get<2>(range);
+    auto const min = static_cast<double>(std::get<0>(range));
+    auto const max = static_cast<double>(std::get<1>(range));
 
-    for (auto val = std::get<0>(range); val <= std::get<1>(range); val += delta) {
+    auto const delta = (max - min) / std::get<2>(range);
+
+    for (auto val = min; val <= max; val += delta) {
         ret.push_back(val);
     }
 
