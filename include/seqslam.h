@@ -50,6 +50,8 @@ namespace seqslam {
     [[nodiscard]] auto prCurve(Mx const& mx, std::vector<std::vector<unsigned>> const& truth, unsigned nPoints)
         -> std::vector<predictionStats>;
 
+    void writePrCurveToCsv(std::vector<predictionStats> stats, std::filesystem::path file);
+
     [[nodiscard]] auto nordlandGroundTruth(unsigned n) -> std::vector<std::vector<unsigned>>;
 
     namespace cpu {

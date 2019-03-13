@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <fstream>
 #include <limits>
 #include <numeric>
 
@@ -294,6 +295,19 @@ namespace seqslam {
                        });
 
         return stats;
+    }
+
+    void writePrCurveToCsv(std::vector<predictionStats> stats, std::filesystem::path file) {
+        std::ofstream f{file};
+        f << "True Positive, False Positive, False Negative, Precision, Recall\n";
+        for (auto const& s : stats) {
+            f << fmt::format("{}, {}, {}, {}, {}\n",
+                             s.truePositive,
+                             s.falsePositive,
+                             s.falseNegative,
+                             s.precision,
+                             s.recall);
+        }
     }
 
     [[nodiscard]] auto nordlandGroundTruth(unsigned n) -> std::vector<std::vector<unsigned>> {
