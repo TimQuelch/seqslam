@@ -31,4 +31,6 @@ int main() {
     cv::imwrite("diffmx.jpg", mxToIm(diffMatrix));
     cv::imwrite("enhanced.jpg", mxToIm(enhanced));
     cv::imwrite("sequence.jpg", mxToIm(sequences));
+    writePrCurveToCsv(prCurve(sequences, nordlandGroundTruth(referenceImages.size()), 50),
+                      "prcurve.csv");
 }
