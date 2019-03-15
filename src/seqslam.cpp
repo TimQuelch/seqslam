@@ -219,11 +219,12 @@ namespace seqslam {
         auto const min = mx.minCoeff();
 
         auto vals = std::vector<double>(nThresholds);
-        std::iota(vals.begin(), vals.end(), 0.0);
+        std::iota(vals.begin(), vals.end(), 1.0);
 
         auto const delta = static_cast<double>(max - min) / nThresholds;
-        std::transform(
-            vals.begin(), vals.end(), vals.begin(), [delta](auto v) { return delta * v; });
+        std::transform(vals.begin(), vals.end(), vals.begin(), [delta, min](auto v) {
+            return static_cast<double>(min) + delta * v;
+        });
 
         return vals;
     }
@@ -270,7 +271,7 @@ namespace seqslam {
                 truth[i].begin(), truth[i].end(), tps.begin(), tps.end(), std::back_inserter(fns));
             stats.truePositive += tps.size();
             stats.falsePositive += fps.size();
-            stats.falseNegative += fps.size();
+            stats.falseNegative += fns.size();
         }
         stats.recall = static_cast<double>(stats.truePositive) /
                        static_cast<double>(stats.truePositive + stats.falseNegative);
