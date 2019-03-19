@@ -55,6 +55,7 @@ target_link_libraries(seqslam
     utils
     opencv_imgproc
     opencv_highgui
+    nlohmann_json::nlohmann_json
     stdc++fs)
 
 add_library(clutils src/clutils.cpp)

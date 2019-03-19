@@ -14,6 +14,8 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 
+#include <nlohmann/json.hpp>
+
 namespace seqslam {
     namespace detail {
         struct Dims {
@@ -310,6 +312,23 @@ namespace seqslam {
                              s.precision,
                              s.recall);
         }
+    }
+
+    void writePrCurveToJson(std::vector<predictionStats> const& stats,
+                            std::filesystem::path const& file) {
+        auto j = nlohmann::json{{"curve", nlohmann::json::array()}};
+
+        std::transform(
+            stats.begin(), stats.end(), std::back_inserter(j["curve"]), [](auto const& s) {
+                return nlohmann::json{{"True Positive", s.truePositive},
+                                      {"False Positive", s.falsePositive},
+                                      {"False Negative", s.falseNegative},
+                                      {"Precision", s.precision},
+                                      {"Recall", s.recall}};
+            });
+
+        std::ofstream f{file};
+        f << j.dump(4);
     }
 
     [[nodiscard]] auto nordlandGroundTruth(unsigned n) -> std::vector<std::vector<unsigned>> {

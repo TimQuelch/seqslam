@@ -53,6 +53,8 @@ namespace seqslam {
 
     void writePrCurveToCsv(std::vector<predictionStats> const& stats,
                            std::filesystem::path const& file);
+    void writePrCurveToJson(std::vector<predictionStats> const& stats,
+                            std::filesystem::path const& file);
 
     [[nodiscard]] auto nordlandGroundTruth(unsigned n) -> std::vector<std::vector<unsigned>>;
 
