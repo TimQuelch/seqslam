@@ -23,15 +23,25 @@ int main() {
     auto const queryImages =
         convertToEigen(contrastEnhancement(readImages(dataDir / "winter"), 20));
 
+    auto p = seqslamParameters{};
+    p.nPix = referenceImages[0].rows() * referenceImages[0].cols();
+    p.nQuery = queryImages.size();
+    p.nReference = referenceImages.size();
+    p.patchWindowSize = 10;
+    p.sequenceLength = 15;
+    p.vMin = 0.8;
+    p.vMax = 1.2;
+    p.nTraj = 15;
+
     auto diffMatrix = cpu::generateDiffMx(referenceImages, queryImages);
     // auto diffMatrix = opencl::generateDiffMx(referenceImages, queryImages, 4);
-    auto enhanced = cpu::enhanceDiffMx(diffMatrix, 10);
-    auto sequences = cpu::sequenceSearch(enhanced, 15, 0.8, 1.2, 15);
+    auto enhanced = cpu::enhanceDiffMx(diffMatrix, p.patchWindowSize);
+    auto sequences = cpu::sequenceSearch(enhanced, p.sequenceLength, p.vMin, p.vMax, p.nTraj);
 
     cv::imwrite("diffmx.jpg", mxToIm(diffMatrix));
     cv::imwrite("enhanced.jpg", mxToIm(enhanced));
     cv::imwrite("sequence.jpg", mxToIm(sequences));
 
     auto const pr = prCurve(sequences, nordlandGroundTruth(referenceImages.size()), 30);
-    writePrCurveToJson(pr, "pr.json");
+    writePrCurveToJson(p, pr, "pr.json");
 }

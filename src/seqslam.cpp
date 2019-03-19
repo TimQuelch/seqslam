@@ -300,12 +300,21 @@ namespace seqslam {
         return stats;
     }
 
-    void writePrCurveToJson(std::vector<predictionStats> const& stats,
+    void writePrCurveToJson(seqslamParameters const& parameters,
+                            std::vector<predictionStats> const& stats,
                             std::filesystem::path const& file) {
-        auto j = nlohmann::json{{"curve", nlohmann::json::array()}};
+        auto j = nlohmann::json{{"parameters",
+                                 {{"n Pixels", parameters.nPix},
+                                  {"n Query", parameters.nQuery},
+                                  {"n Reference", parameters.nReference},
+                                  {"Window size", parameters.patchWindowSize},
+                                  {"Sequence length", parameters.sequenceLength},
+                                  {"v Min", parameters.vMin},
+                                  {"v Max", parameters.vMax},
+                                  {"n Trajectories", parameters.nTraj}}}};
 
         std::transform(
-            stats.begin(), stats.end(), std::back_inserter(j["curve"]), [](auto const& s) {
+            stats.begin(), stats.end(), std::back_inserter(j["data"]), [](auto const& s) {
                 return nlohmann::json{{"True Positive", s.truePositive},
                                       {"False Positive", s.falsePositive},
                                       {"False Negative", s.falseNegative},

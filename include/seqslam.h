@@ -51,7 +51,19 @@ namespace seqslam {
                                std::vector<std::vector<unsigned>> const& truth,
                                unsigned nPoints) -> std::vector<predictionStats>;
 
-    void writePrCurveToJson(std::vector<predictionStats> const& stats,
+    struct seqslamParameters {
+        unsigned nPix = 0;
+        unsigned nQuery = 0;
+        unsigned nReference = 0;
+        unsigned patchWindowSize = 0;
+        unsigned sequenceLength = 0;
+        double vMin = 0.0;
+        double vMax = 0.0;
+        unsigned nTraj = 0;
+    };
+
+    void writePrCurveToJson(seqslamParameters const& parameters,
+                            std::vector<predictionStats> const& stats,
                             std::filesystem::path const& file);
 
     [[nodiscard]] auto nordlandGroundTruth(unsigned n) -> std::vector<std::vector<unsigned>>;
