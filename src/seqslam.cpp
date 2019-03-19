@@ -244,7 +244,7 @@ namespace seqslam {
                     predictions.push_back(i);
                 }
             }
-            allPredictions.push_back(predictions);
+            allPredictions.push_back(std::move(predictions));
         }
         return allPredictions;
     }
