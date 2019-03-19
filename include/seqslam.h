@@ -51,8 +51,6 @@ namespace seqslam {
                                std::vector<std::vector<unsigned>> const& truth,
                                unsigned nPoints) -> std::vector<predictionStats>;
 
-    void writePrCurveToCsv(std::vector<predictionStats> const& stats,
-                           std::filesystem::path const& file);
     void writePrCurveToJson(std::vector<predictionStats> const& stats,
                             std::filesystem::path const& file);
 

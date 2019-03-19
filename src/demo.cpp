@@ -33,6 +33,5 @@ int main() {
     cv::imwrite("sequence.jpg", mxToIm(sequences));
 
     auto const pr = prCurve(sequences, nordlandGroundTruth(referenceImages.size()), 30);
-    writePrCurveToCsv(pr, "pr.csv");
     writePrCurveToJson(pr, "pr.json");
 }

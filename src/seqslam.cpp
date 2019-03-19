@@ -300,20 +300,6 @@ namespace seqslam {
         return stats;
     }
 
-    void writePrCurveToCsv(std::vector<predictionStats> const& stats,
-                           std::filesystem::path const& file) {
-        std::ofstream f{file};
-        f << "True Positive, False Positive, False Negative, Precision, Recall\n";
-        for (auto const& s : stats) {
-            f << fmt::format("{}, {}, {}, {}, {}\n",
-                             s.truePositive,
-                             s.falsePositive,
-                             s.falseNegative,
-                             s.precision,
-                             s.recall);
-        }
-    }
-
     void writePrCurveToJson(std::vector<predictionStats> const& stats,
                             std::filesystem::path const& file) {
         auto j = nlohmann::json{{"curve", nlohmann::json::array()}};
