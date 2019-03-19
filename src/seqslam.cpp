@@ -298,7 +298,8 @@ namespace seqslam {
         return stats;
     }
 
-    void writePrCurveToCsv(std::vector<predictionStats> stats, std::filesystem::path file) {
+    void writePrCurveToCsv(std::vector<predictionStats> const& stats,
+                           std::filesystem::path const& file) {
         std::ofstream f{file};
         f << "True Positive, False Positive, False Negative, Precision, Recall\n";
         for (auto const& s : stats) {

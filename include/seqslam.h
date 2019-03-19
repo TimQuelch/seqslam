@@ -51,7 +51,8 @@ namespace seqslam {
                                std::vector<std::vector<unsigned>> const& truth,
                                unsigned nPoints) -> std::vector<predictionStats>;
 
-    void writePrCurveToCsv(std::vector<predictionStats> stats, std::filesystem::path file);
+    void writePrCurveToCsv(std::vector<predictionStats> const& stats,
+                           std::filesystem::path const& file);
 
     [[nodiscard]] auto nordlandGroundTruth(unsigned n) -> std::vector<std::vector<unsigned>>;
 
