@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <fstream>
 #include <limits>
 #include <numeric>
 
@@ -12,6 +13,8 @@
 #include <opencv2/core/eigen.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
+
+#include <nlohmann/json.hpp>
 
 namespace seqslam {
     namespace detail {
@@ -210,6 +213,126 @@ namespace seqslam {
             Eigen::Map<Mx>{buffer.get() + i * d.nElems(), d.rows, d.cols} = mxs[i];
         }
         return buffer;
+    }
+
+    [[nodiscard]] auto generateThresholdRange(Mx const& mx, unsigned nThresholds)
+        -> std::vector<double> {
+        auto const max = mx.maxCoeff();
+        auto const min = mx.minCoeff();
+
+        auto vals = std::vector<double>(nThresholds);
+        std::iota(vals.begin(), vals.end(), 1.0);
+
+        auto const delta = static_cast<double>(max - min) / nThresholds;
+        std::transform(vals.begin(), vals.end(), vals.begin(), [delta, min](auto v) {
+            return static_cast<double>(min) + delta * v;
+        });
+
+        return vals;
+    }
+
+    [[nodiscard]] auto predict(Mx const& mx, double threshold)
+        -> std::vector<std::vector<unsigned>> {
+        auto allPredictions = std::vector<std::vector<unsigned>>{};
+        allPredictions.reserve(mx.cols());
+
+        MxBool const mask = mx.array() < threshold;
+        for (auto j = 0u; j < mx.cols(); j++) {
+            auto predictions = std::vector<unsigned>{};
+            for (auto i = 0u; i < mx.rows(); i++) {
+                if (mask(i, j)) {
+                    predictions.push_back(i);
+                }
+            }
+            allPredictions.push_back(std::move(predictions));
+        }
+        return allPredictions;
+    }
+
+    [[nodiscard]] auto analysePredictions(std::vector<std::vector<unsigned>> const& predictions,
+                                          std::vector<std::vector<unsigned>> const& truth)
+        -> predictionStats {
+        assert(predictions.size() == truth.size());
+
+        auto stats = predictionStats{};
+        for (auto i = 0; i < static_cast<int>(predictions.size()); i++) {
+            auto tps = std::vector<unsigned>{};
+            auto fps = std::vector<unsigned>{};
+            auto fns = std::vector<unsigned>{};
+            std::set_intersection(predictions[i].begin(),
+                                  predictions[i].end(),
+                                  truth[i].begin(),
+                                  truth[i].end(),
+                                  std::back_inserter(tps));
+            std::set_difference(predictions[i].begin(),
+                                predictions[i].end(),
+                                truth[i].begin(),
+                                truth[i].end(),
+                                std::back_inserter(fps));
+            std::set_difference(
+                truth[i].begin(), truth[i].end(), tps.begin(), tps.end(), std::back_inserter(fns));
+            stats.truePositive += tps.size();
+            stats.falsePositive += fps.size();
+            stats.falseNegative += fns.size();
+        }
+        stats.recall = static_cast<double>(stats.truePositive) /
+                       static_cast<double>(stats.truePositive + stats.falseNegative);
+        stats.precision = static_cast<double>(stats.truePositive) /
+                          static_cast<double>(stats.truePositive + stats.falsePositive);
+
+        return stats;
+    }
+
+    [[nodiscard]] auto prCurve(Mx const& mx,
+                               std::vector<std::vector<unsigned>> const& truth,
+                               unsigned nPoints) -> std::vector<predictionStats> {
+        auto const thresholds = generateThresholdRange(mx, nPoints);
+
+        auto stats = std::vector<predictionStats>{};
+        stats.reserve(thresholds.size());
+        std::transform(thresholds.begin(),
+                       thresholds.end(),
+                       std::back_inserter(stats),
+                       [&mx, &truth](auto threshold) {
+                           return analysePredictions(predict(mx, threshold), truth);
+                       });
+
+        return stats;
+    }
+
+    void writePrCurveToJson(seqslamParameters const& parameters,
+                            std::vector<predictionStats> const& stats,
+                            std::filesystem::path const& file) {
+        auto j = nlohmann::json{{"parameters",
+                                 {{"n Pixels", parameters.nPix},
+                                  {"n Query", parameters.nQuery},
+                                  {"n Reference", parameters.nReference},
+                                  {"Window size", parameters.patchWindowSize},
+                                  {"Sequence length", parameters.sequenceLength},
+                                  {"v Min", parameters.vMin},
+                                  {"v Max", parameters.vMax},
+                                  {"n Trajectories", parameters.nTraj}}}};
+
+        std::transform(
+            stats.begin(), stats.end(), std::back_inserter(j["data"]), [](auto const& s) {
+                return nlohmann::json{{"True Positive", s.truePositive},
+                                      {"False Positive", s.falsePositive},
+                                      {"False Negative", s.falseNegative},
+                                      {"Precision", s.precision},
+                                      {"Recall", s.recall}};
+            });
+
+        std::ofstream f{file};
+        f << j.dump(4);
+    }
+
+    [[nodiscard]] auto nordlandGroundTruth(unsigned n) -> std::vector<std::vector<unsigned>> {
+        auto truth = std::vector<std::vector<unsigned>>{};
+        truth.reserve(n);
+        for (auto i = 0u; i < n; i++) {
+            truth.push_back(std::vector<unsigned>{i});
+        }
+        return truth;
     }
 
     namespace cpu {
