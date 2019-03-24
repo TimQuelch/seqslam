@@ -479,12 +479,13 @@ namespace seqslam {
                 bool const fitsInLocal =
                     localMemoryRequired(nPix, tileSize, nPixPerThread) < localMemorySize;
                 bool const tLessThanMax = nThreads <= 1024;
-                bool const tMoreThanWarp = nThreads > 32;
-                bool const tMoreThanTiles = nThreads > tileSize * tileSize;
+                bool const tMoreThanTwoWarps = nThreads >= 64;
+                bool const tMoreThanTiles = nThreads >= tileSize * tileSize;
                 bool const tilesCorrectly = nImages % tileSize == 0u;
                 bool const initialReduceCorrectly = nPix % nPixPerThread == 0u;
-                return fitsInLocal && tLessThanMax && tMoreThanWarp && tMoreThanTiles &&
-                       tilesCorrectly && initialReduceCorrectly;
+                bool const nWarpsIsPowerOfTwo = !(nPix / 32 == 0) && !(nPix / 32 & (nPix / 32 - 1));
+                return fitsInLocal && tLessThanMax && tMoreThanTwoWarps && tMoreThanTiles &&
+                       tilesCorrectly && initialReduceCorrectly && nWarpsIsPowerOfTwo;
             }
 
             void writeArgs(clutils::Context& context,
