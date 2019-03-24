@@ -22,6 +22,9 @@ namespace seqslam {
     [[nodiscard]] auto readImages(std::filesystem::path const& dir) noexcept
         -> std::vector<cv::Mat>;
 
+    [[nodiscard]] auto resizeImages(std::vector<cv::Mat> const& images, std::pair<int, int> size)
+        -> std::vector<cv::Mat>;
+
     [[nodiscard]] auto contrastEnhancement(std::vector<cv::Mat> const& images,
                                            double threshold) noexcept -> std::vector<cv::Mat>;
 

@@ -158,6 +158,18 @@ namespace seqslam {
         return images;
     }
 
+    [[nodiscard]] auto resizeImages(std::vector<cv::Mat> const& images, std::pair<int, int> size)
+        -> std::vector<cv::Mat> {
+        auto resized = std::vector<cv::Mat>{};
+        std::transform(
+            images.begin(), images.end(), std::back_inserter(resized), [size](auto const& orig) {
+                auto res = cv::Mat{};
+                cv::resize(orig, res, {size.first, size.second});
+                return res;
+            });
+        return resized;
+    }
+
     [[nodiscard]] auto contrastEnhancement(std::vector<cv::Mat> const& images,
                                            double threshold) noexcept -> std::vector<cv::Mat> {
         cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
