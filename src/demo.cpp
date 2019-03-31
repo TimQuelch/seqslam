@@ -59,13 +59,19 @@ int main() {
 
     auto diffMatrix = cpu::generateDiffMx(referenceImages, queryImages);
     // auto diffMatrix = opencl::generateDiffMx(referenceImages, queryImages, 4);
-    auto enhanced = cpu::enhanceDiffMx(diffMatrix, p.patchWindowSize);
-    auto sequences = cpu::sequenceSearch(enhanced, p.sequenceLength, p.vMin, p.vMax, p.nTraj);
+    // auto enhanced = cpu::enhanceDiffMx(diffMatrix, p.patchWindowSize);
+    // auto sequences = cpu::sequenceSearch(enhanced, p.sequenceLength, p.vMin, p.vMax, p.nTraj);
 
-    cv::imwrite("diffmx.jpg", mxToIm(diffMatrix));
-    cv::imwrite("enhanced.jpg", mxToIm(enhanced));
-    cv::imwrite("sequence.jpg", mxToIm(sequences));
+    // cv::imwrite("diffmx.jpg", mxToIm(diffMatrix));
+    // cv::imwrite("enhanced.jpg", mxToIm(enhanced));
+    // cv::imwrite("sequence.jpg", mxToIm(sequences));
 
-    auto const pr = prCurve(sequences, nordlandGroundTruth(referenceImages.size()), 30);
-    writePrCurveToJson(p, pr, "pr.json");
+    for (auto window : {5, 10, 15, 20, 30}) {
+        p.patchWindowSize = window;
+        auto const enhanced = cpu::enhanceDiffMx(diffMatrix, p.patchWindowSize);
+        auto const sequences =
+            cpu::sequenceSearch(enhanced, p.sequenceLength, p.vMin, p.vMax, p.nTraj);
+        auto const pr = prCurve(sequences, nordlandGroundTruth(referenceImages.size()), 30);
+        writePrCurveToJson(p, pr, fmt::format("pr-{}.json", window));
+    }
 }
