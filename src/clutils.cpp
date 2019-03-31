@@ -78,13 +78,6 @@ namespace clutils {
                 return std::tuple{context, queue, std::move(devices)};
             } catch (cl::Error& e) { throw Error{e.what(), e.err()}; }
         }
-
-        [[nodiscard]] auto readJsonConfig(std::filesystem::path const& configFile) {
-            auto stream = std::ifstream{configFile};
-            auto json = nlohmann::json{};
-            stream >> json;
-            return json;
-        }
     } // namespace
 
     namespace detail {
@@ -152,9 +145,9 @@ namespace clutils {
     }
 
     Context::Context() {
-        auto const defaultConfigPath = utils::traverseUpUntilMatch(defaultConfig);
+        auto const defaultConfigPath = utils::traverseUpUntilMatch(utils::defaultConfig);
         if (defaultConfigPath && std::filesystem::exists(*defaultConfigPath)) {
-            auto const config = readJsonConfig(*defaultConfigPath);
+            auto const config = utils::readJsonConfig(*defaultConfigPath)["opencl"];
             std::tie(context_, queue_, devices_) = constructContextQueueDevices(
                 config["platform"].get<unsigned>(), config["device"].get<unsigned>());
         } else {
@@ -167,7 +160,7 @@ namespace clutils {
             throw std::runtime_error{
                 fmt::format("Specified config file ({}) does not exist", configFile.string())};
         }
-        auto const config = readJsonConfig(configFile);
+        auto const config = utils::readJsonConfig(configFile)["opencl"];
 
         std::tie(context_, queue_, devices_) = constructContextQueueDevices(
             config["platform"].get<unsigned>(), config["device"].get<unsigned>());

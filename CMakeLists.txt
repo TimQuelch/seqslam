@@ -71,8 +71,7 @@ target_link_libraries(clutils
     stdc++fs
     PRIVATE
     utils
-    fmt::fmt
-    nlohmann_json::nlohmann_json)
+    fmt::fmt)
 
 add_library(utils src/utils.cpp)
 target_include_directories(
@@ -81,7 +80,7 @@ target_include_directories(
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
     $<INSTALL_INTERFACE:include/>)
 target_compile_features(utils PUBLIC cxx_std_17)
-target_link_libraries(utils PUBLIC stdc++fs)
+target_link_libraries(utils PUBLIC stdc++fs nlohmann_json::nlohmann_json)
 
 add_executable(demo src/demo.cpp)
 target_link_libraries(demo PRIVATE seqslam fmt::fmt)
@@ -89,7 +88,7 @@ target_link_libraries(demo PRIVATE seqslam fmt::fmt)
 configure_file(src/kernels/diff-mx.cl ./kernels/diff-mx.cl COPYONLY)
 configure_file(src/kernels/enhancement.cl ./kernels/enhancement.cl COPYONLY)
 configure_file(src/kernels/search.cl ./kernels/search.cl COPYONLY)
-configure_file(clconfig.json clconfig.json COPYONLY)
+configure_file(config.json config.json COPYONLY)
 
 enable_testing()
 add_subdirectory(test)

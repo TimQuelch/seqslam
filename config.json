@@ -1,0 +1,6 @@
+{
+    "opencl": {
+        "platform": 1,
+        "device": 0
+    }
+}

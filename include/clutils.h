@@ -13,9 +13,6 @@
 
 namespace clutils {
     class Context;
-
-    constexpr auto const defaultConfig = std::string_view{"clconfig.json"};
-
     namespace detail {
         [[nodiscard]] auto compileClSource(std::filesystem::path const& sourceFile,
                                            cl::Context& context,

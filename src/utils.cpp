@@ -1,5 +1,6 @@
 #include "utils.h"
 
+#include <fstream>
 #include <stdexcept>
 
 namespace utils {
@@ -13,5 +14,12 @@ namespace utils {
             current = current.parent_path();
         }
         return current / suffix;
+    }
+
+    [[nodiscard]] auto readJsonConfig(std::filesystem::path const& configFile) -> nlohmann::json {
+        auto stream = std::ifstream{configFile};
+        auto json = nlohmann::json{};
+        stream >> json;
+        return json;
     }
 } // namespace utils
