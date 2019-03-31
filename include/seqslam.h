@@ -45,6 +45,7 @@ namespace seqslam {
         unsigned falseNegative = 0;
         double precision = 0.0;
         double recall = 0.0;
+        double f1score = 0.0;
     };
     [[nodiscard]] auto analysePredictions(std::vector<std::vector<unsigned>> const& predictions,
                                           std::vector<std::vector<unsigned>> const& truth)

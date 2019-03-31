@@ -291,6 +291,7 @@ namespace seqslam {
                        static_cast<double>(stats.truePositive + stats.falseNegative);
         stats.precision = static_cast<double>(stats.truePositive) /
                           static_cast<double>(stats.truePositive + stats.falsePositive);
+        stats.f1score = 2 * stats.precision * stats.recall / (stats.precision + stats.recall);
 
         return stats;
     }
@@ -331,7 +332,8 @@ namespace seqslam {
                                       {"False Positive", s.falsePositive},
                                       {"False Negative", s.falseNegative},
                                       {"Precision", s.precision},
-                                      {"Recall", s.recall}};
+                                      {"Recall", s.recall},
+                                      {"F1 Score", s.f1score}};
             });
 
         std::ofstream f{file};
