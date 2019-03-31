@@ -36,15 +36,23 @@ cv::Mat mxToIm(Mx const& mx) {
     return p;
 }
 
+[[nodiscard]] auto loadImages(std::filesystem::path const& path,
+                              unsigned rows,
+                              unsigned cols,
+                              unsigned contrastThreshold) {
+    auto const images = readImages(path);
+    auto const resized = resizeImages(images, {rows, cols});
+    auto const enhanced = contrastEnhancement(resized, contrastThreshold);
+    return convertToEigen(enhanced);
+}
+
 int main() {
     auto p = readParametersConfig(utils::defaultConfig);
 
-    auto const referenceImages = convertToEigen(contrastEnhancement(
-        resizeImages(readImages(p.datasetRoot / p.referencePath), {p.imageRows, p.imageCols}),
-        p.imageContrastThreshold));
-    auto const queryImages = convertToEigen(contrastEnhancement(
-        resizeImages(readImages(p.datasetRoot / p.queryPath), {p.imageRows, p.imageCols}),
-        p.imageContrastThreshold));
+    auto const referenceImages = loadImages(
+        p.datasetRoot / p.referencePath, p.imageRows, p.imageCols, p.imageContrastThreshold);
+    auto const queryImages =
+        loadImages(p.datasetRoot / p.queryPath, p.imageRows, p.imageCols, p.imageContrastThreshold);
 
     p.nQuery = queryImages.size();
     p.nReference = referenceImages.size();
