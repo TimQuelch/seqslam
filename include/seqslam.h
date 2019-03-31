@@ -56,14 +56,19 @@ namespace seqslam {
                                unsigned nPoints) -> std::vector<predictionStats>;
 
     struct seqslamParameters {
-        unsigned nPix = 0;
+        std::filesystem::path datasetRoot = {};
+        std::filesystem::path referencePath = {};
+        std::filesystem::path queryPath = {};
+        unsigned imageRows = 0;
+        unsigned imageCols = 0;
+        unsigned imageContrastThreshold = 0;
         unsigned nQuery = 0;
         unsigned nReference = 0;
         unsigned patchWindowSize = 0;
         unsigned sequenceLength = 0;
+        unsigned nTraj = 0;
         double vMin = 0.0;
         double vMax = 0.0;
-        unsigned nTraj = 0;
     };
 
     void writePrCurveToJson(seqslamParameters const& parameters,

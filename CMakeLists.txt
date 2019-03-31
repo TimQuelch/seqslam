@@ -83,7 +83,7 @@ target_compile_features(utils PUBLIC cxx_std_17)
 target_link_libraries(utils PUBLIC stdc++fs nlohmann_json::nlohmann_json)
 
 add_executable(demo src/demo.cpp)
-target_link_libraries(demo PRIVATE seqslam fmt::fmt)
+target_link_libraries(demo PRIVATE seqslam utils fmt::fmt)
 
 configure_file(src/kernels/diff-mx.cl ./kernels/diff-mx.cl COPYONLY)
 configure_file(src/kernels/enhancement.cl ./kernels/enhancement.cl COPYONLY)

@@ -317,14 +317,15 @@ namespace seqslam {
                             std::vector<predictionStats> const& stats,
                             std::filesystem::path const& file) {
         auto j = nlohmann::json{{"parameters",
-                                 {{"n Pixels", parameters.nPix},
-                                  {"n Query", parameters.nQuery},
-                                  {"n Reference", parameters.nReference},
-                                  {"Window size", parameters.patchWindowSize},
+                                 {{"Image rows", parameters.imageRows},
+                                  {"Image columns", parameters.imageCols},
+                                  {"Number of query images", parameters.nQuery},
+                                  {"Nubmer of reference images", parameters.nReference},
+                                  {"Patch window size", parameters.patchWindowSize},
                                   {"Sequence length", parameters.sequenceLength},
-                                  {"v Min", parameters.vMin},
-                                  {"v Max", parameters.vMax},
-                                  {"n Trajectories", parameters.nTraj}}}};
+                                  {"Number of trajectories", parameters.nTraj},
+                                  {"Min velocity", parameters.vMin},
+                                  {"Max velocity", parameters.vMax}}}};
 
         std::transform(
             stats.begin(), stats.end(), std::back_inserter(j["data"]), [](auto const& s) {

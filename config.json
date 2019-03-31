@@ -2,5 +2,18 @@
     "opencl": {
         "platform": 1,
         "device": 0
+    },
+    "seqslam": {
+        "Dataset root path": "datasets/nordland_trimmed",
+        "Query image path": "winter",
+        "Reference image path": "summer",
+        "Image rows": 32,
+        "Image columns": 64,
+        "Image contrast enhancement threshold": 20,
+        "Patch window size": 10,
+        "Sequence length": 15,
+        "Number of trajectories": 15,
+        "Min velocity": 0.5,
+        "Max velocity": 1.5
     }
 }

@@ -1,4 +1,5 @@
 #include "seqslam.h"
+#include "utils.h"
 
 #include <filesystem>
 #include <iostream>
@@ -16,22 +17,37 @@ cv::Mat mxToIm(Mx const& mx) {
     return im;
 }
 
-int main() {
-    auto const dataDir = std::filesystem::path{"datasets/nordland_trimmed_resized"};
-    auto const referenceImages =
-        convertToEigen(contrastEnhancement(readImages(dataDir / "summer"), 20));
-    auto const queryImages =
-        convertToEigen(contrastEnhancement(readImages(dataDir / "winter"), 20));
-
+[[nodiscard]] auto readParametersConfig(std::filesystem::path const& configFile) {
+    auto const json =
+        utils::readJsonConfig(utils::traverseUpUntilMatch(configFile).value())["seqslam"];
     auto p = seqslamParameters{};
-    p.nPix = referenceImages[0].rows() * referenceImages[0].cols();
+    p.datasetRoot = json["Dataset root path"].get<std::string>();
+    p.queryPath = json["Query image path"].get<std::string>();
+    p.referencePath = json["Reference image path"].get<std::string>();
+    p.imageRows = json["Image rows"];
+    p.imageCols = json["Image columns"];
+    p.imageContrastThreshold = json["Image contrast enhancement threshold"];
+    p.patchWindowSize = json["Patch window size"];
+    p.sequenceLength = json["Sequence length"];
+    p.vMin = json["Min velocity"];
+    p.vMax = json["Max velocity"];
+    p.nTraj = json["Number of trajectories"];
+
+    return p;
+}
+
+int main() {
+    auto p = readParametersConfig(utils::defaultConfig);
+
+    auto const referenceImages = convertToEigen(contrastEnhancement(
+        resizeImages(readImages(p.datasetRoot / p.referencePath), {p.imageRows, p.imageCols}),
+        p.imageContrastThreshold));
+    auto const queryImages = convertToEigen(contrastEnhancement(
+        resizeImages(readImages(p.datasetRoot / p.queryPath), {p.imageRows, p.imageCols}),
+        p.imageContrastThreshold));
+
     p.nQuery = queryImages.size();
     p.nReference = referenceImages.size();
-    p.patchWindowSize = 10;
-    p.sequenceLength = 15;
-    p.vMin = 0.8;
-    p.vMax = 1.2;
-    p.nTraj = 15;
 
     auto diffMatrix = cpu::generateDiffMx(referenceImages, queryImages);
     // auto diffMatrix = opencl::generateDiffMx(referenceImages, queryImages, 4);
