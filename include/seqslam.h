@@ -100,6 +100,8 @@ namespace seqslam {
 
         constexpr auto localMemorySize = 48u * 1024u;
 
+        [[nodiscard]] auto createContext() -> clutils::Context;
+
         namespace diffmxcalc {
             constexpr auto kernels = std::pair{"kernels/diff-mx.cl"sv,
                                                std::array{"diffMxNDiffs"sv,

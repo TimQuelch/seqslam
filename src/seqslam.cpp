@@ -488,6 +488,15 @@ namespace seqslam {
     } // namespace cpu
 
     namespace opencl {
+        [[nodiscard]] auto createContext() -> clutils::Context {
+            auto context = clutils::Context{};
+            context.addKernels(findOrThrow(diffmxcalc::kernels.first), diffmxcalc::kernels.second);
+            context.addKernels(findOrThrow(diffmxenhance::kernels.first),
+                               diffmxenhance::kernels.second);
+            context.addKernels(findOrThrow(seqsearch::kernels.first), seqsearch::kernels.second);
+            return context;
+        }
+
         namespace diffmxcalc {
             [[nodiscard]] auto createContext() -> clutils::Context {
                 auto context = clutils::Context{};

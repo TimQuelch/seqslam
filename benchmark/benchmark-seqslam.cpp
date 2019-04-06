@@ -103,10 +103,13 @@ BENCHMARK_CAPTURE(cpuWhole, large, largeImagesDir);
 void gpuWhole(benchmark::State& state, std::string_view imagePath) {
     auto const [r, q] = loadImages(imagePath);
 
+    auto context = opencl::createContext();
+
     for (auto _ : state) {
-        auto mx = opencl::generateDiffMx(r, q, 4, 8);
-        auto enhanced = opencl::enhanceDiffMx(mx, enhancementWindowSize, 8);
-        auto searched = opencl::sequenceSearch(enhanced, searchSequenceLength, searchVMin, searchVMax, searchNTraj, 6);
+        auto mx = opencl::generateDiffMx(context, r, q, 4, 8);
+        auto enhanced = opencl::enhanceDiffMx(context, mx, enhancementWindowSize, 8);
+        auto searched = opencl::sequenceSearch(
+            context, enhanced, searchSequenceLength, searchVMin, searchVMax, searchNTraj, 6);
         benchmark::DoNotOptimize(searched.data());
         benchmark::ClobberMemory();
     }
