@@ -34,6 +34,10 @@ namespace seqslam {
     [[nodiscard]] auto convertToBuffer(std::vector<Mx> const& mxs) noexcept
         -> std::unique_ptr<PixType[]>;
 
+    [[nodiscard]] auto dropFrames(std::vector<Mx> const& queryImages,
+                                  std::pair<double, double> vRange,
+                                  unsigned nSegments) -> std::vector<Mx>;
+
     [[nodiscard]] auto generateThresholdRange(Mx const& mx, unsigned nThresholds)
         -> std::vector<double>;
 

@@ -8,6 +8,7 @@
 #include <fstream>
 #include <limits>
 #include <numeric>
+#include <random>
 
 #include <opencv2/core.hpp>
 #include <opencv2/core/eigen.hpp>
@@ -18,6 +19,8 @@
 
 namespace seqslam {
     namespace detail {
+        auto rng = std::mt19937{42};
+
         struct Dims {
             int rows;
             int cols;
@@ -225,6 +228,43 @@ namespace seqslam {
             Eigen::Map<Mx>{buffer.get() + i * d.nElems(), d.rows, d.cols} = mxs[i];
         }
         return buffer;
+    }
+
+    [[nodiscard]] auto dropFrames(std::vector<Mx> const& queryImages,
+                                  std::pair<double, double> vRange,
+                                  unsigned nSegments) -> std::vector<Mx> {
+        auto const intervals = [vRange, nSegments]() {
+            auto vs = std::vector<double>{};
+            std::generate_n(std::back_inserter(vs), nSegments, [vRange]() {
+                return std::uniform_real_distribution{vRange.first, vRange.second}(rng);
+            });
+            auto is = std::vector<unsigned>{};
+            std::transform(vs.begin(), vs.end(), std::back_inserter(is), [](auto v) {
+                return std::round(v / (v - 1));
+            });
+            return is;
+        }();
+
+        auto const segmentLength =
+            std::ceil(static_cast<double>(queryImages.size()) / static_cast<double>(nSegments));
+
+        auto mask = std::vector<bool>{};
+        for (auto i = 0u; i < nSegments; i++) {
+            for (auto j = 0u; j < segmentLength; j++) {
+                mask.push_back(j % intervals[i] != 0);
+            }
+        }
+
+        assert(mask.size() >= queryImages.size());
+
+        auto ret = std::vector<Mx>{};
+        for (auto i = 0u; i < queryImages.size(); i++) {
+            if (mask[i]) {
+                ret.push_back(queryImages[i]);
+            }
+        }
+
+        return ret;
     }
 
     [[nodiscard]] auto generateThresholdRange(Mx const& mx, unsigned nThresholds)
