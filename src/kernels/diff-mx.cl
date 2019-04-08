@@ -192,7 +192,7 @@ kernel void diffMxTwoDiffs(global float const* query,
     if (pi < tileSizeR * tileSizeQ) {
         const unsigned int i = pi % tileSizeR;
         const unsigned int j = pi / tileSizeR;
-        const unsigned int imageIndex = (i + j * tileSize) * offset;
+        const unsigned int imageIndex = (i + j * tileSizeR) * offset;
         diffMxOutput[tx * tileSizeR + i +
                      (ty * tileSizeQ + j) * get_global_size(1) * tileSizeR] =
             diffs[imageIndex];
@@ -236,7 +236,7 @@ kernel void diffMxContinuousIndex(global float const* query,
     }
 
     // Save all SAD values to global memory, one per thread
-    if (pi < tileSize * tileSize) {
+    if (pi < tileSizeR * tileSizeQ) {
         const unsigned int i = pi % tileSizeR;
         const unsigned int j = pi / tileSizeR;
         const unsigned int imageIndex = (i + j * tileSizeR) * nPix;
