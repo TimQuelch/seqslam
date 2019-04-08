@@ -518,33 +518,40 @@ namespace seqslam {
             }
 
             [[nodiscard]] constexpr auto localMemoryRequired(std::size_t nPix,
-                                                             std::size_t tileSize,
+                                                             std::size_t tileSizeR,
+                                                             std::size_t tileSizeQ,
                                                              std::size_t nPerThread) noexcept {
-                return nPix * tileSize * tileSize * sizeof(PixType) / nPerThread;
+                return nPix * tileSizeR * tileSizeQ * sizeof(PixType) / nPerThread;
             }
 
-            [[nodiscard]] auto isValidParameters(std::size_t nImages,
+            [[nodiscard]] auto isValidParameters(std::size_t nReference,
+                                                 std::size_t nQuery,
                                                  std::size_t nPix,
-                                                 std::size_t tileSize,
+                                                 std::size_t tileSizeR,
+                                                 std::size_t tileSizeQ,
                                                  std::size_t nPixPerThread) noexcept -> bool {
                 auto const nThreads = nPix / nPixPerThread;
                 bool const fitsInLocal =
-                    localMemoryRequired(nPix, tileSize, nPixPerThread) < localMemorySize;
+                    localMemoryRequired(nPix, tileSizeR, tileSizeQ, nPixPerThread) <
+                    localMemorySize;
                 bool const tLessThanMax = nThreads <= 1024;
                 bool const tMoreThanTwoWarps = nThreads >= 64;
-                bool const tMoreThanTiles = nThreads >= tileSize * tileSize;
-                bool const tilesCorrectly = nImages % tileSize == 0u;
+                bool const tMoreThanTiles = nThreads >= tileSizeR * tileSizeQ;
+                bool const tilesCorrectlyR = nReference % tileSizeR == 0u;
+                bool const tilesCorrectlyQ = nQuery % tileSizeQ == 0u;
                 bool const initialReduceCorrectly = nPix % nPixPerThread == 0u;
                 bool const nWarpsIsPowerOfTwo = !(nPix / 32 == 0) && !(nPix / 32 & (nPix / 32 - 1));
                 return fitsInLocal && tLessThanMax && tMoreThanTwoWarps && tMoreThanTiles &&
-                       tilesCorrectly && initialReduceCorrectly && nWarpsIsPowerOfTwo;
+                       tilesCorrectlyR && tilesCorrectlyQ && initialReduceCorrectly &&
+                       nWarpsIsPowerOfTwo;
             }
 
             void writeArgs(clutils::Context& context,
                            diffMxBuffers const& buffers,
                            std::vector<Mx> const& referenceMxs,
                            std::vector<Mx> const& queryMxs,
-                           std::size_t tileSize,
+                           std::size_t tileSizeR,
+                           std::size_t tileSizeQ,
                            std::size_t nPerThread,
                            std::string_view kernelName) {
                 assert(!referenceMxs.empty());
@@ -556,15 +563,18 @@ namespace seqslam {
                 buffers.reference.writeBuffer(rbuf.get());
                 buffers.query.writeBuffer(qbuf.get());
 
-                if (localMemoryRequired(d.nElems(), tileSize, nPerThread) > localMemorySize) {
+                if (localMemoryRequired(d.nElems(), tileSizeR, tileSizeQ, nPerThread) >
+                    localMemorySize) {
                     throw std::runtime_error{fmt::format(
                         "Allocation of GPU local memory is too large with parameters number pixels "
-                        "per image = {}, tile size = {}, and number of pixels per thread = {}. "
+                        "per image = {}, tile size = {}r x {}q, and number of pixels per thread = "
+                        "{}. "
                         "Requesting memory allocation of {}, where max is {}",
                         d.nElems(),
-                        tileSize,
+                        tileSizeR,
+                        tileSizeQ,
                         nPerThread,
-                        localMemoryRequired(d.nElems(), tileSize, nPerThread),
+                        localMemoryRequired(d.nElems(), tileSizeR, tileSizeQ, nPerThread),
                         localMemorySize)};
                 }
 
@@ -572,11 +582,14 @@ namespace seqslam {
 #pragma GCC diagnostic ignored "-Wuseless-cast"
                 context.setKernelArg(kernelName, 0, buffers.query);
                 context.setKernelArg(kernelName, 1, buffers.reference);
-                context.setKernelArg(kernelName, 2, static_cast<unsigned int>(tileSize));
-                context.setKernelArg(kernelName, 3, static_cast<unsigned int>(nPerThread));
-                context.setKernelArg(kernelName, 4, buffers.diffMx);
-                context.setKernelLocalArg(
-                    kernelName, 5, d.nElems() * tileSize * tileSize * sizeof(PixType) / nPerThread);
+                context.setKernelArg(kernelName, 2, static_cast<unsigned int>(tileSizeR));
+                context.setKernelArg(kernelName, 3, static_cast<unsigned int>(tileSizeQ));
+                context.setKernelArg(kernelName, 4, static_cast<unsigned int>(nPerThread));
+                context.setKernelArg(kernelName, 5, buffers.diffMx);
+                context.setKernelLocalArg(kernelName,
+                                          6,
+                                          d.nElems() * tileSizeR * tileSizeQ * sizeof(PixType) /
+                                              nPerThread);
 #pragma GCC diagnostic pop
             }
         } // namespace diffmxcalc
@@ -707,18 +720,20 @@ namespace seqslam {
 
         [[nodiscard]] auto generateDiffMx(std::vector<Mx> const& referenceMxs,
                                           std::vector<Mx> const& queryMxs,
-                                          std::size_t tileSize,
+                                          std::size_t tileSizeR,
+                                          std::size_t tileSizeQ,
                                           std::size_t nPerThread,
                                           std::string_view kernelName) -> Mx {
             auto context = diffmxcalc::createContext();
             return generateDiffMx(
-                context, referenceMxs, queryMxs, tileSize, nPerThread, kernelName);
+                context, referenceMxs, queryMxs, tileSizeR, tileSizeQ, nPerThread, kernelName);
         }
 
         [[nodiscard]] auto generateDiffMx(clutils::Context& context,
                                           std::vector<Mx> const& referenceMxs,
                                           std::vector<Mx> const& queryMxs,
-                                          std::size_t tileSize,
+                                          std::size_t tileSizeR,
+                                          std::size_t tileSizeQ,
                                           std::size_t nPerThread,
                                           std::string_view kernelName) -> Mx {
             assert(!referenceMxs.empty());
@@ -727,14 +742,22 @@ namespace seqslam {
             auto const d = dims(referenceMxs[0]);
             auto bufs = diffmxcalc::createBuffers(
                 context, referenceMxs.size(), queryMxs.size(), d.nElems());
-            writeArgs(context, bufs, referenceMxs, queryMxs, tileSize, nPerThread, kernelName);
+            writeArgs(context,
+                      bufs,
+                      referenceMxs,
+                      queryMxs,
+                      tileSizeR,
+                      tileSizeQ,
+                      nPerThread,
+                      kernelName);
 
             return generateDiffMx(context,
                                   bufs.diffMx,
                                   referenceMxs.size(),
                                   queryMxs.size(),
                                   d.nElems(),
-                                  tileSize,
+                                  tileSizeR,
+                                  tileSizeQ,
                                   nPerThread,
                                   kernelName);
         }
@@ -744,11 +767,12 @@ namespace seqslam {
                                           std::size_t referenceSize,
                                           std::size_t querySize,
                                           std::size_t nPix,
-                                          std::size_t tileSize,
+                                          std::size_t tileSizeR,
+                                          std::size_t tileSizeQ,
                                           std::size_t nPerThread,
                                           std::string_view kernelName) -> Mx {
             context.runKernel(kernelName,
-                              {nPix / nPerThread, referenceSize / tileSize, querySize / tileSize},
+                              {nPix / nPerThread, referenceSize / tileSizeR, querySize / tileSizeQ},
                               {nPix / nPerThread, 1, 1});
 
             auto buffer = std::make_unique<PixType[]>(referenceSize * querySize);

@@ -2,12 +2,13 @@
 
 // Reduce a single warp
 void warpReduce(local volatile float* diffs,
-                unsigned int tileSize,
+                unsigned int tileSizeR,
+                unsigned int tileSizeQ,
                 unsigned int offset,
                 unsigned int pi) {
-    for (unsigned int i = 0; i < tileSize; i++) {
-        for (unsigned int j = 0; j < tileSize; j++) {
-            const unsigned int imageIndex = (i + j * tileSize) * offset;
+    for (unsigned int i = 0; i < tileSizeR; i++) {
+        for (unsigned int j = 0; j < tileSizeQ; j++) {
+            const unsigned int imageIndex = (i + j * tileSizeR) * offset;
             diffs[imageIndex + pi] += diffs[imageIndex + pi + WARP_SIZE];
             diffs[imageIndex + pi] += diffs[imageIndex + pi + (WARP_SIZE >> 1)];
             diffs[imageIndex + pi] += diffs[imageIndex + pi + (WARP_SIZE >> 2)];
@@ -20,7 +21,8 @@ void warpReduce(local volatile float* diffs,
 
 kernel void diffMxNDiffs(global float const* query,
                          global float const* reference,
-                         unsigned int tileSize,
+                         unsigned int tileSizeR,
+                         unsigned int tileSizeQ,
                          unsigned int nPerThread,
                          global float* diffMxOutput,
                          local float* diffs) {
@@ -31,16 +33,16 @@ kernel void diffMxNDiffs(global float const* query,
     const unsigned nPix = offset * nPerThread;
 
     // Load initial sums of differences into local memory
-    for (unsigned i = 0; i < tileSize; i++) {
-        for (unsigned j = 0; j < tileSize; j++) {
-            const unsigned imageIndex = (i + j * tileSize) * offset;
+    for (unsigned i = 0; i < tileSizeR; i++) {
+        for (unsigned j = 0; j < tileSizeQ; j++) {
+            const unsigned imageIndex = (i + j * tileSizeR) * offset;
             diffs[pi + imageIndex] = 0; // Initialise sum to 0
 
             // Sum as many differences as specifed
             for (unsigned n = 0; n < nPerThread; n++) {
                 diffs[pi + imageIndex] += fabs(
-                    query[(tx * tileSize + i) * nPix + pi + n * offset] -
-                    reference[(ty * tileSize + j) * nPix + pi + n * offset]);
+                    query[(tx * tileSizeQ + i) * nPix + pi + n * offset] -
+                    reference[(ty * tileSizeR + j) * nPix + pi + n * offset]);
             }
         }
     }
@@ -49,9 +51,10 @@ kernel void diffMxNDiffs(global float const* query,
     // Perform parallel reduction until down to a single warp
     for (unsigned int s = get_local_size(0) / 2; s > WARP_SIZE; s >>= 1) {
         if (pi < s) {
-            for (unsigned int i = 0; i < tileSize; i++) {
-                for (unsigned int j = 0; j < tileSize; j++) {
-                    const unsigned int imageIndex = (i + j * tileSize) * offset;
+            for (unsigned int i = 0; i < tileSizeR; i++) {
+                for (unsigned int j = 0; j < tileSizeQ; j++) {
+                    const unsigned int imageIndex =
+                        (i + j * tileSizeR) * offset;
                     diffs[imageIndex + pi] += diffs[imageIndex + pi + s];
                 }
             }
@@ -61,21 +64,21 @@ kernel void diffMxNDiffs(global float const* query,
 
     // Reduce the final warp
     if (pi < WARP_SIZE) {
-        warpReduce(diffs, tileSize, offset, pi);
+        warpReduce(diffs, tileSizeR, tileSizeQ, offset, pi);
     }
 
     // Only sync if there are more values than are in a warp
-    if (tileSize * tileSize > WARP_SIZE) {
+    if (tileSizeR * tileSizeQ > WARP_SIZE) {
         barrier(CLK_LOCAL_MEM_FENCE);
     }
 
     // Save SAD the values to global memory in parallel
-    if (pi < tileSize * tileSize) {
-        const unsigned int i = pi % tileSize;
-        const unsigned int j = pi / tileSize;
-        const unsigned int imageIndex = (i + j * tileSize) * offset;
-        diffMxOutput[ty * tileSize + j +
-                     (tx * tileSize + i) * get_global_size(1) * tileSize] =
+    if (pi < tileSizeR * tileSizeQ) {
+        const unsigned int i = pi % tileSizeR;
+        const unsigned int j = pi / tileSizeR;
+        const unsigned int imageIndex = (i + j * tileSizeR) * offset;
+        diffMxOutput[ty * tileSizeR + j +
+                     (tx * tileSizeQ + i) * get_global_size(1) * tileSizeR] =
             diffs[imageIndex];
     }
 }
