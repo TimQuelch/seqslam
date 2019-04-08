@@ -26,23 +26,23 @@ kernel void diffMxNDiffs(global float const* query,
                          unsigned int nPerThread,
                          global float* diffMxOutput,
                          local float* diffs) {
-    const unsigned ty = get_group_id(1);
-    const unsigned tx = get_group_id(2);
+    const unsigned tr = get_group_id(1);
+    const unsigned tq = get_group_id(2);
     const unsigned pi = get_local_id(0);
     const unsigned offset = get_local_size(0);
     const unsigned nPix = offset * nPerThread;
 
     // Load initial sums of differences into local memory
-    for (unsigned i = 0; i < tileSizeR; i++) {
-        for (unsigned j = 0; j < tileSizeQ; j++) {
-            const unsigned imageIndex = (i + j * tileSizeR) * offset;
+    for (unsigned q = 0; q < tileSizeQ; q++) {
+        for (unsigned r = 0; r < tileSizeR; r++) {
+            const unsigned imageIndex = (r + q * tileSizeR) * offset;
             diffs[pi + imageIndex] = 0; // Initialise sum to 0
 
             // Sum as many differences as specifed
             for (unsigned n = 0; n < nPerThread; n++) {
                 diffs[pi + imageIndex] += fabs(
-                    query[(tx * tileSizeQ + i) * nPix + pi + n * offset] -
-                    reference[(ty * tileSizeR + j) * nPix + pi + n * offset]);
+                    query[(tq * tileSizeQ + q) * nPix + pi + n * offset] -
+                    reference[(tr * tileSizeR + r) * nPix + pi + n * offset]);
             }
         }
     }
@@ -51,10 +51,10 @@ kernel void diffMxNDiffs(global float const* query,
     // Perform parallel reduction until down to a single warp
     for (unsigned int s = get_local_size(0) / 2; s > WARP_SIZE; s >>= 1) {
         if (pi < s) {
-            for (unsigned int i = 0; i < tileSizeR; i++) {
-                for (unsigned int j = 0; j < tileSizeQ; j++) {
+            for (unsigned int q = 0; q < tileSizeQ; q++) {
+                for (unsigned int r = 0; r < tileSizeR; r++) {
                     const unsigned int imageIndex =
-                        (i + j * tileSizeR) * offset;
+                        (r + q * tileSizeR) * offset;
                     diffs[imageIndex + pi] += diffs[imageIndex + pi + s];
                 }
             }
@@ -74,11 +74,11 @@ kernel void diffMxNDiffs(global float const* query,
 
     // Save SAD the values to global memory in parallel
     if (pi < tileSizeR * tileSizeQ) {
-        const unsigned int i = pi % tileSizeR;
-        const unsigned int j = pi / tileSizeR;
-        const unsigned int imageIndex = (i + j * tileSizeR) * offset;
-        diffMxOutput[ty * tileSizeR + j +
-                     (tx * tileSizeQ + i) * get_global_size(1) * tileSizeR] =
+        const unsigned int r = pi % tileSizeR;
+        const unsigned int q = pi / tileSizeR;
+        const unsigned int imageIndex = (r + q * tileSizeR) * offset;
+        diffMxOutput[tr * tileSizeR + r +
+                     (tq * tileSizeQ + q) * get_global_size(1) * tileSizeR] =
             diffs[imageIndex];
     }
 }
