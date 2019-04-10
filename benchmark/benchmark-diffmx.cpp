@@ -45,10 +45,10 @@ namespace {
         for (auto i = 4u; i < 16; i += 4) {
             args.push_back(i);
         }
-        for (auto i = 16u; i < 64; i += 8) {
+        for (auto i = 16u; i < 64; i += 16) {
             args.push_back(i);
         }
-        for (auto i = 64u; i < 256; i += 32) {
+        for (auto i = 64u; i < 256; i += 64) {
             args.push_back(i);
         }
         for (auto i : args) {
