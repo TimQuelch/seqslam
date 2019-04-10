@@ -39,16 +39,22 @@ namespace {
     }
 
     void cpuBenchmarkArgs(benchmark::internal::Benchmark* b) {
-        b->Args({1});
-        b->Args({2});
-        for (auto i = 4u; i < 32; i += 4) {
-            b->Args({static_cast<long>(i)});
+        auto args = std::vector<long>{};
+        args.push_back(1);
+        args.push_back(2);
+        for (auto i = 4u; i < 16; i += 4) {
+            args.push_back(i);
         }
-        for (auto i = 32u; i < 128; i += 8) {
-            b->Args({static_cast<long>(i)});
+        for (auto i = 16u; i < 64; i += 8) {
+            args.push_back(i);
         }
-        for (auto i = 128u; i < 256; i += 32) {
-            b->Args({static_cast<long>(i)});
+        for (auto i = 64u; i < 256; i += 32) {
+            args.push_back(i);
+        }
+        for (auto i : args) {
+            for (auto j : args) {
+                b->Args({i, j});
+            }
         }
     }
 

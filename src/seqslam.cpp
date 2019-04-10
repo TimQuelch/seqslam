@@ -393,35 +393,36 @@ namespace seqslam {
     namespace cpu {
         [[nodiscard]] auto generateDiffMx(std::vector<Mx> const& referenceMxs,
                                           std::vector<Mx> const& queryMxs,
-                                          std::size_t tileSize) noexcept -> Mx {
+                                          std::size_t tileSizeR,
+                                          std::size_t tileSizeQ) noexcept -> Mx {
             Mx mx = Mx(referenceMxs.size(), queryMxs.size());
-            for (auto tr = 0u; tr < referenceMxs.size() / tileSize; tr++) {
-                for (auto tq = 0u; tq < queryMxs.size() / tileSize; tq++) {
-                    for (auto i = 0u; i < tileSize; i++) {
-                        for (auto j = 0u; j < tileSize; j++) {
-                            auto const r = tr * tileSize + i;
-                            auto const q = tq * tileSize + j;
+            for (auto tr = 0u; tr < referenceMxs.size() / tileSizeR; tr++) {
+                for (auto tq = 0u; tq < queryMxs.size() / tileSizeQ; tq++) {
+                    for (auto i = 0u; i < tileSizeR; i++) {
+                        for (auto j = 0u; j < tileSizeQ; j++) {
+                            auto const r = tr * tileSizeR + i;
+                            auto const q = tq * tileSizeQ + j;
                             mx(r, q) = (referenceMxs[r] - queryMxs[q]).cwiseAbs().sum();
                         }
                     }
                 }
             }
-            auto const rrem = referenceMxs.size() % tileSize;
-            auto const qrem = queryMxs.size() % tileSize;
-            for (auto tr = 0u; tr < referenceMxs.size() / tileSize; tr++) {
-                for (auto i = 0u; i < tileSize; i++) {
+            auto const rrem = referenceMxs.size() % tileSizeR;
+            auto const qrem = queryMxs.size() % tileSizeQ;
+            for (auto tr = 0u; tr < referenceMxs.size() / tileSizeR; tr++) {
+                for (auto i = 0u; i < tileSizeR; i++) {
                     for (auto j = 0u; j < qrem; j++) {
-                        auto const r = tr * tileSize + i;
+                        auto const r = tr * tileSizeR + i;
                         auto const q = queryMxs.size() - qrem + j;
                         mx(r, q) = (referenceMxs[r] - queryMxs[q]).cwiseAbs().sum();
                     }
                 }
             }
-            for (auto tq = 0u; tq < queryMxs.size() / tileSize; tq++) {
+            for (auto tq = 0u; tq < queryMxs.size() / tileSizeQ; tq++) {
                 for (auto i = 0u; i < rrem; i++) {
-                    for (auto j = 0u; j < tileSize; j++) {
+                    for (auto j = 0u; j < tileSizeQ; j++) {
                         auto const r = referenceMxs.size() - rrem + i;
-                        auto const q = tq * tileSize + j;
+                        auto const q = tq * tileSizeQ + j;
                         mx(r, q) = (referenceMxs[r] - queryMxs[q]).cwiseAbs().sum();
                     }
                 }

@@ -84,7 +84,8 @@ namespace seqslam {
     namespace cpu {
         [[nodiscard]] auto generateDiffMx(std::vector<Mx> const& referenceMxs,
                                           std::vector<Mx> const& queryMxs,
-                                          std::size_t tileSize = 32) noexcept -> Mx;
+                                          std::size_t tileSizeR = 32,
+                                          std::size_t tileSizeQ = 32) noexcept -> Mx;
 
         [[nodiscard]] auto enhanceDiffMx(Mx const& diffMx, unsigned windowSize) noexcept -> Mx;
 
