@@ -31,18 +31,23 @@ def main(args):
     splitLabel[0] = splitLabel[0].replace(to_replace={'small': 'Small', 'large': 'Large'})
     splitLabel[1] = splitLabel[1].replace(to_replace={None: '-'})
     d['Method'] = splitNames[0]
-    d['Tile size'] = pd.to_numeric(splitNames[2], downcast='integer')
-    d['n Pixels per Thread'] = pd.to_numeric(splitNames[3], downcast='integer')
+    d['Tile size R'] = pd.to_numeric(splitNames[2], downcast='integer')
+    d['Tile size Q'] = pd.to_numeric(splitNames[3], downcast='integer')
+    d['n Pixels per Thread'] = pd.to_numeric(splitNames[4], downcast='integer')
     d['Dataset'] = splitLabel[0]
     d['Label'] = splitLabel[1]
 
-    tsizeName = '$t_{size}$'
+
+    tsizeRName = '$t_{r}$'
+    tsizeQName = '$t_{q}$'
     nloadName = '$n_{load}$'
     d = d.rename(columns=lambda s: s.replace('_', ' '))
     d = d.rename(columns=lambda s: s.title())
     d = d.rename(columns=lambda s: s.replace('Per', 'per'))
     d = d.rename(columns=lambda s: s.replace('Cpu', 'CPU'))
-    d = d.rename(columns={'Tile Size': tsizeName, 'N Pixels per Thread': nloadName})
+    d = d.rename(columns={'Tile Size R': tsizeRName,
+                          'Tile Size Q': tsizeQName,
+                          'N Pixels per Thread': nloadName})
 
     d['Method'] = d['Method'].str.replace('DifferenceMatrix', '')
     d['Method'] = d['Method'].replace(to_replace={'cpu': 'CPU',
@@ -57,9 +62,11 @@ def main(args):
                                                 'twodiffs': 'Two diffs',
                                                 'warpreduce': 'Warp reduce'})
     d['GiB per Second'] = d['Bytes per Second'] / 2**(10*3)
+    d['\\frac{' + tsizeRName + '}{' + tsizeQName + '}'] = d[tsizeRName] / d[tsizeQName]
+    d['\\frac{' + tsizeQName + '}{' + tsizeRName + '}'] = d[tsizeQName] / d[tsizeRName]
     d = d.drop(columns=['Time Unit', 'Name'])
 
-    d = d.set_index(['Method', 'Dataset', 'Label', tsizeName, nloadName])
+    d = d.set_index(['Method', 'Dataset', 'Label', tsizeRName, tsizeQName, nloadName])
     d = d.sort_index()
 
     dr = d['GiB per Second']
@@ -70,6 +77,13 @@ def main(args):
     ax = cpu.plot(style='o-')
     ax = setYAxis(ax)
     figs.append((ax.get_figure(), 'cpu'))
+
+    #cpu = cpu['Large'].unstack(level=[tsizeRName, tsizeQName])
+    cpu = cpu.reset_index()
+    #ax = cpu.set_index('Large')['Ratio'].plot(style='o')
+    #ax = cpu.set_index('Small')['Ratio'].plot(style='o', ax=ax)
+
+    #ax = cpu.plot.scatter(x=tsizeQName, y=tsizeRName, s=cpu['Large'])
 
     gpu = dr.loc[('GPU')]
     gpu = gpu.unstack(level=nloadName)
@@ -91,6 +105,7 @@ def main(args):
 
     copies = dr.loc[(['GPU', 'GPU (with copy and context)', 'GPU (with copy)'],
                      'Small',
+                     slice(None),
                      slice(None),
                      slice(None),
                      8)]
