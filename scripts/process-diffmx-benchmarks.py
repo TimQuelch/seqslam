@@ -31,15 +31,15 @@ def main(args):
     splitLabel[0] = splitLabel[0].replace(to_replace={'small': 'Small', 'large': 'Large'})
     splitLabel[1] = splitLabel[1].replace(to_replace={None: '-'})
     d['Method'] = splitNames[0]
-    d['Tile size R'] = pd.to_numeric(splitNames[2], downcast='integer')
-    d['Tile size Q'] = pd.to_numeric(splitNames[3], downcast='integer')
-    d['n Pixels per Thread'] = pd.to_numeric(splitNames[4], downcast='integer')
+    d['Tile size R'] = pd.to_numeric(splitNames[2])
+    d['Tile size Q'] = pd.to_numeric(splitNames[3])
+    d['n Pixels per Thread'] = pd.to_numeric(splitNames[4]).fillna(1)
     d['Dataset'] = splitLabel[0]
     d['Label'] = splitLabel[1]
 
-
     tsizeRName = '$t_{r}$'
     tsizeQName = '$t_{q}$'
+    tsizeName = '$t_{size}$'
     nloadName = '$n_{load}$'
     d = d.rename(columns=lambda s: s.replace('_', ' '))
     d = d.rename(columns=lambda s: s.title())
@@ -64,9 +64,10 @@ def main(args):
     d['GiB per Second'] = d['Bytes per Second'] / 2**(10*3)
     d['\\frac{' + tsizeRName + '}{' + tsizeQName + '}'] = d[tsizeRName] / d[tsizeQName]
     d['\\frac{' + tsizeQName + '}{' + tsizeRName + '}'] = d[tsizeQName] / d[tsizeRName]
+    d[tsizeName] = d[tsizeQName] * d[tsizeRName]
     d = d.drop(columns=['Time Unit', 'Name'])
 
-    d = d.set_index(['Method', 'Dataset', 'Label', tsizeRName, tsizeQName, nloadName])
+    d = d.groupby(['Method', 'Dataset', 'Label', tsizeName, nloadName]).max()
     d = d.sort_index()
 
     dr = d['GiB per Second']
@@ -74,16 +75,9 @@ def main(args):
     cpu = dr.loc[('CPU')]
     cpu = cpu.reset_index(level=['Label', nloadName], drop=True)
     cpu = cpu.unstack(level='Dataset')
-    ax = cpu.plot(style='o-')
+    ax = cpu.plot(style='o-', logx=True)
     ax = setYAxis(ax)
     figs.append((ax.get_figure(), 'cpu'))
-
-    #cpu = cpu['Large'].unstack(level=[tsizeRName, tsizeQName])
-    cpu = cpu.reset_index()
-    #ax = cpu.set_index('Large')['Ratio'].plot(style='o')
-    #ax = cpu.set_index('Small')['Ratio'].plot(style='o', ax=ax)
-
-    #ax = cpu.plot.scatter(x=tsizeQName, y=tsizeRName, s=cpu['Large'])
 
     gpu = dr.loc[('GPU')]
     gpu = gpu.unstack(level=nloadName)
@@ -94,7 +88,7 @@ def main(args):
     ax2 = setYAxis(ax2, top=ymax)
     figs.append((ax1.get_figure(), 'gpu-large'))
     figs.append((ax2.get_figure(), 'gpu-small'))
-
+    
     early = dr.loc[('GPU', 'Small',
                     ['Naive', 'Parallel save', 'Continuous index', 'Two diffs', 'Warp reduce'])]
     early = early.reset_index(level=['Method', 'Dataset', nloadName], drop=True)
@@ -107,10 +101,9 @@ def main(args):
                      'Small',
                      slice(None),
                      slice(None),
-                     slice(None),
                      8)]
-    copies = copies.reset_index(level=['Dataset', 'Label', nloadName], drop=True)
     copies = copies.unstack(level='Method')
+    copies = copies.reset_index(level=['Dataset', 'Label', nloadName], drop=True)
     ax = copies.plot(style='o-')
     ax = setYAxis(ax)
     figs.append((ax.get_figure(), 'gpu-copies-and-context'))
