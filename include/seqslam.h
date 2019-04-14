@@ -36,7 +36,8 @@ namespace seqslam {
 
     [[nodiscard]] auto dropFrames(std::vector<Mx> const& queryImages,
                                   std::pair<double, double> vRange,
-                                  unsigned nSegments) -> std::vector<Mx>;
+                                  unsigned nSegments)
+        -> std::pair<std::vector<Mx>, std::vector<std::vector<unsigned>>>;
 
     [[nodiscard]] auto generateThresholdRange(Mx const& mx, unsigned nThresholds)
         -> std::vector<double>;
@@ -84,7 +85,8 @@ namespace seqslam {
     namespace cpu {
         [[nodiscard]] auto generateDiffMx(std::vector<Mx> const& referenceMxs,
                                           std::vector<Mx> const& queryMxs,
-                                          std::size_t tileSize = 32) noexcept -> Mx;
+                                          std::size_t tileSizeR = 32,
+                                          std::size_t tileSizeQ = 32) noexcept -> Mx;
 
         [[nodiscard]] auto enhanceDiffMx(Mx const& diffMx, unsigned windowSize) noexcept -> Mx;
 
@@ -124,16 +126,19 @@ namespace seqslam {
                                              std::size_t nQuery,
                                              std::size_t nPix) -> diffMxBuffers;
 
-            [[nodiscard]] auto isValidParameters(std::size_t nImages,
+            [[nodiscard]] auto isValidParameters(std::size_t nReference,
+                                                 std::size_t nQuery,
                                                  std::size_t nPix,
-                                                 std::size_t tileSize,
+                                                 std::size_t tileSizeR,
+                                                 std::size_t tileSizeQ,
                                                  std::size_t nPixPerThread) noexcept -> bool;
 
             void writeArgs(clutils::Context& context,
                            diffMxBuffers const& buffers,
                            std::vector<Mx> const& referenceMxs,
                            std::vector<Mx> const& queryMxs,
-                           std::size_t tileSize,
+                           std::size_t tileSizeR,
+                           std::size_t tileSizeQ,
                            std::size_t nPerThread,
                            std::string_view kernelName = defaultKernel);
         } // namespace diffmxcalc
@@ -200,7 +205,8 @@ namespace seqslam {
 
         [[nodiscard]] auto generateDiffMx(std::vector<Mx> const& referenceMxs,
                                           std::vector<Mx> const& queryMxs,
-                                          std::size_t tileSize = 4,
+                                          std::size_t tileSizeR = 4,
+                                          std::size_t tileSizeQ = 4,
                                           std::size_t nPerThread = 4,
                                           std::string_view kernelName = diffmxcalc::defaultKernel)
             -> Mx;
@@ -208,7 +214,8 @@ namespace seqslam {
         [[nodiscard]] auto generateDiffMx(clutils::Context& context,
                                           std::vector<Mx> const& referenceMxs,
                                           std::vector<Mx> const& queryMxs,
-                                          std::size_t tileSize = 4,
+                                          std::size_t tileSizeR = 4,
+                                          std::size_t tileSizeQ = 4,
                                           std::size_t nPerThread = 4,
                                           std::string_view kernelName = diffmxcalc::defaultKernel)
             -> Mx;
@@ -218,7 +225,8 @@ namespace seqslam {
                                           std::size_t referenceSize,
                                           std::size_t querySize,
                                           std::size_t nPix,
-                                          std::size_t tileSize = 4,
+                                          std::size_t tileSizeR = 4,
+                                          std::size_t tileSizeQ = 4,
                                           std::size_t nPerThread = 4,
                                           std::string_view kernelName = diffmxcalc::defaultKernel)
             -> Mx;

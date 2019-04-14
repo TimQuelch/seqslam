@@ -50,7 +50,7 @@ namespace fmt {
 } // namespace fmt
 
 TEST_CASE("Difference matrix results consistent with all parameters", "[diffmx]") {
-    for (auto shortSide = 1; shortSide <= 32; shortSide++) {
+    for (auto shortSide = 1; shortSide <= 32; shortSide *= 2) {
         auto const nPix = 2 * shortSide * shortSide;
         auto const nWarps = nPix / 32;
         auto const size = std::pair(shortSide, 2 * shortSide);
@@ -69,31 +69,45 @@ TEST_CASE("Difference matrix results consistent with all parameters", "[diffmx]"
         assert(referenceImages.size() == queryImages.size());
         assert(referenceImages[0].rows() == queryImages[0].rows());
         assert(referenceImages[0].cols() == queryImages[0].cols());
-        auto const nImages = referenceImages.size();
+        auto const nReference = referenceImages.size();
+        auto const nQuery = queryImages.size();
 
         auto diffMxFns = std::vector<std::pair<std::function<Mx()>, std::string>>{};
-        for (auto tileSize = 1u; tileSize <= 256; tileSize *= 2) {
-            diffMxFns.push_back(
-                {[&referenceImages, &queryImages, tileSize]() {
-                     return cpu::generateDiffMx(referenceImages, queryImages, tileSize);
-                 },
-                 fmt::format(
-                     "{}x{} ({}) CPU tile size {}", shortSide, 2 * shortSide, nPix, tileSize)});
+        for (auto tileSizeR = 1u; tileSizeR <= 256; tileSizeR *= 4) {
+            for (auto tileSizeQ = 1u; tileSizeQ <= 256; tileSizeQ *= 4) {
+                diffMxFns.push_back({[&referenceImages, &queryImages, tileSizeR, tileSizeQ]() {
+                                         return cpu::generateDiffMx(
+                                             referenceImages, queryImages, tileSizeR, tileSizeQ);
+                                     },
+                                     fmt::format("{}x{} ({}) CPU tile size {}x{}",
+                                                 shortSide,
+                                                 2 * shortSide,
+                                                 nPix,
+                                                 tileSizeR,
+                                                 tileSizeQ)});
+            }
         }
-        for (auto tileSize = 1u; tileSize <= 512; tileSize++) {
-            for (auto nPerThread = 1u; nPerThread <= 512; nPerThread++) {
-                if (opencl::diffmxcalc::isValidParameters(nImages, nPix, tileSize, nPerThread)) {
-                    diffMxFns.push_back(
-                        {[&referenceImages, &queryImages, tileSize, nPerThread]() {
-                             return opencl::generateDiffMx(
-                                 referenceImages, queryImages, tileSize, nPerThread);
-                         },
-                         fmt::format("{}x{} ({}) GPU tile size {} n pixels per thread {}",
-                                     shortSide,
-                                     2 * shortSide,
-                                     nPix,
-                                     tileSize,
-                                     nPerThread)});
+        for (auto tileSizeR = 1u; tileSizeR <= 512; tileSizeR++) {
+            for (auto tileSizeQ = 1u; tileSizeQ <= 512; tileSizeQ++) {
+                for (auto nPerThread = 1u; nPerThread <= 512; nPerThread++) {
+                    if (opencl::diffmxcalc::isValidParameters(
+                            nReference, nQuery, nPix, tileSizeR, tileSizeQ, nPerThread)) {
+                        diffMxFns.push_back(
+                            {[&referenceImages, &queryImages, tileSizeR, tileSizeQ, nPerThread]() {
+                                 return opencl::generateDiffMx(referenceImages,
+                                                               queryImages,
+                                                               tileSizeR,
+                                                               tileSizeQ,
+                                                               nPerThread);
+                             },
+                             fmt::format("{}x{} ({}) GPU tile size {}x{} n pixels per thread {}",
+                                         shortSide,
+                                         2 * shortSide,
+                                         nPix,
+                                         tileSizeR,
+                                         tileSizeQ,
+                                         nPerThread)});
+                    }
                 }
             }
         }

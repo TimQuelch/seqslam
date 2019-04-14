@@ -16,32 +16,45 @@ constexpr auto nImages = 3576u;
 
 namespace {
     void gpuBenchmarkArgs(benchmark::internal::Benchmark* b,
-                          std::size_t nImages,
                           std::size_t nPix,
-                          std::pair<std::size_t, std::size_t> tileSizeRange,
+                          std::pair<std::size_t, std::size_t> tileSizeRRange,
+                          std::pair<std::size_t, std::size_t> tileSizeQRange,
                           std::pair<std::size_t, std::size_t> nPixPerThreadRange) {
-        for (auto tileSize = tileSizeRange.first; tileSize <= tileSizeRange.second; tileSize++) {
-            for (auto nPixPerThread = nPixPerThreadRange.first;
-                 nPixPerThread <= nPixPerThreadRange.second;
-                 nPixPerThread++) {
-                if (opencl::diffmxcalc::isValidParameters(nImages, nPix, tileSize, nPixPerThread)) {
-                    b->Args({static_cast<long>(tileSize), static_cast<long>(nPixPerThread)});
+        for (auto tileSizeR = tileSizeRRange.first; tileSizeR <= tileSizeRRange.second;
+             tileSizeR++) {
+            for (auto tileSizeQ = tileSizeQRange.first; tileSizeQ <= tileSizeQRange.second;
+                 tileSizeQ++) {
+                for (auto nPixPerThread = nPixPerThreadRange.first;
+                     nPixPerThread <= nPixPerThreadRange.second;
+                     nPixPerThread++) {
+                    if (opencl::diffmxcalc::isValidParameters(
+                            nImages, nImages, nPix, tileSizeR, tileSizeQ, nPixPerThread)) {
+                        b->Args({static_cast<long>(tileSizeR),
+                                 static_cast<long>(tileSizeQ),
+                                 static_cast<long>(nPixPerThread)});
+                    }
                 }
             }
         }
     }
 
     void cpuBenchmarkArgs(benchmark::internal::Benchmark* b) {
-        b->Args({1});
-        b->Args({2});
-        for (auto i = 4u; i < 32; i += 4) {
-            b->Args({static_cast<long>(i)});
+        auto args = std::vector<long>{};
+        args.push_back(1);
+        args.push_back(2);
+        for (auto i = 4u; i < 16; i += 4) {
+            args.push_back(i);
         }
-        for (auto i = 32u; i < 128; i += 8) {
-            b->Args({static_cast<long>(i)});
+        for (auto i = 16u; i < 64; i += 16) {
+            args.push_back(i);
         }
-        for (auto i = 128u; i < 256; i += 32) {
-            b->Args({static_cast<long>(i)});
+        for (auto i = 64u; i < 256; i += 64) {
+            args.push_back(i);
+        }
+        for (auto i : args) {
+            for (auto j : args) {
+                b->Args({i, j});
+            }
         }
     }
 
@@ -86,8 +99,8 @@ void gpuDifferenceMatrixWithCopyAndContext(benchmark::State& state, std::string_
     auto const [referenceImages, queryImages, nRows, nCols] = loadImages(dir);
 
     for (auto _ : state) {
-        auto diffMatrix =
-            opencl::generateDiffMx(referenceImages, queryImages, state.range(0), state.range(1));
+        auto diffMatrix = opencl::generateDiffMx(
+            referenceImages, queryImages, state.range(0), state.range(1), state.range(2));
         benchmark::DoNotOptimize(diffMatrix.data());
         benchmark::ClobberMemory();
     }
@@ -99,12 +112,12 @@ void gpuDifferenceMatrixWithCopyAndContext(benchmark::State& state, std::string_
 BENCHMARK_CAPTURE(gpuDifferenceMatrixWithCopyAndContext, small, smallImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
-        return gpuBenchmarkArgs(b, nImages, smallSize, {1, 256}, {1, 256});
+        return gpuBenchmarkArgs(b, smallSize, {1, 256}, {1, 256}, {1, 256});
     });
 BENCHMARK_CAPTURE(gpuDifferenceMatrixWithCopyAndContext, large, largeImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
-        return gpuBenchmarkArgs(b, nImages, largeSize, {1, 256}, {1, 256});
+        return gpuBenchmarkArgs(b, largeSize, {1, 256}, {1, 256}, {1, 256});
     });
 
 void gpuDifferenceMatrixWithCopy(benchmark::State& state, std::string_view dir) {
@@ -114,7 +127,7 @@ void gpuDifferenceMatrixWithCopy(benchmark::State& state, std::string_view dir) 
 
     for (auto _ : state) {
         auto diffMatrix = opencl::generateDiffMx(
-            context, referenceImages, queryImages, state.range(0), state.range(1));
+            context, referenceImages, queryImages, state.range(0), state.range(1), state.range(2));
         benchmark::DoNotOptimize(diffMatrix.data());
         benchmark::ClobberMemory();
     }
@@ -126,12 +139,12 @@ void gpuDifferenceMatrixWithCopy(benchmark::State& state, std::string_view dir) 
 BENCHMARK_CAPTURE(gpuDifferenceMatrixWithCopy, small, smallImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
-        return gpuBenchmarkArgs(b, nImages, smallSize, {1, 256}, {1, 256});
+        return gpuBenchmarkArgs(b, smallSize, {1, 256}, {1, 256}, {1, 256});
     });
 BENCHMARK_CAPTURE(gpuDifferenceMatrixWithCopy, large, largeImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
-        return gpuBenchmarkArgs(b, nImages, largeSize, {1, 256}, {1, 256});
+        return gpuBenchmarkArgs(b, largeSize, {1, 256}, {1, 256}, {1, 256});
     });
 
 void gpuDifferenceMatrix(benchmark::State& state, std::string const& kernel, std::string_view dir) {
@@ -140,8 +153,14 @@ void gpuDifferenceMatrix(benchmark::State& state, std::string const& kernel, std
     auto context = opencl::diffmxcalc::createContext();
     auto bufs = opencl::diffmxcalc::createBuffers(
         context, referenceImages.size(), queryImages.size(), nRows * nCols);
-    opencl::diffmxcalc::writeArgs(
-        context, bufs, referenceImages, queryImages, state.range(0), state.range(1), kernel);
+    opencl::diffmxcalc::writeArgs(context,
+                                  bufs,
+                                  referenceImages,
+                                  queryImages,
+                                  state.range(0),
+                                  state.range(1),
+                                  state.range(2),
+                                  kernel);
 
     for (auto _ : state) {
         auto diffMatrix = opencl::generateDiffMx(context,
@@ -151,6 +170,7 @@ void gpuDifferenceMatrix(benchmark::State& state, std::string const& kernel, std
                                                  nRows * nCols,
                                                  state.range(0),
                                                  state.range(1),
+                                                 state.range(2),
                                                  kernel);
         benchmark::DoNotOptimize(diffMatrix.data());
         benchmark::ClobberMemory();
@@ -163,17 +183,17 @@ void gpuDifferenceMatrix(benchmark::State& state, std::string const& kernel, std
 BENCHMARK_CAPTURE(gpuDifferenceMatrix, small_best, "diffMxNDiffs", smallImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
-        return gpuBenchmarkArgs(b, nImages, smallSize, {1, 256}, {1, 256});
+        return gpuBenchmarkArgs(b, smallSize, {1, 256}, {1, 256}, {1, 256});
     });
 BENCHMARK_CAPTURE(gpuDifferenceMatrix, small_warpreduce, "diffMxUnrolledWarpReduce", smallImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
-        return gpuBenchmarkArgs(b, nImages, smallSize, {1, 256}, {2, 2});
+        return gpuBenchmarkArgs(b, smallSize, {1, 256}, {1, 256}, {2, 2});
     });
 BENCHMARK_CAPTURE(gpuDifferenceMatrix, small_twodiffs, "diffMxTwoDiffs", smallImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
-        return gpuBenchmarkArgs(b, nImages, smallSize, {1, 256}, {2, 2});
+        return gpuBenchmarkArgs(b, smallSize, {1, 256}, {1, 256}, {2, 2});
     });
 BENCHMARK_CAPTURE(gpuDifferenceMatrix,
                   small_continuousindex,
@@ -181,33 +201,33 @@ BENCHMARK_CAPTURE(gpuDifferenceMatrix,
                   smallImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
-        return gpuBenchmarkArgs(b, nImages, smallSize, {1, 256}, {1, 1});
+        return gpuBenchmarkArgs(b, smallSize, {1, 256}, {1, 256}, {1, 1});
     });
 BENCHMARK_CAPTURE(gpuDifferenceMatrix, small_parallelsave, "diffMxParallelSave", smallImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
-        return gpuBenchmarkArgs(b, nImages, smallSize, {1, 256}, {1, 1});
+        return gpuBenchmarkArgs(b, smallSize, {1, 256}, {1, 256}, {1, 1});
     });
 BENCHMARK_CAPTURE(gpuDifferenceMatrix, small_naive, "diffMxNaive", smallImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
-        return gpuBenchmarkArgs(b, nImages, smallSize, {1, 256}, {1, 1});
+        return gpuBenchmarkArgs(b, smallSize, {1, 256}, {1, 256}, {1, 1});
     });
 
 BENCHMARK_CAPTURE(gpuDifferenceMatrix, large_best, "diffMxNDiffs", largeImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
-        return gpuBenchmarkArgs(b, nImages, largeSize, {1, 256}, {1, 256});
+        return gpuBenchmarkArgs(b, largeSize, {1, 256}, {1, 256}, {1, 256});
     });
 BENCHMARK_CAPTURE(gpuDifferenceMatrix, large_warpreduce, "diffMxUnrolledWarpReduce", largeImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
-        return gpuBenchmarkArgs(b, nImages, largeSize, {1, 256}, {2, 2});
+        return gpuBenchmarkArgs(b, largeSize, {1, 256}, {1, 256}, {2, 2});
     });
 BENCHMARK_CAPTURE(gpuDifferenceMatrix, large_twodiffs, "diffMxTwoDiffs", largeImagesDir)
     ->Unit(benchmark::kMillisecond)
     ->Apply([](auto b) {
-        return gpuBenchmarkArgs(b, nImages, largeSize, {1, 256}, {2, 2});
+        return gpuBenchmarkArgs(b, largeSize, {1, 256}, {1, 256}, {2, 2});
     });
 
 BENCHMARK_MAIN();

@@ -12,7 +12,6 @@ namespace {
     constexpr auto const smallImagesDir = "../datasets/nordland_trimmed_resized"sv;
     constexpr auto const largeImagesDir = "../datasets/nordland_trimmed"sv;
 
-    constexpr auto const diffMxTileSize = 20;
     constexpr auto const enhancementWindowSize = 30;
     constexpr auto const searchVMin = 0.0f;
     constexpr auto const searchVMax = 5.0f;
@@ -54,7 +53,7 @@ void diffMxGeneration(benchmark::State& state, std::string_view imagePath) {
     auto const [r, q] = loadImages(imagePath);
 
     for (auto _ : state) {
-        auto mx = cpu::generateDiffMx(r, q, diffMxTileSize);
+        auto mx = cpu::generateDiffMx(r, q, 192, 16);
         benchmark::DoNotOptimize(mx.data());
         benchmark::ClobberMemory();
     }
@@ -89,7 +88,7 @@ void cpuWhole(benchmark::State& state, std::string_view imagePath) {
     auto const [r, q] = loadImages(imagePath);
 
     for (auto _ : state) {
-        auto mx = cpu::generateDiffMx(r, q, diffMxTileSize);
+        auto mx = cpu::generateDiffMx(r, q, 192, 16);
         auto enhanced = cpu::enhanceDiffMx(mx, enhancementWindowSize);
         auto searched = cpu::sequenceSearch(
             enhanced, searchSequenceLength, searchVMin, searchVMax, searchNTraj);
@@ -106,7 +105,7 @@ void gpuWhole(benchmark::State& state, std::string_view imagePath) {
     auto context = opencl::createContext();
 
     for (auto _ : state) {
-        auto mx = opencl::generateDiffMx(context, r, q, 4, 8);
+        auto mx = opencl::generateDiffMx(context, r, q, 1, 24, 8);
         auto enhanced = opencl::enhanceDiffMx(context, mx, enhancementWindowSize, 8);
         auto searched = opencl::sequenceSearch(
             context, enhanced, searchSequenceLength, searchVMin, searchVMax, searchNTraj, 6);
