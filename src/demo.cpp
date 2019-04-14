@@ -51,8 +51,10 @@ int main() {
 
     auto const referenceImages = loadImages(
         p.datasetRoot / p.referencePath, p.imageRows, p.imageCols, p.imageContrastThreshold);
-    auto const queryImages =
-        loadImages(p.datasetRoot / p.queryPath, p.imageRows, p.imageCols, p.imageContrastThreshold);
+    auto const [queryImages, groundTruth] = dropFrames(
+        loadImages(p.datasetRoot / p.queryPath, p.imageRows, p.imageCols, p.imageContrastThreshold),
+        {1.0, 1.5},
+        30);
 
     p.nQuery = queryImages.size();
     p.nReference = referenceImages.size();

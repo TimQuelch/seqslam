@@ -232,7 +232,8 @@ namespace seqslam {
 
     [[nodiscard]] auto dropFrames(std::vector<Mx> const& queryImages,
                                   std::pair<double, double> vRange,
-                                  unsigned nSegments) -> std::vector<Mx> {
+                                  unsigned nSegments)
+        -> std::pair<std::vector<Mx>, std::vector<std::vector<unsigned>>> {
         auto const intervals = [vRange, nSegments]() {
             auto vs = std::vector<double>{};
             std::generate_n(std::back_inserter(vs), nSegments, [vRange]() {
@@ -258,13 +259,16 @@ namespace seqslam {
         assert(mask.size() >= queryImages.size());
 
         auto ret = std::vector<Mx>{};
+        auto const oldGroundTruth = nordlandGroundTruth(queryImages.size());
+        auto newGroundTruth = decltype(oldGroundTruth){};
         for (auto i = 0u; i < queryImages.size(); i++) {
             if (mask[i]) {
                 ret.push_back(queryImages[i]);
+                newGroundTruth.push_back(oldGroundTruth[i]);
             }
         }
 
-        return ret;
+        return {ret, newGroundTruth};
     }
 
     [[nodiscard]] auto generateThresholdRange(Mx const& mx, unsigned nThresholds)

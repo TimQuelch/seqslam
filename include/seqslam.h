@@ -36,7 +36,8 @@ namespace seqslam {
 
     [[nodiscard]] auto dropFrames(std::vector<Mx> const& queryImages,
                                   std::pair<double, double> vRange,
-                                  unsigned nSegments) -> std::vector<Mx>;
+                                  unsigned nSegments)
+        -> std::pair<std::vector<Mx>, std::vector<std::vector<unsigned>>>;
 
     [[nodiscard]] auto generateThresholdRange(Mx const& mx, unsigned nThresholds)
         -> std::vector<double>;
