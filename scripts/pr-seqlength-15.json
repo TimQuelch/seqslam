@@ -1,0 +1,815 @@
+{
+    "data": [
+        {
+            "F1 Score": 0.0027201632097925872,
+            "False Negative": 2933,
+            "False Positive": 0,
+            "Precision": 1.0,
+            "Recall": 0.001361933946203609,
+            "True Positive": 4
+        },
+        {
+            "F1 Score": 0.003399048266485384,
+            "False Negative": 2932,
+            "False Positive": 0,
+            "Precision": 1.0,
+            "Recall": 0.0017024174327545114,
+            "True Positive": 5
+        },
+        {
+            "F1 Score": 0.003399048266485384,
+            "False Negative": 2932,
+            "False Positive": 0,
+            "Precision": 1.0,
+            "Recall": 0.0017024174327545114,
+            "True Positive": 5
+        },
+        {
+            "F1 Score": 0.004755434782608696,
+            "False Negative": 2930,
+            "False Positive": 0,
+            "Precision": 1.0,
+            "Recall": 0.002383384405856316,
+            "True Positive": 7
+        },
+        {
+            "F1 Score": 0.005432937181663836,
+            "False Negative": 2929,
+            "False Positive": 0,
+            "Precision": 1.0,
+            "Recall": 0.002723867892407218,
+            "True Positive": 8
+        },
+        {
+            "F1 Score": 0.008138351983723298,
+            "False Negative": 2925,
+            "False Positive": 0,
+            "Precision": 1.0,
+            "Recall": 0.0040858018386108275,
+            "True Positive": 12
+        },
+        {
+            "F1 Score": 0.013527223537368955,
+            "False Negative": 2917,
+            "False Positive": 0,
+            "Precision": 1.0,
+            "Recall": 0.0068096697310180455,
+            "True Positive": 20
+        },
+        {
+            "F1 Score": 0.01888701517706577,
+            "False Negative": 2909,
+            "False Positive": 0,
+            "Precision": 1.0,
+            "Recall": 0.009533537623425264,
+            "True Positive": 28
+        },
+        {
+            "F1 Score": 0.02554621848739496,
+            "False Negative": 2899,
+            "False Positive": 0,
+            "Precision": 1.0,
+            "Recall": 0.012938372488934287,
+            "True Positive": 38
+        },
+        {
+            "F1 Score": 0.03084143479718404,
+            "False Negative": 2891,
+            "False Positive": 0,
+            "Precision": 1.0,
+            "Recall": 0.015662240381341504,
+            "True Positive": 46
+        },
+        {
+            "F1 Score": 0.03413654618473895,
+            "False Negative": 2886,
+            "False Positive": 0,
+            "Precision": 1.0,
+            "Recall": 0.017364657814096015,
+            "True Positive": 51
+        },
+        {
+            "F1 Score": 0.04004004004004004,
+            "False Negative": 2877,
+            "False Positive": 0,
+            "Precision": 1.0,
+            "Recall": 0.020429009193054137,
+            "True Positive": 60
+        },
+        {
+            "F1 Score": 0.047856430707876374,
+            "False Negative": 2865,
+            "False Positive": 0,
+            "Precision": 1.0,
+            "Recall": 0.024514811031664963,
+            "True Positive": 72
+        },
+        {
+            "F1 Score": 0.05689712206417466,
+            "False Negative": 2851,
+            "False Positive": 0,
+            "Precision": 1.0,
+            "Recall": 0.029281579843377595,
+            "True Positive": 86
+        },
+        {
+            "F1 Score": 0.06138613861386139,
+            "False Negative": 2844,
+            "False Positive": 0,
+            "Precision": 1.0,
+            "Recall": 0.031664964249233915,
+            "True Positive": 93
+        },
+        {
+            "F1 Score": 0.06966809069996713,
+            "False Negative": 2831,
+            "False Positive": 0,
+            "Precision": 1.0,
+            "Recall": 0.03609124957439564,
+            "True Positive": 106
+        },
+        {
+            "F1 Score": 0.08164598301763554,
+            "False Negative": 2812,
+            "False Positive": 0,
+            "Precision": 1.0,
+            "Recall": 0.042560435818862784,
+            "True Positive": 125
+        },
+        {
+            "F1 Score": 0.09409474367293966,
+            "False Negative": 2792,
+            "False Positive": 0,
+            "Precision": 1.0,
+            "Recall": 0.04937010554988083,
+            "True Positive": 145
+        },
+        {
+            "F1 Score": 0.10454985479186835,
+            "False Negative": 2775,
+            "False Positive": 0,
+            "Precision": 1.0,
+            "Recall": 0.05515832482124617,
+            "True Positive": 162
+        },
+        {
+            "F1 Score": 0.11549566891241579,
+            "False Negative": 2757,
+            "False Positive": 0,
+            "Precision": 1.0,
+            "Recall": 0.06128702757916241,
+            "True Positive": 180
+        },
+        {
+            "F1 Score": 0.1322314049586777,
+            "False Negative": 2729,
+            "False Positive": 1,
+            "Precision": 0.9952153110047847,
+            "Recall": 0.07082056520258767,
+            "True Positive": 208
+        },
+        {
+            "F1 Score": 0.14754098360655737,
+            "False Negative": 2703,
+            "False Positive": 1,
+            "Precision": 0.9957446808510638,
+            "Recall": 0.07967313585291114,
+            "True Positive": 234
+        },
+        {
+            "F1 Score": 0.16260162601626016,
+            "False Negative": 2677,
+            "False Positive": 1,
+            "Precision": 0.9961685823754789,
+            "Recall": 0.08852570650323459,
+            "True Positive": 260
+        },
+        {
+            "F1 Score": 0.1768538628606888,
+            "False Negative": 2652,
+            "False Positive": 1,
+            "Precision": 0.9965034965034965,
+            "Recall": 0.09703779366700716,
+            "True Positive": 285
+        },
+        {
+            "F1 Score": 0.19588578446423088,
+            "False Negative": 2618,
+            "False Positive": 1,
+            "Precision": 0.996875,
+            "Recall": 0.10861423220973783,
+            "True Positive": 319
+        },
+        {
+            "F1 Score": 0.2166919575113809,
+            "False Negative": 2580,
+            "False Positive": 1,
+            "Precision": 0.9972067039106145,
+            "Recall": 0.12155260469867211,
+            "True Positive": 357
+        },
+        {
+            "F1 Score": 0.23860911270983212,
+            "False Negative": 2539,
+            "False Positive": 1,
+            "Precision": 0.9974937343358395,
+            "Recall": 0.1355124276472591,
+            "True Positive": 398
+        },
+        {
+            "F1 Score": 0.25999407758365417,
+            "False Negative": 2498,
+            "False Positive": 1,
+            "Precision": 0.9977272727272727,
+            "Recall": 0.1494722505958461,
+            "True Positive": 439
+        },
+        {
+            "F1 Score": 0.28737977266103176,
+            "False Negative": 2444,
+            "False Positive": 1,
+            "Precision": 0.9979757085020243,
+            "Recall": 0.16785835886959483,
+            "True Positive": 493
+        },
+        {
+            "F1 Score": 0.3175965665236052,
+            "False Negative": 2382,
+            "False Positive": 3,
+            "Precision": 0.9946236559139785,
+            "Recall": 0.18896833503575078,
+            "True Positive": 555
+        },
+        {
+            "F1 Score": 0.3416009019165727,
+            "False Negative": 2331,
+            "False Positive": 5,
+            "Precision": 0.9918166939443536,
+            "Recall": 0.20633299284984677,
+            "True Positive": 606
+        },
+        {
+            "F1 Score": 0.3667128987517337,
+            "False Negative": 2276,
+            "False Positive": 7,
+            "Precision": 0.9895209580838323,
+            "Recall": 0.2250595846101464,
+            "True Positive": 661
+        },
+        {
+            "F1 Score": 0.4022770398481973,
+            "False Negative": 2195,
+            "False Positive": 10,
+            "Precision": 0.9867021276595744,
+            "Recall": 0.2526387470207695,
+            "True Positive": 742
+        },
+        {
+            "F1 Score": 0.4378635642517187,
+            "False Negative": 2109,
+            "False Positive": 17,
+            "Precision": 0.9798816568047337,
+            "Recall": 0.2819203268641471,
+            "True Positive": 828
+        },
+        {
+            "F1 Score": 0.46742502585315404,
+            "False Negative": 2033,
+            "False Positive": 27,
+            "Precision": 0.9709989258861439,
+            "Recall": 0.30779707184201566,
+            "True Positive": 904
+        },
+        {
+            "F1 Score": 0.5008809463881198,
+            "False Negative": 1942,
+            "False Positive": 41,
+            "Precision": 0.9604247104247104,
+            "Recall": 0.33878106911814776,
+            "True Positive": 995
+        },
+        {
+            "F1 Score": 0.5319045299561617,
+            "False Negative": 1845,
+            "False Positive": 77,
+            "Precision": 0.9341317365269461,
+            "Recall": 0.3718079673135853,
+            "True Positive": 1092
+        },
+        {
+            "F1 Score": 0.5668073136427567,
+            "False Negative": 1728,
+            "False Positive": 120,
+            "Precision": 0.909706546275395,
+            "Recall": 0.41164453524004085,
+            "True Positive": 1209
+        },
+        {
+            "F1 Score": 0.5932432432432433,
+            "False Negative": 1620,
+            "False Positive": 186,
+            "Precision": 0.8762475049900199,
+            "Recall": 0.4484167517875383,
+            "True Positive": 1317
+        },
+        {
+            "F1 Score": 0.6101184068891281,
+            "False Negative": 1520,
+            "False Positive": 291,
+            "Precision": 0.8296252927400468,
+            "Recall": 0.4824651004426285,
+            "True Positive": 1417
+        },
+        {
+            "F1 Score": 0.614950634696756,
+            "False Negative": 1411,
+            "False Positive": 500,
+            "Precision": 0.7532082922013821,
+            "Recall": 0.5195778004766769,
+            "True Positive": 1526
+        },
+        {
+            "F1 Score": 0.6052582509789297,
+            "False Negative": 1314,
+            "False Positive": 803,
+            "Precision": 0.669002473206925,
+            "Recall": 0.5526046986721144,
+            "True Positive": 1623
+        },
+        {
+            "F1 Score": 0.5766850643920387,
+            "False Negative": 1213,
+            "False Positive": 1318,
+            "Precision": 0.5667324128862591,
+            "Recall": 0.5869935308137555,
+            "True Positive": 1724
+        },
+        {
+            "F1 Score": 0.531523642732049,
+            "False Negative": 1116,
+            "False Positive": 2094,
+            "Precision": 0.46513409961685825,
+            "Recall": 0.6200204290091931,
+            "True Positive": 1821
+        },
+        {
+            "F1 Score": 0.4670731707317074,
+            "False Negative": 1022,
+            "False Positive": 3348,
+            "Precision": 0.3638609158274748,
+            "Recall": 0.6520258767449779,
+            "True Positive": 1915
+        },
+        {
+            "F1 Score": 0.39608993157380257,
+            "False Negative": 911,
+            "False Positive": 5267,
+            "Precision": 0.2778006307418072,
+            "Recall": 0.6898195437521281,
+            "True Positive": 2026
+        },
+        {
+            "F1 Score": 0.3206591579106508,
+            "False Negative": 816,
+            "False Positive": 8171,
+            "Precision": 0.20608239409249904,
+            "Recall": 0.7221654749744637,
+            "True Positive": 2121
+        },
+        {
+            "F1 Score": 0.24554764024933218,
+            "False Negative": 731,
+            "False Positive": 12825,
+            "Precision": 0.14676335573148827,
+            "Recall": 0.7511065713312904,
+            "True Positive": 2206
+        },
+        {
+            "F1 Score": 0.1843097506588283,
+            "False Negative": 664,
+            "False Positive": 19455,
+            "Precision": 0.10461156111929308,
+            "Recall": 0.7739189649302008,
+            "True Positive": 2273
+        },
+        {
+            "F1 Score": 0.13675907667323978,
+            "False Negative": 579,
+            "False Positive": 29189,
+            "Precision": 0.07474561764985577,
+            "Recall": 0.8028600612870276,
+            "True Positive": 2358
+        },
+        {
+            "F1 Score": 0.10025744001647616,
+            "False Negative": 503,
+            "False Positive": 43184,
+            "Precision": 0.05335613135165943,
+            "Recall": 0.8287368062648961,
+            "True Positive": 2434
+        },
+        {
+            "F1 Score": 0.07272621489141975,
+            "False Negative": 437,
+            "False Positive": 63314,
+            "Precision": 0.03798583887926581,
+            "Recall": 0.8512087163772557,
+            "True Positive": 2500
+        },
+        {
+            "F1 Score": 0.053100465666193045,
+            "False Negative": 377,
+            "False Positive": 90924,
+            "Precision": 0.027384365238971375,
+            "Recall": 0.8716377255703098,
+            "True Positive": 2560
+        },
+        {
+            "F1 Score": 0.0389557124853655,
+            "False Negative": 325,
+            "False Positive": 128552,
+            "Precision": 0.01991400079290049,
+            "Recall": 0.8893428668709568,
+            "True Positive": 2612
+        },
+        {
+            "F1 Score": 0.028737926941132037,
+            "False Negative": 274,
+            "False Positive": 179730,
+            "Precision": 0.014600341021859392,
+            "Recall": 0.9067075246850528,
+            "True Positive": 2663
+        },
+        {
+            "F1 Score": 0.02148614479999683,
+            "False Negative": 222,
+            "False Positive": 247069,
+            "Precision": 0.010869391153957018,
+            "Recall": 0.9244126659856997,
+            "True Positive": 2715
+        },
+        {
+            "F1 Score": 0.016177404558605606,
+            "False Negative": 186,
+            "False Positive": 334416,
+            "Precision": 0.008159161483775103,
+            "Recall": 0.9366700715015321,
+            "True Positive": 2751
+        },
+        {
+            "F1 Score": 0.012333414639554736,
+            "False Negative": 156,
+            "False Positive": 445252,
+            "Precision": 0.00620713206393279,
+            "Recall": 0.9468845760980592,
+            "True Positive": 2781
+        },
+        {
+            "F1 Score": 0.009552006496582529,
+            "False Negative": 114,
+            "False Positive": 585320,
+            "Precision": 0.0047998530969509115,
+            "Recall": 0.9611848825331971,
+            "True Positive": 2823
+        },
+        {
+            "F1 Score": 0.007441923708515067,
+            "False Negative": 91,
+            "False Positive": 759073,
+            "Precision": 0.0037353051964841406,
+            "Recall": 0.9690160027238679,
+            "True Positive": 2846
+        },
+        {
+            "F1 Score": 0.005870273100649616,
+            "False Negative": 67,
+            "False Positive": 972001,
+            "Precision": 0.0029439792546911334,
+            "Recall": 0.9771876064010896,
+            "True Positive": 2870
+        },
+        {
+            "F1 Score": 0.004673840027939321,
+            "False Negative": 53,
+            "False Positive": 1228282,
+            "Precision": 0.002342494838226527,
+            "Recall": 0.9819543752128022,
+            "True Positive": 2884
+        },
+        {
+            "F1 Score": 0.0037576436691689487,
+            "False Negative": 43,
+            "False Positive": 1534496,
+            "Precision": 0.0018824110993306837,
+            "Recall": 0.9853592100783112,
+            "True Positive": 2894
+        },
+        {
+            "F1 Score": 0.0030533370266879983,
+            "False Negative": 38,
+            "False Positive": 1893070,
+            "Precision": 0.0015290334388378714,
+            "Recall": 0.9870616275110657,
+            "True Positive": 2899
+        },
+        {
+            "F1 Score": 0.002517444175826742,
+            "False Negative": 26,
+            "False Positive": 2306815,
+            "Precision": 0.0012603226529900083,
+            "Recall": 0.9911474293496766,
+            "True Positive": 2911
+        },
+        {
+            "F1 Score": 0.002097682514025015,
+            "False Negative": 21,
+            "False Positive": 2774358,
+            "Precision": 0.0010499504190079913,
+            "Recall": 0.992849846782431,
+            "True Positive": 2916
+        },
+        {
+            "F1 Score": 0.0017681097948919924,
+            "False Negative": 19,
+            "False Positive": 3294845,
+            "Precision": 0.0008848422400275581,
+            "Recall": 0.9935308137555329,
+            "True Positive": 2918
+        },
+        {
+            "F1 Score": 0.0015111564228029362,
+            "False Negative": 17,
+            "False Positive": 3858733,
+            "Precision": 0.0007561528702863773,
+            "Recall": 0.9942117807286347,
+            "True Positive": 2920
+        },
+        {
+            "F1 Score": 0.0013071465326931003,
+            "False Negative": 17,
+            "False Positive": 4461890,
+            "Precision": 0.0006540031938649125,
+            "Recall": 0.9942117807286347,
+            "True Positive": 2920
+        },
+        {
+            "F1 Score": 0.0011456130686957992,
+            "False Negative": 16,
+            "False Positive": 5093595,
+            "Precision": 0.00057313662902265,
+            "Recall": 0.9945522642151856,
+            "True Positive": 2921
+        },
+        {
+            "F1 Score": 0.0010163533374472273,
+            "False Negative": 16,
+            "False Positive": 5742143,
+            "Precision": 0.0005084364595416169,
+            "Recall": 0.9945522642151856,
+            "True Positive": 2921
+        },
+        {
+            "F1 Score": 0.000913059311345098,
+            "False Negative": 16,
+            "False Positive": 6392412,
+            "Precision": 0.0004567393128708075,
+            "Recall": 0.9945522642151856,
+            "True Positive": 2921
+        },
+        {
+            "F1 Score": 0.0008303698756250337,
+            "False Negative": 16,
+            "False Positive": 7029561,
+            "Precision": 0.0004153583329470306,
+            "Recall": 0.9945522642151856,
+            "True Positive": 2921
+        },
+        {
+            "F1 Score": 0.0007648664200467796,
+            "False Negative": 16,
+            "False Positive": 7632077,
+            "Precision": 0.0003825803228763125,
+            "Recall": 0.9945522642151856,
+            "True Positive": 2921
+        },
+        {
+            "F1 Score": 0.0007132671101083209,
+            "False Negative": 16,
+            "False Positive": 8184622,
+            "Precision": 0.00035676148509998664,
+            "Recall": 0.9945522642151856,
+            "True Positive": 2921
+        },
+        {
+            "F1 Score": 0.0006730494613012112,
+            "False Negative": 16,
+            "False Positive": 8674039,
+            "Precision": 0.00033663863841714147,
+            "Recall": 0.9945522642151856,
+            "True Positive": 2921
+        },
+        {
+            "F1 Score": 0.0006421501323266752,
+            "False Negative": 16,
+            "False Positive": 9091703,
+            "Precision": 0.00032117875351416397,
+            "Recall": 0.9945522642151856,
+            "True Positive": 2921
+        },
+        {
+            "F1 Score": 0.0006187380835726415,
+            "False Negative": 16,
+            "False Positive": 9435940,
+            "Precision": 0.0003094653051888358,
+            "Recall": 0.9945522642151856,
+            "True Positive": 2921
+        },
+        {
+            "F1 Score": 0.0006013354134062594,
+            "False Negative": 16,
+            "False Positive": 9709186,
+            "Precision": 0.0003007586304393063,
+            "Recall": 0.9945522642151856,
+            "True Positive": 2921
+        },
+        {
+            "F1 Score": 0.0005850908803316829,
+            "False Negative": 0,
+            "False Positive": 10033592,
+            "Precision": 0.0002926310480445979,
+            "Recall": 1.0,
+            "True Positive": 2937
+        },
+        {
+            "F1 Score": 0.0005761872237692826,
+            "False Negative": 0,
+            "False Positive": 10188729,
+            "Precision": 0.0002881766337319139,
+            "Recall": 1.0,
+            "True Positive": 2937
+        },
+        {
+            "F1 Score": 0.0005700029955724333,
+            "False Negative": 0,
+            "False Positive": 10299335,
+            "Precision": 0.00028508274679604653,
+            "Recall": 1.0,
+            "True Positive": 2937
+        },
+        {
+            "F1 Score": 0.0005658430218136626,
+            "False Negative": 0,
+            "False Positive": 10375097,
+            "Precision": 0.000283001578140908,
+            "Recall": 1.0,
+            "True Positive": 2937
+        },
+        {
+            "F1 Score": 0.000563145438589057,
+            "False Negative": 0,
+            "False Positive": 10424824,
+            "Precision": 0.0002816520248210522,
+            "Recall": 1.0,
+            "True Positive": 2937
+        },
+        {
+            "F1 Score": 0.0005614577868144592,
+            "False Negative": 0,
+            "False Positive": 10456177,
+            "Precision": 0.0002808077242489182,
+            "Recall": 1.0,
+            "True Positive": 2937
+        },
+        {
+            "F1 Score": 0.0005604363427225662,
+            "False Negative": 0,
+            "False Positive": 10475245,
+            "Precision": 0.00028029671559436553,
+            "Recall": 1.0,
+            "True Positive": 2937
+        },
+        {
+            "F1 Score": 0.0005598366123423101,
+            "False Negative": 0,
+            "False Positive": 10486473,
+            "Precision": 0.0002799966823682171,
+            "Recall": 1.0,
+            "True Positive": 2937
+        },
+        {
+            "F1 Score": 0.0005595001341600169,
+            "False Negative": 0,
+            "False Positive": 10492783,
+            "Precision": 0.0002798283490794343,
+            "Recall": 1.0,
+            "True Positive": 2937
+        },
+        {
+            "F1 Score": 0.0005593144180192557,
+            "False Negative": 0,
+            "False Positive": 10496269,
+            "Precision": 0.00027973543904177134,
+            "Recall": 1.0,
+            "True Positive": 2937
+        },
+        {
+            "F1 Score": 0.0005592189974519073,
+            "False Negative": 0,
+            "False Positive": 10498061,
+            "Precision": 0.0002796877020641276,
+            "Recall": 1.0,
+            "True Positive": 2937
+        },
+        {
+            "F1 Score": 0.0005591706073883629,
+            "False Negative": 0,
+            "False Positive": 10498970,
+            "Precision": 0.000279663493496943,
+            "Recall": 1.0,
+            "True Positive": 2937
+        },
+        {
+            "F1 Score": 0.0005591475598406401,
+            "False Negative": 0,
+            "False Positive": 10499403,
+            "Precision": 0.00027965196327675546,
+            "Recall": 1.0,
+            "True Positive": 2937
+        },
+        {
+            "F1 Score": 0.0005591365424001407,
+            "False Negative": 0,
+            "False Positive": 10499610,
+            "Precision": 0.0002796464514750565,
+            "Recall": 1.0,
+            "True Positive": 2937
+        },
+        {
+            "F1 Score": 0.0005591315926769182,
+            "False Negative": 0,
+            "False Positive": 10499703,
+            "Precision": 0.00027964397522908525,
+            "Recall": 1.0,
+            "True Positive": 2937
+        },
+        {
+            "F1 Score": 0.0005591293041248399,
+            "False Negative": 0,
+            "False Positive": 10499746,
+            "Precision": 0.0002796428303129781,
+            "Recall": 1.0,
+            "True Positive": 2937
+        },
+        {
+            "F1 Score": 0.000559128346131858,
+            "False Negative": 0,
+            "False Positive": 10499764,
+            "Precision": 0.0002796423510485541,
+            "Recall": 1.0,
+            "True Positive": 2937
+        },
+        {
+            "F1 Score": 0.0005591279735799182,
+            "False Negative": 0,
+            "False Positive": 10499771,
+            "Precision": 0.0002796421646683884,
+            "Recall": 1.0,
+            "True Positive": 2937
+        },
+        {
+            "F1 Score": 0.0005591278139149531,
+            "False Negative": 0,
+            "False Positive": 10499774,
+            "Precision": 0.00027964208479125055,
+            "Recall": 1.0,
+            "True Positive": 2937
+        },
+        {
+            "F1 Score": 0.0005591278139149531,
+            "False Negative": 0,
+            "False Positive": 10499774,
+            "Precision": 0.00027964208479125055,
+            "Recall": 1.0,
+            "True Positive": 2937
+        },
+        {
+            "F1 Score": 0.0005591278139149531,
+            "False Negative": 0,
+            "False Positive": 10499774,
+            "Precision": 0.00027964208479125055,
+            "Recall": 1.0,
+            "True Positive": 2937
+        }
+    ],
+    "parameters": {
+        "Image columns": 64,
+        "Image rows": 32,
+        "Max velocity": 1.6,
+        "Min velocity": 0.9,
+        "Nubmer of reference images": 3576,
+        "Number of query images": 2937,
+        "Number of trajectories": 10,
+        "Patch window size": 10,
+        "Sequence length": 15
+    }
+}
