@@ -58,22 +58,48 @@ int main() {
 
     p.nQuery = queryImages.size();
     p.nReference = referenceImages.size();
+    auto const pFixed = p;
 
-    auto diffMatrix = cpu::generateDiffMx(referenceImages, queryImages);
+    auto diffMatrix = opencl::generateDiffMx(referenceImages, queryImages, 1, 24, 8);
     // auto diffMatrix = opencl::generateDiffMx(referenceImages, queryImages, 4);
     // auto enhanced = cpu::enhanceDiffMx(diffMatrix, p.patchWindowSize);
     // auto sequences = cpu::sequenceSearch(enhanced, p.sequenceLength, p.vMin, p.vMax, p.nTraj);
 
-    // cv::imwrite("diffmx.jpg", mxToIm(diffMatrix));
+    cv::imwrite("diffmx.jpg", mxToIm(diffMatrix));
     // cv::imwrite("enhanced.jpg", mxToIm(enhanced));
     // cv::imwrite("sequence.jpg", mxToIm(sequences));
 
-    for (auto window : {5, 10, 15, 20, 30}) {
+    constexpr auto const prPoints = 100;
+
+    auto const vals = std::vector{5, 10, 15, 20, 25, 30};
+
+    p = pFixed;
+    for (auto window : vals) {
         p.patchWindowSize = window;
-        auto const enhanced = cpu::enhanceDiffMx(diffMatrix, p.patchWindowSize);
+        auto const enhanced = opencl::enhanceDiffMx(diffMatrix, p.patchWindowSize);
         auto const sequences =
-            cpu::sequenceSearch(enhanced, p.sequenceLength, p.vMin, p.vMax, p.nTraj);
-        auto const pr = prCurve(sequences, nordlandGroundTruth(referenceImages.size()), 30);
-        writePrCurveToJson(p, pr, fmt::format("pr-{}.json", window));
+            opencl::sequenceSearch(enhanced, p.sequenceLength, p.vMin, p.vMax, p.nTraj);
+        auto const pr = prCurve(sequences, groundTruth, prPoints);
+        writePrCurveToJson(p, pr, fmt::format("pr-window-{}.json", window));
+    }
+
+    p = pFixed;
+    for (auto seqLength : vals) {
+        p.sequenceLength = seqLength;
+        auto const enhanced = opencl::enhanceDiffMx(diffMatrix, p.patchWindowSize);
+        auto const sequences =
+            opencl::sequenceSearch(enhanced, p.sequenceLength, p.vMin, p.vMax, p.nTraj);
+        auto const pr = prCurve(sequences, groundTruth, prPoints);
+        writePrCurveToJson(p, pr, fmt::format("pr-seqlength-{}.json", seqLength));
+    }
+
+    p = pFixed;
+    for (auto nTraj : vals) {
+        p.nTraj = nTraj;
+        auto const enhanced = opencl::enhanceDiffMx(diffMatrix, p.patchWindowSize);
+        auto const sequences =
+            opencl::sequenceSearch(enhanced, p.sequenceLength, p.vMin, p.vMax, p.nTraj);
+        auto const pr = prCurve(sequences, groundTruth, prPoints);
+        writePrCurveToJson(p, pr, fmt::format("pr-ntraj-{}.json", nTraj));
     }
 }

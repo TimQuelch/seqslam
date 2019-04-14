@@ -1,34 +1,34 @@
 {
   "context": {
-    "date": "2019-02-07 11:25:18",
+    "date": "2019-04-12 13:08:19",
     "executable": "benchmark/benchmark-enhance",
-    "num_cpus": 4,
-    "mhz_per_cpu": 4300,
+    "num_cpus": 12,
+    "mhz_per_cpu": 4700,
     "cpu_scaling_enabled": true,
     "caches": [
       {
         "type": "Data",
         "level": 1,
         "size": 32000000,
-        "num_sharing": 1
+        "num_sharing": 2
       },
       {
         "type": "Instruction",
         "level": 1,
         "size": 32000000,
-        "num_sharing": 1
+        "num_sharing": 2
       },
       {
         "type": "Unified",
         "level": 2,
         "size": 256000000,
-        "num_sharing": 1
+        "num_sharing": 2
       },
       {
         "type": "Unified",
         "level": 3,
-        "size": 6144000000,
-        "num_sharing": 4
+        "size": 12288000000,
+        "num_sharing": 12
       }
     ],
     "library_build_type": "release"
@@ -36,1029 +36,1029 @@
   "benchmarks": [
     {
       "name": "cpuEnhancement/4",
-      "iterations": 18,
-      "real_time": 3.8538955299979234e+08,
-      "cpu_time": 3.8520602633333331e+08,
+      "iterations": 11,
+      "real_time": 6.5151477909900928e+08,
+      "cpu_time": 6.4615684427272713e+08,
       "time_unit": "ns",
-      "bytes_per_second": 6.6394475297924101e+08,
-      "items_per_second": 3.3197237648962047e+07
+      "bytes_per_second": 3.9581027774744391e+08,
+      "items_per_second": 1.9790513887372196e+07
     },
     {
       "name": "cpuEnhancement/8",
-      "iterations": 17,
-      "real_time": 4.1692650441152239e+08,
-      "cpu_time": 4.1673758605882353e+08,
+      "iterations": 10,
+      "real_time": 7.0734500330872834e+08,
+      "cpu_time": 7.0212151659999990e+08,
       "time_unit": "ns",
-      "bytes_per_second": 1.1046758233489864e+09,
-      "items_per_second": 3.0685439537471846e+07
+      "bytes_per_second": 6.5566988778420818e+08,
+      "items_per_second": 1.8213052438450228e+07
     },
     {
       "name": "cpuEnhancement/16",
-      "iterations": 14,
-      "real_time": 5.0463052414332718e+08,
-      "cpu_time": 5.0440950600000000e+08,
+      "iterations": 8,
+      "real_time": 8.3656364202033734e+08,
+      "cpu_time": 8.3113421975000000e+08,
       "time_unit": "ns",
-      "bytes_per_second": 1.7239341401309752e+09,
-      "items_per_second": 2.5351972648984931e+07
+      "bytes_per_second": 1.0462434915284331e+09,
+      "items_per_second": 1.5385933698947545e+07
     },
     {
       "name": "cpuEnhancement/32",
-      "iterations": 10,
-      "real_time": 6.7391104299895227e+08,
-      "cpu_time": 6.7362127060000038e+08,
+      "iterations": 6,
+      "real_time": 1.1547134799572327e+09,
+      "cpu_time": 1.1486144115000000e+09,
       "time_unit": "ns",
-      "bytes_per_second": 2.5058389716472220e+09,
-      "items_per_second": 1.8983628573085018e+07
+      "bytes_per_second": 1.4695849321580622e+09,
+      "items_per_second": 1.1133219183015622e+07
     },
     {
       "name": "cpuEnhancement/64",
-      "iterations": 7,
-      "real_time": 9.8678685899981892e+08,
-      "cpu_time": 9.8639384757142889e+08,
+      "iterations": 5,
+      "real_time": 1.5173230346292257e+09,
+      "cpu_time": 1.5067258622000012e+09,
       "time_unit": "ns",
-      "bytes_per_second": 3.3706837975378146e+09,
-      "items_per_second": 1.2964168452068519e+07
+      "bytes_per_second": 2.2066534088326859e+09,
+      "items_per_second": 8.4871284955103304e+06
     },
     {
       "name": "cpuEnhancement/96",
-      "iterations": 5,
-      "real_time": 1.3244304504012690e+09,
-      "cpu_time": 1.3239302461999998e+09,
+      "iterations": 4,
+      "real_time": 1.9181337717454882e+09,
+      "cpu_time": 1.9060263309999995e+09,
       "time_unit": "ns",
-      "bytes_per_second": 3.7476725848972459e+09,
-      "items_per_second": 9.6589499610753749e+06
+      "bytes_per_second": 2.6031419436880808e+09,
+      "items_per_second": 6.7091287208455689e+06
     },
     {
       "name": "cpuEnhancement/128",
-      "iterations": 4,
-      "real_time": 1.6244977702517645e+09,
-      "cpu_time": 1.6239184897500002e+09,
+      "iterations": 3,
+      "real_time": 2.2058188533410430e+09,
+      "cpu_time": 2.1893355463333321e+09,
       "time_unit": "ns",
-      "bytes_per_second": 4.0633150356061454e+09,
-      "items_per_second": 7.8746415418723747e+06
+      "bytes_per_second": 3.0139246709126248e+09,
+      "items_per_second": 5.8409392847143896e+06
     },
     {
       "name": "cpuEnhancement/160",
-      "iterations": 4,
-      "real_time": 1.9668154445025721e+09,
-      "cpu_time": 1.9660905102500017e+09,
+      "iterations": 3,
+      "real_time": 2.6611057682894168e+09,
+      "cpu_time": 2.6402914966666651e+09,
       "time_unit": "ns",
-      "bytes_per_second": 4.1886819050628662e+09,
-      "items_per_second": 6.5041644488553824e+06
+      "bytes_per_second": 3.1190979308144565e+09,
+      "items_per_second": 4.8433197683454296e+06
     },
     {
       "name": "cpuEnhancement/192",
-      "iterations": 3,
-      "real_time": 2.2796824996670089e+09,
-      "cpu_time": 2.2788708423333335e+09,
+      "iterations": 2,
+      "real_time": 3.1476579024456444e+09,
+      "cpu_time": 3.1237996700000038e+09,
       "time_unit": "ns",
-      "bytes_per_second": 4.3320415043319893e+09,
-      "items_per_second": 5.6114527258186387e+06
+      "bytes_per_second": 3.1603060743008490e+09,
+      "items_per_second": 4.0936607180062812e+06
     },
     {
       "name": "cpuEnhancement/224",
-      "iterations": 3,
-      "real_time": 2.5891309026677241e+09,
-      "cpu_time": 2.5882185466666622e+09,
+      "iterations": 2,
+      "real_time": 3.5456073698587713e+09,
+      "cpu_time": 3.5209534764999971e+09,
       "time_unit": "ns",
-      "bytes_per_second": 4.4466872454887209e+09,
-      "items_per_second": 4.9407636060985783e+06
+      "bytes_per_second": 3.2687164078749819e+09,
+      "items_per_second": 3.6319071198610910e+06
     },
     {
       "name": "cpuEnhancement/256",
       "iterations": 2,
-      "real_time": 3.3469481194988475e+09,
-      "cpu_time": 3.3457070050000014e+09,
+      "real_time": 3.9326839589048176e+09,
+      "cpu_time": 3.9055424290000005e+09,
       "time_unit": "ns",
-      "bytes_per_second": 3.9291646603704901e+09,
-      "items_per_second": 3.8221446112553407e+06
+      "bytes_per_second": 3.3659431351680236e+09,
+      "items_per_second": 3.2742637501634471e+06
     },
     {
       "name": "cpuEnhancement/288",
       "iterations": 2,
-      "real_time": 3.6846282279948354e+09,
-      "cpu_time": 3.6833276450000057e+09,
+      "real_time": 4.3309962064959106e+09,
+      "cpu_time": 4.3054857369999981e+09,
       "time_unit": "ns",
-      "bytes_per_second": 4.0134005119167118e+09,
-      "items_per_second": 3.4717997507930035e+06
+      "bytes_per_second": 3.4334497798848491e+09,
+      "items_per_second": 2.9701122663363745e+06
     },
     {
       "name": "cpuEnhancement/320",
       "iterations": 2,
-      "real_time": 3.9894550004974008e+09,
-      "cpu_time": 3.9880284994999967e+09,
+      "real_time": 4.7355074109509583e+09,
+      "cpu_time": 4.7069837560000000e+09,
       "time_unit": "ns",
-      "bytes_per_second": 4.1171983565460005e+09,
-      "items_per_second": 3.2065407761261687e+06
+      "bytes_per_second": 3.4883282448277054e+09,
+      "items_per_second": 2.7167665458159703e+06
     },
     {
       "name": "cpuEnhancement/352",
-      "iterations": 2,
-      "real_time": 4.2930464844976087e+09,
-      "cpu_time": 4.2915430034999957e+09,
+      "iterations": 1,
+      "real_time": 5.1664545047096910e+09,
+      "cpu_time": 5.1379047819999924e+09,
       "time_unit": "ns",
-      "bytes_per_second": 4.2074236928941488e+09,
-      "items_per_second": 2.9797618221629951e+06
+      "bytes_per_second": 3.5143391086689911e+09,
+      "items_per_second": 2.4889087171876705e+06
     },
     {
       "name": "cpuEnhancement/384",
-      "iterations": 2,
-      "real_time": 4.6032937104973822e+09,
-      "cpu_time": 4.6017050869999990e+09,
+      "iterations": 1,
+      "real_time": 5.5867486470378933e+09,
+      "cpu_time": 5.5445262080000076e+09,
       "time_unit": "ns",
-      "bytes_per_second": 4.2795387074312968e+09,
-      "items_per_second": 2.7789212385917511e+06
+      "bytes_per_second": 3.5518228792183161e+09,
+      "items_per_second": 2.3063784929989064e+06
     },
     {
       "name": "cpuEnhancement/416",
-      "iterations": 2,
-      "real_time": 4.9113040814991112e+09,
-      "cpu_time": 4.9095779470000029e+09,
+      "iterations": 1,
+      "real_time": 5.9562130067497492e+09,
+      "cpu_time": 5.9270917389999905e+09,
       "time_unit": "ns",
-      "bytes_per_second": 4.3445710809080248e+09,
-      "items_per_second": 2.6046589214076884e+06
+      "bytes_per_second": 3.5987312677564130e+09,
+      "items_per_second": 2.1575127504534852e+06
     },
     {
       "name": "cpuEnhancement/448",
       "iterations": 1,
-      "real_time": 5.2112412669957848e+09,
-      "cpu_time": 5.2094912510000029e+09,
+      "real_time": 6.3423560531809921e+09,
+      "cpu_time": 6.3120013240000219e+09,
       "time_unit": "ns",
-      "bytes_per_second": 4.4086542407747269e+09,
-      "items_per_second": 2.4547072610104270e+06
+      "bytes_per_second": 3.6385996322075424e+09,
+      "items_per_second": 2.0259463430999678e+06
     },
     {
       "name": "cpuEnhancement/480",
       "iterations": 1,
-      "real_time": 5.5110644359956493e+09,
-      "cpu_time": 5.5092404930000210e+09,
+      "real_time": 6.7522909143008289e+09,
+      "cpu_time": 6.7028214279999933e+09,
       "time_unit": "ns",
-      "bytes_per_second": 4.4658934485182047e+09,
-      "items_per_second": 2.3211504410177781e+06
+      "bytes_per_second": 3.6706454570342503e+09,
+      "items_per_second": 1.9078198841134356e+06
     },
     {
       "name": "cpuEnhancement/512",
       "iterations": 1,
-      "real_time": 5.7048636660038033e+09,
-      "cpu_time": 5.7029378830000038e+09,
+      "real_time": 7.1382527081295853e+09,
+      "cpu_time": 7.0915673349999790e+09,
       "time_unit": "ns",
-      "bytes_per_second": 4.6012278040447979e+09,
-      "items_per_second": 2.2423137446612078e+06
+      "bytes_per_second": 3.7002421485151248e+09,
+      "items_per_second": 1.8032369144810550e+06
     },
     {
       "name": "gpuEnhancement/4/4",
-      "iterations": 155,
-      "real_time": 4.5027669406432144e+07,
-      "cpu_time": 4.4933327619354703e+07,
+      "iterations": 175,
+      "real_time": 3.9957713165453501e+07,
+      "cpu_time": 3.9956554439999893e+07,
       "time_unit": "ns",
-      "bytes_per_second": 5.6918891511127510e+09,
-      "items_per_second": 2.8459445755563754e+08
+      "bytes_per_second": 6.4008402021763687e+09,
+      "items_per_second": 3.2004201010881841e+08
     },
     {
       "name": "gpuEnhancement/4/6",
-      "iterations": 156,
-      "real_time": 4.5016058109001443e+07,
-      "cpu_time": 4.4920172794871792e+07,
+      "iterations": 175,
+      "real_time": 3.9958332188959636e+07,
+      "cpu_time": 3.9957183600000039e+07,
       "time_unit": "ns",
-      "bytes_per_second": 5.6935560147533045e+09,
-      "items_per_second": 2.8467780073766518e+08
+      "bytes_per_second": 6.4007394154777155e+09,
+      "items_per_second": 3.2003697077388573e+08
     },
     {
       "name": "gpuEnhancement/4/8",
-      "iterations": 156,
-      "real_time": 4.4831741179409735e+07,
-      "cpu_time": 4.4746673211538479e+07,
+      "iterations": 175,
+      "real_time": 3.9936340592269383e+07,
+      "cpu_time": 3.9934309554285750e+07,
       "time_unit": "ns",
-      "bytes_per_second": 5.7156320603081236e+09,
-      "items_per_second": 2.8578160301540619e+08
+      "bytes_per_second": 6.4044057066350937e+09,
+      "items_per_second": 3.2022028533175468e+08
     },
     {
       "name": "gpuEnhancement/4/12",
-      "iterations": 156,
-      "real_time": 4.4900350282076918e+07,
-      "cpu_time": 4.4809882243589856e+07,
+      "iterations": 175,
+      "real_time": 3.9946267578218669e+07,
+      "cpu_time": 3.9945937165714279e+07,
       "time_unit": "ns",
-      "bytes_per_second": 5.7075695626624050e+09,
-      "items_per_second": 2.8537847813312024e+08
+      "bytes_per_second": 6.4025414884874887e+09,
+      "items_per_second": 3.2012707442437446e+08
     },
     {
       "name": "gpuEnhancement/4/24",
-      "iterations": 156,
-      "real_time": 4.5191137365364760e+07,
-      "cpu_time": 4.5120060256410219e+07,
+      "iterations": 175,
+      "real_time": 4.0094151760318451e+07,
+      "cpu_time": 4.0093739142857075e+07,
       "time_unit": "ns",
-      "bytes_per_second": 5.6683328556429567e+09,
-      "items_per_second": 2.8341664278214782e+08
+      "bytes_per_second": 6.3789390929272881e+09,
+      "items_per_second": 3.1894695464636439e+08
     },
     {
       "name": "gpuEnhancement/8/4",
-      "iterations": 155,
-      "real_time": 4.5199634412945732e+07,
-      "cpu_time": 4.5105518529032357e+07,
+      "iterations": 175,
+      "real_time": 4.0041501881288633e+07,
+      "cpu_time": 4.0041283125714242e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.0206288521075029e+10,
-      "items_per_second": 2.8350801447430640e+08
+      "bytes_per_second": 1.1497132460881603e+10,
+      "items_per_second": 3.1936479058004451e+08
     },
     {
       "name": "gpuEnhancement/8/6",
-      "iterations": 156,
-      "real_time": 4.5137740916685194e+07,
-      "cpu_time": 4.5045137698717751e+07,
+      "iterations": 175,
+      "real_time": 3.9975459788526811e+07,
+      "cpu_time": 3.9974050822857119e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.0219969557626740e+10,
-      "items_per_second": 2.8388804326740938e+08
+      "bytes_per_second": 1.1516469472660168e+10,
+      "items_per_second": 3.1990192979611576e+08
     },
     {
       "name": "gpuEnhancement/8/8",
-      "iterations": 156,
-      "real_time": 4.5085451647397488e+07,
-      "cpu_time": 4.4990617538461246e+07,
+      "iterations": 175,
+      "real_time": 4.0014579354652338e+07,
+      "cpu_time": 4.0013454828571513e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.0232354237112904e+10,
-      "items_per_second": 2.8423206214202505e+08
+      "bytes_per_second": 1.1505128411738171e+10,
+      "items_per_second": 3.1958690032606030e+08
     },
     {
       "name": "gpuEnhancement/8/12",
-      "iterations": 155,
-      "real_time": 4.5415326954811931e+07,
-      "cpu_time": 4.5325413393548377e+07,
+      "iterations": 175,
+      "real_time": 4.0033582119005069e+07,
+      "cpu_time": 4.0032929765714340e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.0156773022737123e+10,
-      "items_per_second": 2.8213258396492010e+08
+      "bytes_per_second": 1.1499531478065065e+10,
+      "items_per_second": 3.1943142994625181e+08
     },
     {
       "name": "gpuEnhancement/8/24",
-      "iterations": 154,
-      "real_time": 4.5473669298721157e+07,
-      "cpu_time": 4.5383364980519250e+07,
+      "iterations": 174,
+      "real_time": 4.0140512942646943e+07,
+      "cpu_time": 4.0139679201149255e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.0143803488295963e+10,
-      "items_per_second": 2.8177231911933231e+08
+      "bytes_per_second": 1.1468949058935659e+10,
+      "items_per_second": 3.1858191830376834e+08
     },
     {
       "name": "gpuEnhancement/16/4",
-      "iterations": 153,
-      "real_time": 4.5782302607846096e+07,
-      "cpu_time": 4.5691582960784383e+07,
+      "iterations": 173,
+      "real_time": 4.0479833663931124e+07,
+      "cpu_time": 4.0479317075144634e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.9031268160403259e+10,
-      "items_per_second": 2.7987159059416562e+08
+      "bytes_per_second": 2.1481804309735703e+10,
+      "items_per_second": 3.1590888690787798e+08
     },
     {
       "name": "gpuEnhancement/16/6",
-      "iterations": 153,
-      "real_time": 4.5663950379022539e+07,
-      "cpu_time": 4.5566479300653704e+07,
+      "iterations": 173,
+      "real_time": 4.0436945710266598e+07,
+      "cpu_time": 4.0432152508670263e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.9083518879360184e+10,
-      "items_per_second": 2.8063998352000266e+08
+      "bytes_per_second": 2.1506863079167747e+10,
+      "items_per_second": 3.1627739822305506e+08
     },
     {
       "name": "gpuEnhancement/16/8",
-      "iterations": 154,
-      "real_time": 4.5647321883120343e+07,
-      "cpu_time": 4.5550445324675381e+07,
+      "iterations": 173,
+      "real_time": 4.0422359758697324e+07,
+      "cpu_time": 4.0422023537572280e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.9090236369850399e+10,
-      "items_per_second": 2.8073877014485878e+08
+      "bytes_per_second": 2.1512252279793358e+10,
+      "items_per_second": 3.1635665117343175e+08
     },
     {
       "name": "gpuEnhancement/16/12",
-      "iterations": 154,
-      "real_time": 4.5623861850646034e+07,
-      "cpu_time": 4.5536058961039171e+07,
+      "iterations": 173,
+      "real_time": 4.0437113092620075e+07,
+      "cpu_time": 4.0436595104046322e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.9096267613848763e+10,
-      "items_per_second": 2.8082746490954065e+08
+      "bytes_per_second": 2.1504500212308575e+10,
+      "items_per_second": 3.1624265018100846e+08
     },
     {
       "name": "gpuEnhancement/16/24",
-      "iterations": 153,
-      "real_time": 4.5774889392192401e+07,
-      "cpu_time": 4.5694659666666433e+07,
+      "iterations": 173,
+      "real_time": 4.0241775450140581e+07,
+      "cpu_time": 4.0235946959537573e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.9029986749947002e+10,
-      "items_per_second": 2.7985274632275003e+08
+      "bytes_per_second": 2.1611738599677132e+10,
+      "items_per_second": 3.1781968528936958e+08
     },
     {
       "name": "gpuEnhancement/32/4",
-      "iterations": 151,
-      "real_time": 4.6589937947003558e+07,
-      "cpu_time": 4.6467054927152447e+07,
+      "iterations": 173,
+      "real_time": 4.0411448041569293e+07,
+      "cpu_time": 4.0405582971098252e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.6326520685382332e+10,
-      "items_per_second": 2.7520091428319943e+08
+      "bytes_per_second": 4.1776069242891548e+10,
+      "items_per_second": 3.1648537305220866e+08
     },
     {
       "name": "gpuEnhancement/32/6",
-      "iterations": 150,
-      "real_time": 4.6663137039965175e+07,
-      "cpu_time": 4.6568113026666731e+07,
+      "iterations": 173,
+      "real_time": 4.0375151577260286e+07,
+      "cpu_time": 4.0370161606936343e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.6247688005597153e+10,
-      "items_per_second": 2.7460369701209962e+08
+      "bytes_per_second": 4.1812724170764099e+10,
+      "items_per_second": 3.1676306189972800e+08
     },
     {
       "name": "gpuEnhancement/32/8",
-      "iterations": 151,
-      "real_time": 4.6204362841055490e+07,
-      "cpu_time": 4.6114475271523260e+07,
+      "iterations": 173,
+      "real_time": 4.0509878773500636e+07,
+      "cpu_time": 4.0505152057803400e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.6604264107118011e+10,
-      "items_per_second": 2.7730503111453038e+08
+      "bytes_per_second": 4.1673376008838013e+10,
+      "items_per_second": 3.1570739400634861e+08
     },
     {
       "name": "gpuEnhancement/32/12",
-      "iterations": 151,
-      "real_time": 4.6360721662181847e+07,
-      "cpu_time": 4.6272228205298126e+07,
+      "iterations": 173,
+      "real_time": 4.0681745340197071e+07,
+      "cpu_time": 4.0681254265895881e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.6479471541997780e+10,
-      "items_per_second": 2.7635963289392257e+08
+      "bytes_per_second": 4.1492979075010513e+10,
+      "items_per_second": 3.1434075056826150e+08
     },
     {
       "name": "gpuEnhancement/32/24",
-      "iterations": 151,
-      "real_time": 4.6410507966886856e+07,
-      "cpu_time": 4.6341766450331047e+07,
+      "iterations": 172,
+      "real_time": 4.0601190864541672e+07,
+      "cpu_time": 4.0599560883720845e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.6424732186443054e+10,
-      "items_per_second": 2.7594494080638677e+08
+      "bytes_per_second": 4.1576470170070969e+10,
+      "items_per_second": 3.1497325886417401e+08
     },
     {
       "name": "gpuEnhancement/64/4",
-      "iterations": 145,
-      "real_time": 4.8370765351814799e+07,
-      "cpu_time": 4.8280373344827518e+07,
+      "iterations": 170,
+      "real_time": 4.1223647722097881e+07,
+      "cpu_time": 4.1223161752941117e+07,
       "time_unit": "ns",
-      "bytes_per_second": 6.8864872610936462e+10,
-      "items_per_second": 2.6486489465744796e+08
+      "bytes_per_second": 8.0654215218287735e+10,
+      "items_per_second": 3.1020852007033741e+08
     },
     {
       "name": "gpuEnhancement/64/6",
-      "iterations": 145,
-      "real_time": 4.8218347303416774e+07,
-      "cpu_time": 4.8127694048275769e+07,
+      "iterations": 170,
+      "real_time": 4.1167148106786259e+07,
+      "cpu_time": 4.1166681799999796e+07,
       "time_unit": "ns",
-      "bytes_per_second": 6.9083338101861862e+10,
-      "items_per_second": 2.6570514654562256e+08
+      "bytes_per_second": 8.0764871362549713e+10,
+      "items_per_second": 3.1063412062519121e+08
     },
     {
       "name": "gpuEnhancement/64/8",
-      "iterations": 146,
-      "real_time": 4.7990320404084109e+07,
-      "cpu_time": 4.7912578349315032e+07,
+      "iterations": 170,
+      "real_time": 4.1520360881900959e+07,
+      "cpu_time": 4.1275800847058557e+07,
       "time_unit": "ns",
-      "bytes_per_second": 6.9393505307934067e+10,
-      "items_per_second": 2.6689809733820796e+08
+      "bytes_per_second": 8.0551356770027084e+10,
+      "items_per_second": 3.0981291065395033e+08
     },
     {
       "name": "gpuEnhancement/64/12",
-      "iterations": 145,
-      "real_time": 4.8296989889711075e+07,
-      "cpu_time": 4.8209286668965250e+07,
+      "iterations": 170,
+      "real_time": 4.1170940016779833e+07,
+      "cpu_time": 4.1170622170588277e+07,
       "time_unit": "ns",
-      "bytes_per_second": 6.8966416840603363e+10,
-      "items_per_second": 2.6525544938693601e+08
+      "bytes_per_second": 8.0757141493363358e+10,
+      "items_per_second": 3.1060439035908985e+08
     },
     {
       "name": "gpuEnhancement/64/24",
-      "iterations": 145,
-      "real_time": 4.8400561262126848e+07,
-      "cpu_time": 4.8327243986206815e+07,
+      "iterations": 169,
+      "real_time": 4.1500110237049103e+07,
+      "cpu_time": 4.1499056911242776e+07,
       "time_unit": "ns",
-      "bytes_per_second": 6.8798083353334717e+10,
-      "items_per_second": 2.6460801289744121e+08
+      "bytes_per_second": 8.0118007672103287e+10,
+      "items_per_second": 3.0814618335424346e+08
     },
     {
       "name": "gpuEnhancement/96/4",
-      "iterations": 140,
-      "real_time": 5.0251383564318530e+07,
-      "cpu_time": 5.0179035107142664e+07,
+      "iterations": 167,
+      "real_time": 4.1832695185335100e+07,
+      "cpu_time": 4.1832424257484987e+07,
       "time_unit": "ns",
-      "bytes_per_second": 9.8879085207713364e+10,
-      "items_per_second": 2.5484300311266333e+08
+      "bytes_per_second": 1.1860792617373164e+11,
+      "items_per_second": 3.0569053137559700e+08
     },
     {
       "name": "gpuEnhancement/96/6",
-      "iterations": 140,
-      "real_time": 5.0127337821426667e+07,
-      "cpu_time": 5.0036750449999906e+07,
+      "iterations": 167,
+      "real_time": 4.1830551467590526e+07,
+      "cpu_time": 4.1827996940119781e+07,
       "time_unit": "ns",
-      "bytes_per_second": 9.9160258077870636e+10,
-      "items_per_second": 2.5556767545842949e+08
+      "bytes_per_second": 1.1862048032333513e+11,
+      "items_per_second": 3.0572288743127608e+08
     },
     {
       "name": "gpuEnhancement/96/8",
-      "iterations": 141,
-      "real_time": 4.9818426262358606e+07,
-      "cpu_time": 4.9746956446808569e+07,
+      "iterations": 168,
+      "real_time": 4.1706447816631272e+07,
+      "cpu_time": 4.1705350392856896e+07,
       "time_unit": "ns",
-      "bytes_per_second": 9.9737902424346329e+10,
-      "items_per_second": 2.5705644954728436e+08
+      "bytes_per_second": 1.1896931787557431e+11,
+      "items_per_second": 3.0662195328756267e+08
     },
     {
       "name": "gpuEnhancement/96/12",
-      "iterations": 140,
-      "real_time": 5.0163285392877050e+07,
-      "cpu_time": 5.0073656914285690e+07,
+      "iterations": 167,
+      "real_time": 4.1880350328513429e+07,
+      "cpu_time": 4.1879665664670616e+07,
       "time_unit": "ns",
-      "bytes_per_second": 9.9087172652342697e+10,
-      "items_per_second": 2.5537931095964614e+08
+      "bytes_per_second": 1.1847413319217632e+11,
+      "items_per_second": 3.0534570410354722e+08
     },
     {
       "name": "gpuEnhancement/96/24",
-      "iterations": 139,
-      "real_time": 5.0363974316483662e+07,
-      "cpu_time": 5.0273539280575320e+07,
+      "iterations": 167,
+      "real_time": 4.1900623455911338e+07,
+      "cpu_time": 4.1899880916167587e+07,
       "time_unit": "ns",
-      "bytes_per_second": 9.8693212353900940e+10,
-      "items_per_second": 2.5436394936572406e+08
+      "bytes_per_second": 1.1841697349754239e+11,
+      "items_per_second": 3.0519838530294430e+08
     },
     {
       "name": "gpuEnhancement/128/4",
-      "iterations": 135,
-      "real_time": 5.1994552296323322e+07,
-      "cpu_time": 5.1903938600000598e+07,
+      "iterations": 165,
+      "real_time": 4.2342251824271500e+07,
+      "cpu_time": 4.2341935018182330e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.2712893460458746e+11,
-      "items_per_second": 2.4637390427245635e+08
+      "bytes_per_second": 1.5583823491218570e+11,
+      "items_per_second": 3.0201208316315055e+08
     },
     {
       "name": "gpuEnhancement/128/6",
-      "iterations": 135,
-      "real_time": 5.1973150177811339e+07,
-      "cpu_time": 5.1880466674074173e+07,
+      "iterations": 165,
+      "real_time": 4.2336735575262345e+07,
+      "cpu_time": 4.2336258593939587e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.2718645068197534e+11,
-      "items_per_second": 2.4648536953871191e+08
+      "bytes_per_second": 1.5585912962428311e+11,
+      "items_per_second": 3.0205257679124635e+08
     },
     {
       "name": "gpuEnhancement/128/8",
-      "iterations": 136,
-      "real_time": 5.1713644007309884e+07,
-      "cpu_time": 5.1621424882353373e+07,
+      "iterations": 166,
+      "real_time": 4.2358581072101027e+07,
+      "cpu_time": 4.2357464999999553e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.2782468579738245e+11,
-      "items_per_second": 2.4772225929725280e+08
+      "bytes_per_second": 1.5578109823144681e+11,
+      "items_per_second": 3.0190135316171861e+08
     },
     {
       "name": "gpuEnhancement/128/12",
-      "iterations": 134,
-      "real_time": 5.2202711947702758e+07,
-      "cpu_time": 5.2108006962686121e+07,
+      "iterations": 165,
+      "real_time": 4.2433503879742190e+07,
+      "cpu_time": 4.2432964096969679e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.2663106498632919e+11,
-      "items_per_second": 2.4540904067118061e+08
+      "bytes_per_second": 1.5550392381076266e+11,
+      "items_per_second": 3.0136419343171054e+08
     },
     {
       "name": "gpuEnhancement/128/24",
-      "iterations": 133,
-      "real_time": 5.2685246518721163e+07,
-      "cpu_time": 5.2591182533835061e+07,
+      "iterations": 164,
+      "real_time": 4.2733540096910805e+07,
+      "cpu_time": 4.2733014902439222e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.2546765632727110e+11,
-      "items_per_second": 2.4315437272726956e+08
+      "bytes_per_second": 1.5441204958425143e+11,
+      "items_per_second": 2.9924815810901439e+08
     },
     {
       "name": "gpuEnhancement/160/4",
-      "iterations": 130,
-      "real_time": 5.3755016984583698e+07,
-      "cpu_time": 5.3674492961538188e+07,
+      "iterations": 162,
+      "real_time": 4.3075089630337410e+07,
+      "cpu_time": 4.3074732259259254e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.5343093692382397e+11,
-      "items_per_second": 2.3824679646556520e+08
+      "bytes_per_second": 1.9118697463824054e+11,
+      "items_per_second": 2.9687418422087038e+08
     },
     {
       "name": "gpuEnhancement/160/6",
-      "iterations": 131,
-      "real_time": 5.3548806183216095e+07,
-      "cpu_time": 5.3454073832061365e+07,
+      "iterations": 163,
+      "real_time": 4.3017627582799621e+07,
+      "cpu_time": 4.3016981496932618e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.5406361299745334e+11,
-      "items_per_second": 2.3922921272896481e+08
+      "bytes_per_second": 1.9144364521688327e+11,
+      "items_per_second": 2.9727274102000511e+08
     },
     {
       "name": "gpuEnhancement/160/8",
-      "iterations": 132,
-      "real_time": 5.3253360295484804e+07,
-      "cpu_time": 5.3159468280302815e+07,
+      "iterations": 163,
+      "real_time": 4.2895255398942277e+07,
+      "cpu_time": 4.2889512742331579e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.5491742130632706e+11,
-      "items_per_second": 2.4055500202845815e+08
+      "bytes_per_second": 1.9201262074194193e+11,
+      "items_per_second": 2.9815624338810861e+08
     },
     {
       "name": "gpuEnhancement/160/12",
-      "iterations": 130,
-      "real_time": 5.3892448815391764e+07,
-      "cpu_time": 5.3794538738461249e+07,
+      "iterations": 162,
+      "real_time": 4.3222531549816512e+07,
+      "cpu_time": 4.3222109475308381e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.5308854647938498e+11,
-      "items_per_second": 2.3771513428475928e+08
+      "bytes_per_second": 1.9053507207242206e+11,
+      "items_per_second": 2.9586191315593487e+08
     },
     {
       "name": "gpuEnhancement/160/24",
-      "iterations": 129,
-      "real_time": 5.4565044604679540e+07,
-      "cpu_time": 5.4470347441859886e+07,
+      "iterations": 161,
+      "real_time": 4.3425031827751152e+07,
+      "cpu_time": 4.3424805875776924e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.5118919064707925e+11,
-      "items_per_second": 2.3476582398614791e+08
+      "bytes_per_second": 1.8964570083648438e+11,
+      "items_per_second": 2.9448090192000681e+08
     },
     {
       "name": "gpuEnhancement/192/4",
-      "iterations": 126,
-      "real_time": 5.5757048436452538e+07,
-      "cpu_time": 5.5663378412698455e+07,
+      "iterations": 160,
+      "real_time": 4.3786428519524634e+07,
+      "cpu_time": 4.3786145431250386e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.7735472322225897e+11,
-      "items_per_second": 2.2973409743815929e+08
+      "bytes_per_second": 2.2546316819553128e+11,
+      "items_per_second": 2.9205073600457418e+08
     },
     {
       "name": "gpuEnhancement/192/6",
-      "iterations": 126,
-      "real_time": 5.5761927976120554e+07,
-      "cpu_time": 5.5684642325396843e+07,
+      "iterations": 159,
+      "real_time": 4.3730109467305847e+07,
+      "cpu_time": 4.3724724320754230e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.7728699798970370e+11,
-      "items_per_second": 2.2964637045298406e+08
+      "bytes_per_second": 2.2577988141400613e+11,
+      "items_per_second": 2.9246098628757274e+08
     },
     {
       "name": "gpuEnhancement/192/8",
-      "iterations": 127,
-      "real_time": 5.5217815866152108e+07,
-      "cpu_time": 5.5126141614173897e+07,
+      "iterations": 160,
+      "real_time": 4.3575467448681593e+07,
+      "cpu_time": 4.3566518443749659e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.7908314971678873e+11,
-      "items_per_second": 2.3197299186112529e+08
+      "bytes_per_second": 2.2659977029714493e+11,
+      "items_per_second": 2.9352301851961780e+08
     },
     {
       "name": "gpuEnhancement/192/12",
-      "iterations": 125,
-      "real_time": 5.5982568783918396e+07,
-      "cpu_time": 5.5889922247999497e+07,
+      "iterations": 160,
+      "real_time": 4.3798737364704721e+07,
+      "cpu_time": 4.3792553724999554e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.7663583477884265e+11,
-      "items_per_second": 2.2880289479124695e+08
+      "bytes_per_second": 2.2543017550411423e+11,
+      "items_per_second": 2.9200799935766095e+08
     },
     {
       "name": "gpuEnhancement/192/24",
-      "iterations": 124,
-      "real_time": 5.6611937435527869e+07,
-      "cpu_time": 5.6520646669355303e+07,
+      "iterations": 159,
+      "real_time": 4.4116556881663367e+07,
+      "cpu_time": 4.4110443201258026e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.7466472260574023e+11,
-      "items_per_second": 2.2624964068101069e+08
+      "bytes_per_second": 2.2380557427086670e+11,
+      "items_per_second": 2.8990359361511230e+08
     },
     {
       "name": "gpuEnhancement/224/4",
-      "iterations": 122,
-      "real_time": 5.7533935327884421e+07,
-      "cpu_time": 5.7415898557376772e+07,
+      "iterations": 157,
+      "real_time": 4.4331308768670648e+07,
+      "cpu_time": 4.4325512203822017e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.0044967838479169e+11,
-      "items_per_second": 2.2272186487199077e+08
+      "bytes_per_second": 2.5964727372079016e+11,
+      "items_per_second": 2.8849697080087793e+08
     },
     {
       "name": "gpuEnhancement/224/6",
-      "iterations": 121,
-      "real_time": 5.7430924148749068e+07,
-      "cpu_time": 5.7348529280991606e+07,
+      "iterations": 158,
+      "real_time": 4.4413751232897550e+07,
+      "cpu_time": 4.4413468955696449e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.0068515346939685e+11,
-      "items_per_second": 2.2298350385488537e+08
+      "bytes_per_second": 2.5913306640110718e+11,
+      "items_per_second": 2.8792562933456355e+08
     },
     {
       "name": "gpuEnhancement/224/8",
-      "iterations": 123,
-      "real_time": 5.6730689227721095e+07,
-      "cpu_time": 5.6651583886179201e+07,
+      "iterations": 158,
+      "real_time": 4.4369246418693967e+07,
+      "cpu_time": 4.4368807215189636e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.0315404460929382e+11,
-      "items_per_second": 2.2572671623254868e+08
+      "bytes_per_second": 2.5939391032490729e+11,
+      "items_per_second": 2.8821545591656363e+08
     },
     {
       "name": "gpuEnhancement/224/12",
-      "iterations": 122,
-      "real_time": 5.7787126672218487e+07,
-      "cpu_time": 5.7702709614754453e+07,
+      "iterations": 157,
+      "real_time": 4.4692345254218116e+07,
+      "cpu_time": 4.4692014840764061e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.9945334416422580e+11,
-      "items_per_second": 2.2161482684913978e+08
+      "bytes_per_second": 2.5751800273507742e+11,
+      "items_per_second": 2.8613111415008599e+08
     },
     {
       "name": "gpuEnhancement/224/24",
-      "iterations": 121,
-      "real_time": 5.7946243165238872e+07,
-      "cpu_time": 5.7861672471074052e+07,
+      "iterations": 156,
+      "real_time": 4.4782287859095216e+07,
+      "cpu_time": 4.4781806403846487e+07,
       "time_unit": "ns",
-      "bytes_per_second": 1.9890538777207880e+11,
-      "items_per_second": 2.2100598641342089e+08
+      "bytes_per_second": 2.5700165590040707e+11,
+      "items_per_second": 2.8555739544489676e+08
     },
     {
       "name": "gpuEnhancement/256/4",
-      "iterations": 118,
-      "real_time": 5.7997411406762756e+07,
-      "cpu_time": 5.7916452432203770e+07,
+      "iterations": 155,
+      "real_time": 4.5030982374784447e+07,
+      "cpu_time": 4.5030658548386872e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.2697926367966577e+11,
-      "items_per_second": 2.2079694910473323e+08
+      "bytes_per_second": 2.9193074566907312e+11,
+      "items_per_second": 2.8397932458081043e+08
     },
     {
       "name": "gpuEnhancement/256/6",
-      "iterations": 120,
-      "real_time": 5.8075354791678064e+07,
-      "cpu_time": 5.7998556966667064e+07,
+      "iterations": 155,
+      "real_time": 4.5082123850983001e+07,
+      "cpu_time": 4.5081682064515449e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.2665794487878680e+11,
-      "items_per_second": 2.2048438217780820e+08
+      "bytes_per_second": 2.9160033800840161e+11,
+      "items_per_second": 2.8365791635058522e+08
     },
     {
       "name": "gpuEnhancement/256/8",
-      "iterations": 122,
-      "real_time": 5.7727883450856790e+07,
-      "cpu_time": 5.7633265237705320e+07,
+      "iterations": 156,
+      "real_time": 4.5071757897042118e+07,
+      "cpu_time": 4.5071295923076622e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.2809455049580676e+11,
-      "items_per_second": 2.2188185845895600e+08
+      "bytes_per_second": 2.9166753382099445e+11,
+      "items_per_second": 2.8372328192703742e+08
     },
     {
       "name": "gpuEnhancement/256/12",
-      "iterations": 119,
-      "real_time": 5.8317033184874222e+07,
-      "cpu_time": 5.8222994907563426e+07,
+      "iterations": 154,
+      "real_time": 4.5305109812648267e+07,
+      "cpu_time": 4.5303487857142508e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.2578422406595056e+11,
-      "items_per_second": 2.1963445920812312e+08
+      "bytes_per_second": 2.9017266329368146e+11,
+      "items_per_second": 2.8226912771758896e+08
     },
     {
       "name": "gpuEnhancement/256/24",
-      "iterations": 120,
-      "real_time": 5.8165960991633862e+07,
-      "cpu_time": 5.8065164074999601e+07,
+      "iterations": 154,
+      "real_time": 4.5648715026410565e+07,
+      "cpu_time": 4.5647755487013087e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.2639794336962939e+11,
-      "items_per_second": 2.2023146242181849e+08
+      "bytes_per_second": 2.8798423028137775e+11,
+      "items_per_second": 2.8014030183013397e+08
     },
     {
       "name": "gpuEnhancement/288/4",
-      "iterations": 118,
-      "real_time": 5.9076662254282981e+07,
-      "cpu_time": 5.9003743169491097e+07,
+      "iterations": 152,
+      "real_time": 4.6010488570716821e+07,
+      "cpu_time": 4.6004074802631199e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.5053781780481403e+11,
-      "items_per_second": 2.1672821609412977e+08
+      "bytes_per_second": 3.2133390616855762e+11,
+      "items_per_second": 2.7797050706622630e+08
     },
     {
       "name": "gpuEnhancement/288/6",
-      "iterations": 119,
-      "real_time": 5.8999025344456345e+07,
-      "cpu_time": 5.8905348873949371e+07,
+      "iterations": 153,
+      "real_time": 4.5636003450460099e+07,
+      "cpu_time": 4.5635564176470377e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.5095631107513174e+11,
-      "items_per_second": 2.1709023449405861e+08
+      "bytes_per_second": 3.2392870172123169e+11,
+      "items_per_second": 2.8021513989725924e+08
     },
     {
       "name": "gpuEnhancement/288/8",
-      "iterations": 119,
-      "real_time": 5.8429908907645531e+07,
-      "cpu_time": 5.8357130436974823e+07,
+      "iterations": 154,
+      "real_time": 4.5573064779209629e+07,
+      "cpu_time": 4.5566907948052011e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.5331384434615323e+11,
-      "items_per_second": 2.1912962313681075e+08
+      "bytes_per_second": 3.2441676913546118e+11,
+      "items_per_second": 2.8063734354278648e+08
     },
     {
       "name": "gpuEnhancement/288/12",
-      "iterations": 118,
-      "real_time": 5.9460124406757392e+07,
-      "cpu_time": 5.9385635610169627e+07,
+      "iterations": 152,
+      "real_time": 4.5938206423000477e+07,
+      "cpu_time": 4.5936992394736737e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.4892667905483371e+11,
-      "items_per_second": 2.1533449745227832e+08
+      "bytes_per_second": 3.2180315439401154e+11,
+      "items_per_second": 2.7837643113668817e+08
     },
     {
       "name": "gpuEnhancement/288/24",
-      "iterations": 118,
-      "real_time": 5.9452348347418845e+07,
-      "cpu_time": 5.9377908533898622e+07,
+      "iterations": 152,
+      "real_time": 4.6053482308420107e+07,
+      "cpu_time": 4.6050641539473623e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.4895907284374341e+11,
-      "items_per_second": 2.1536251976102370e+08
+      "bytes_per_second": 3.2100897103308783e+11,
+      "items_per_second": 2.7768942130889952e+08
     },
     {
       "name": "gpuEnhancement/320/4",
-      "iterations": 115,
-      "real_time": 6.0720404356581405e+07,
-      "cpu_time": 6.0625690973912910e+07,
+      "iterations": 151,
+      "real_time": 4.6317355728874736e+07,
+      "cpu_time": 4.6317062549668580e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.7083409888169806e+11,
-      "items_per_second": 2.1092998355272436e+08
+      "bytes_per_second": 3.5450228231534277e+11,
+      "items_per_second": 2.7609212018328875e+08
     },
     {
       "name": "gpuEnhancement/320/6",
-      "iterations": 116,
-      "real_time": 6.0617900353400759e+07,
-      "cpu_time": 6.0524815224137627e+07,
+      "iterations": 151,
+      "real_time": 4.6304615942255549e+07,
+      "cpu_time": 4.6304374721854545e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.7128549377961276e+11,
-      "items_per_second": 2.1128153721153641e+08
+      "bytes_per_second": 3.5459941922615771e+11,
+      "items_per_second": 2.7616777198298889e+08
     },
     {
       "name": "gpuEnhancement/320/8",
-      "iterations": 117,
-      "real_time": 6.0018338299103670e+07,
-      "cpu_time": 5.9924892820513025e+07,
+      "iterations": 152,
+      "real_time": 4.5960212769722074e+07,
+      "cpu_time": 4.5955565453946926e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.7400139760249020e+11,
-      "items_per_second": 2.1339672710474315e+08
+      "bytes_per_second": 3.5729087917445703e+11,
+      "items_per_second": 2.7826392459069860e+08
     },
     {
       "name": "gpuEnhancement/320/12",
-      "iterations": 115,
-      "real_time": 6.1171860087020122e+07,
-      "cpu_time": 6.1078126486956097e+07,
+      "iterations": 151,
+      "real_time": 4.6469601867288746e+07,
+      "cpu_time": 4.6469022218543343e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.6882789843769299e+11,
-      "items_per_second": 2.0936752214773595e+08
+      "bytes_per_second": 3.5334301433714783e+11,
+      "items_per_second": 2.7518926350245154e+08
     },
     {
       "name": "gpuEnhancement/320/24",
-      "iterations": 114,
-      "real_time": 6.1285812429815181e+07,
-      "cpu_time": 6.1191385070175961e+07,
+      "iterations": 150,
+      "real_time": 4.6906110560521483e+07,
+      "cpu_time": 4.6901736713333927e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.6833032730293100e+11,
-      "items_per_second": 2.0898000568764096e+08
+      "bytes_per_second": 3.5008307867908905e+11,
+      "items_per_second": 2.7265037280302882e+08
     },
     {
       "name": "gpuEnhancement/352/4",
-      "iterations": 113,
-      "real_time": 6.2226682601716019e+07,
-      "cpu_time": 6.2153547460176148e+07,
+      "iterations": 148,
+      "real_time": 4.6933564823120832e+07,
+      "cpu_time": 4.6932176216216706e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.9051181227538617e+11,
-      "items_per_second": 2.0574490954347464e+08
+      "bytes_per_second": 3.8473263265727075e+11,
+      "items_per_second": 2.7247353587625408e+08
     },
     {
       "name": "gpuEnhancement/352/6",
-      "iterations": 113,
-      "real_time": 6.2134739371589422e+07,
-      "cpu_time": 6.2041930221238770e+07,
+      "iterations": 150,
+      "real_time": 4.7226019486164056e+07,
+      "cpu_time": 4.7046923753333278e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.9103446084949152e+11,
-      "items_per_second": 2.0611505725884670e+08
+      "bytes_per_second": 3.8379426902956024e+11,
+      "items_per_second": 2.7180897240053838e+08
     },
     {
       "name": "gpuEnhancement/352/8",
-      "iterations": 114,
-      "real_time": 6.1499762921078384e+07,
-      "cpu_time": 6.1404851885964818e+07,
+      "iterations": 149,
+      "real_time": 4.6895452046879381e+07,
+      "cpu_time": 4.6894812255033575e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.9405395758518396e+11,
-      "items_per_second": 2.0825351103766567e+08
+      "bytes_per_second": 3.8503917264455786e+11,
+      "items_per_second": 2.7269063218453103e+08
     },
     {
       "name": "gpuEnhancement/352/12",
-      "iterations": 111,
-      "real_time": 6.2884175540619269e+07,
-      "cpu_time": 6.2788978153153323e+07,
+      "iterations": 148,
+      "real_time": 4.7288589066246875e+07,
+      "cpu_time": 4.7283857885135323e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.8757180389139990e+11,
-      "items_per_second": 2.0366275063130304e+08
+      "bytes_per_second": 3.8187111880471985e+11,
+      "items_per_second": 2.7044696799201125e+08
     },
     {
       "name": "gpuEnhancement/352/24",
-      "iterations": 111,
-      "real_time": 6.3354417324319966e+07,
-      "cpu_time": 6.3279547063063078e+07,
+      "iterations": 147,
+      "real_time": 4.7544467570196815e+07,
+      "cpu_time": 4.7544145353741802e+07,
       "time_unit": "ns",
-      "bytes_per_second": 2.8534242974282715e+11,
-      "items_per_second": 2.0208387375554329e+08
+      "bytes_per_second": 3.7978050878096051e+11,
+      "items_per_second": 2.6896636599218166e+08
     },
     {
       "name": "gpuEnhancement/384/4",
-      "iterations": 110,
-      "real_time": 6.3849479045496665e+07,
-      "cpu_time": 6.3778264445454620e+07,
+      "iterations": 148,
+      "real_time": 4.7417702556059167e+07,
+      "cpu_time": 4.7416762722972371e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.0877564968614478e+11,
-      "items_per_second": 2.0050366862736675e+08
+      "bytes_per_second": 4.1532095210833722e+11,
+      "items_per_second": 2.6968892994047874e+08
     },
     {
       "name": "gpuEnhancement/384/6",
-      "iterations": 110,
-      "real_time": 6.3728314309132248e+07,
-      "cpu_time": 6.3655739045453757e+07,
+      "iterations": 148,
+      "real_time": 4.7479142331065156e+07,
+      "cpu_time": 4.7418461101350710e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.0936998509966199e+11,
-      "items_per_second": 2.0088960071406624e+08
+      "bytes_per_second": 4.1530607663349585e+11,
+      "items_per_second": 2.6967927054123110e+08
     },
     {
       "name": "gpuEnhancement/384/8",
-      "iterations": 111,
-      "real_time": 6.2999991171202533e+07,
-      "cpu_time": 6.2923068873873986e+07,
+      "iterations": 148,
+      "real_time": 4.7316820933357693e+07,
+      "cpu_time": 4.7316529918918140e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.1297225949792664e+11,
-      "items_per_second": 2.0322873993371859e+08
+      "bytes_per_second": 4.1620074578051965e+11,
+      "items_per_second": 2.7026022453280497e+08
     },
     {
       "name": "gpuEnhancement/384/12",
-      "iterations": 109,
-      "real_time": 6.4357352752234243e+07,
-      "cpu_time": 6.4283722348623589e+07,
+      "iterations": 146,
+      "real_time": 4.7882879631313153e+07,
+      "cpu_time": 4.7881546095890030e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.0634777079646912e+11,
-      "items_per_second": 1.9892712389381114e+08
+      "bytes_per_second": 4.1128945587014752e+11,
+      "items_per_second": 2.6707107524035555e+08
     },
     {
       "name": "gpuEnhancement/384/24",
-      "iterations": 107,
-      "real_time": 6.5274086701014578e+07,
-      "cpu_time": 6.5193289495326348e+07,
+      "iterations": 145,
+      "real_time": 4.8390474282847397e+07,
+      "cpu_time": 4.8390127296551295e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.0207365194253296e+11,
-      "items_per_second": 1.9615172204060581e+08
+      "bytes_per_second": 4.0696679550589874e+11,
+      "items_per_second": 2.6426415292590827e+08
     },
     {
       "name": "gpuEnhancement/416/4",
-      "iterations": 107,
-      "real_time": 6.5439708747685604e+07,
-      "cpu_time": 6.5358684981308177e+07,
+      "iterations": 145,
+      "real_time": 4.8165772925933890e+07,
+      "cpu_time": 4.8165382827586465e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.2635311396029669e+11,
-      "items_per_second": 1.9565534410089728e+08
+      "bytes_per_second": 4.4284938924607385e+11,
+      "items_per_second": 2.6549723575903708e+08
     },
     {
       "name": "gpuEnhancement/416/6",
-      "iterations": 107,
-      "real_time": 6.5233448046753526e+07,
-      "cpu_time": 6.5151805813084096e+07,
+      "iterations": 145,
+      "real_time": 4.8533483703845531e+07,
+      "cpu_time": 4.8530416717242055e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.2738939622324951e+11,
-      "items_per_second": 1.9627661644079706e+08
+      "bytes_per_second": 4.3951838477459027e+11,
+      "items_per_second": 2.6350023068020996e+08
     },
     {
       "name": "gpuEnhancement/416/8",
-      "iterations": 109,
-      "real_time": 6.4564102779889114e+07,
-      "cpu_time": 6.4487390651376292e+07,
+      "iterations": 146,
+      "real_time": 4.7879307575472817e+07,
+      "cpu_time": 4.7875907226027690e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.3076249717268988e+11,
-      "items_per_second": 1.9829885921624091e+08
+      "bytes_per_second": 4.4552702191727783e+11,
+      "items_per_second": 2.6710253112546635e+08
     },
     {
       "name": "gpuEnhancement/416/12",
-      "iterations": 106,
-      "real_time": 6.6117973367926300e+07,
-      "cpu_time": 6.6040505386792861e+07,
+      "iterations": 144,
+      "real_time": 4.8541994338544704e+07,
+      "cpu_time": 4.8541562909722164e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.2298375433489178e+11,
-      "items_per_second": 1.9363534432547468e+08
+      "bytes_per_second": 4.3941746184954236e+11,
+      "items_per_second": 2.6343972532946187e+08
     },
     {
       "name": "gpuEnhancement/416/24",
-      "iterations": 104,
-      "real_time": 6.6987275355691403e+07,
-      "cpu_time": 6.6892333625000551e+07,
+      "iterations": 143,
+      "real_time": 4.9130077617099658e+07,
+      "cpu_time": 4.9016767328671798e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.1887077654632837e+11,
-      "items_per_second": 1.9116953030355418e+08
+      "bytes_per_second": 4.3515742735492993e+11,
+      "items_per_second": 2.6088574781470618e+08
     },
     {
       "name": "gpuEnhancement/448/4",
-      "iterations": 104,
-      "real_time": 6.7230455307603389e+07,
-      "cpu_time": 6.7133824096153751e+07,
+      "iterations": 143,
+      "real_time": 4.8815319588134341e+07,
+      "cpu_time": 4.8814947657343708e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.4210542904729034e+11,
-      "items_per_second": 1.9048186472566280e+08
+      "bytes_per_second": 4.7048797137335187e+11,
+      "items_per_second": 2.6196434931701109e+08
     },
     {
       "name": "gpuEnhancement/448/6",
-      "iterations": 105,
-      "real_time": 6.6906515752392195e+07,
-      "cpu_time": 6.6834530552380651e+07,
+      "iterations": 144,
+      "real_time": 4.8682721328481823e+07,
+      "cpu_time": 4.8681763666667484e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.4363742074914471e+11,
-      "items_per_second": 1.9133486678682894e+08
+      "bytes_per_second": 4.7177513644037207e+11,
+      "items_per_second": 2.6268103365276843e+08
     },
     {
       "name": "gpuEnhancement/448/8",
-      "iterations": 106,
-      "real_time": 6.5978007867876306e+07,
-      "cpu_time": 6.5908333386792555e+07,
+      "iterations": 145,
+      "real_time": 4.8305302627127744e+07,
+      "cpu_time": 4.8304598655171312e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.4846649150139722e+11,
-      "items_per_second": 1.9402365896514320e+08
+      "bytes_per_second": 4.7545878312646436e+11,
+      "items_per_second": 2.6473206187442335e+08
     },
     {
       "name": "gpuEnhancement/448/12",
-      "iterations": 103,
-      "real_time": 6.7863154320415899e+07,
-      "cpu_time": 6.7795611553398743e+07,
+      "iterations": 143,
+      "real_time": 4.9116932754437409e+07,
+      "cpu_time": 4.9116652489510991e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.3876596389886273e+11,
-      "items_per_second": 1.8862247433121532e+08
+      "bytes_per_second": 4.6759794350611823e+11,
+      "items_per_second": 2.6035520239761594e+08
     },
     {
       "name": "gpuEnhancement/448/24",
-      "iterations": 103,
-      "real_time": 6.8266674757254705e+07,
-      "cpu_time": 6.8170238165048957e+07,
+      "iterations": 141,
+      "real_time": 4.9661003205106191e+07,
+      "cpu_time": 4.9660745127660424e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.3690429011549432e+11,
-      "items_per_second": 1.8758590763668951e+08
+      "bytes_per_second": 4.6247485084970557e+11,
+      "items_per_second": 2.5750270091854432e+08
     },
     {
       "name": "gpuEnhancement/480/4",
-      "iterations": 102,
-      "real_time": 6.8680927803963602e+07,
-      "cpu_time": 6.8583880539215580e+07,
+      "iterations": 142,
+      "real_time": 4.9500430796400338e+07,
+      "cpu_time": 4.9499755330985785e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.5873853783954175e+11,
-      "items_per_second": 1.8645454149664333e+08
+      "bytes_per_second": 4.9704651789659698e+11,
+      "items_per_second": 2.5834018601694232e+08
     },
     {
       "name": "gpuEnhancement/480/6",
-      "iterations": 102,
-      "real_time": 6.8556583539283767e+07,
-      "cpu_time": 6.8485000294117525e+07,
+      "iterations": 142,
+      "real_time": 4.9343802507074788e+07,
+      "cpu_time": 4.9343185415492870e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.5925649293036969e+11,
-      "items_per_second": 1.8672374892430857e+08
+      "bytes_per_second": 4.9862368667173413e+11,
+      "items_per_second": 2.5915992030755413e+08
     },
     {
       "name": "gpuEnhancement/480/8",
-      "iterations": 104,
-      "real_time": 6.7521631124971181e+07,
-      "cpu_time": 6.7444197365384400e+07,
+      "iterations": 143,
+      "real_time": 4.8903153867337048e+07,
+      "cpu_time": 4.8901003139860280e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.6480056083561298e+11,
-      "items_per_second": 1.8960528109959093e+08
+      "bytes_per_second": 5.0313243991399841e+11,
+      "items_per_second": 2.6150334714864781e+08
     },
     {
       "name": "gpuEnhancement/480/12",
-      "iterations": 101,
-      "real_time": 6.9577635267327562e+07,
-      "cpu_time": 6.9502326821782053e+07,
+      "iterations": 140,
+      "real_time": 4.9923930257292733e+07,
+      "cpu_time": 4.9923538028571911e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.5399794724986383e+11,
-      "items_per_second": 1.8399061707373381e+08
+      "bytes_per_second": 4.9282727137485693e+11,
+      "items_per_second": 2.5614723044431233e+08
     },
     {
       "name": "gpuEnhancement/480/24",
-      "iterations": 100,
-      "real_time": 6.9923324729898021e+07,
-      "cpu_time": 6.9827134570000455e+07,
+      "iterations": 139,
+      "real_time": 5.0195196278312869e+07,
+      "cpu_time": 5.0193828546762951e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.5235129116368439e+11,
-      "items_per_second": 1.8313476671709168e+08
+      "bytes_per_second": 4.9017342841417334e+11,
+      "items_per_second": 2.5476789418616077e+08
     },
     {
       "name": "gpuEnhancement/512/4",
-      "iterations": 100,
-      "real_time": 7.0328362759901211e+07,
-      "cpu_time": 7.0254756040001214e+07,
+      "iterations": 139,
+      "real_time": 5.0095009831912652e+07,
+      "cpu_time": 5.0026478863309674e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.7350519496586591e+11,
-      "items_per_second": 1.8202007551942784e+08
+      "bytes_per_second": 5.2453254652798016e+11,
+      "items_per_second": 2.5562014938010731e+08
     },
     {
       "name": "gpuEnhancement/512/6",
-      "iterations": 100,
-      "real_time": 7.0063716500008017e+07,
-      "cpu_time": 6.9990573630000204e+07,
+      "iterations": 142,
+      "real_time": 4.9410273202917948e+07,
+      "cpu_time": 4.9403275894365825e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.7491500627953815e+11,
-      "items_per_second": 1.8270711806995034e+08
+      "bytes_per_second": 5.3114931908781763e+11,
+      "items_per_second": 2.5884469741121715e+08
     },
     {
       "name": "gpuEnhancement/512/8",
-      "iterations": 102,
-      "real_time": 6.8990482127393231e+07,
-      "cpu_time": 6.8920215107843488e+07,
+      "iterations": 143,
+      "real_time": 4.8925173586117215e+07,
+      "cpu_time": 4.8924910041958332e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.8073758636620520e+11,
-      "items_per_second": 1.8554463273206881e+08
+      "bytes_per_second": 5.3634265917905536e+11,
+      "items_per_second": 2.6137556490207377e+08
     },
     {
       "name": "gpuEnhancement/512/12",
-      "iterations": 98,
-      "real_time": 7.1184533959277198e+07,
-      "cpu_time": 7.1088127224489108e+07,
+      "iterations": 140,
+      "real_time": 5.0237744600911222e+07,
+      "cpu_time": 5.0041153871429086e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.6912656693198718e+11,
-      "items_per_second": 1.7988624119492552e+08
+      "bytes_per_second": 5.2437872274927649e+11,
+      "items_per_second": 2.5554518652498853e+08
     },
     {
       "name": "gpuEnhancement/512/24",
-      "iterations": 98,
-      "real_time": 7.1214424897928491e+07,
-      "cpu_time": 7.1140438785714269e+07,
+      "iterations": 139,
+      "real_time": 5.0359959901719213e+07,
+      "cpu_time": 5.0359223561149880e+07,
       "time_unit": "ns",
-      "bytes_per_second": 3.6885513780763129e+11,
-      "items_per_second": 1.7975396579319265e+08
+      "bytes_per_second": 5.2106673805518134e+11,
+      "items_per_second": 2.5393115889628720e+08
     }
   ]
 }
