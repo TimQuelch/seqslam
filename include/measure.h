@@ -4,21 +4,13 @@
 #include "seqslam.h"
 #include "utils.h"
 
+#include <chrono>
 #include <filesystem>
 #include <vector>
 
 #include <Eigen/Dense>
 
 namespace seqslam {
-    struct predictionStats {
-        unsigned truePositive = 0;
-        unsigned falsePositive = 0;
-        unsigned falseNegative = 0;
-        double precision = 0.0;
-        double recall = 0.0;
-        double f1score = 0.0;
-    };
-
     struct seqslamParameters {
         std::filesystem::path datasetRoot = {};
         std::filesystem::path referencePath = {};
@@ -34,6 +26,30 @@ namespace seqslam {
         double vMin = 0.0;
         double vMax = 0.0;
     };
+    struct predictionStats {
+        unsigned truePositive = 0;
+        unsigned falsePositive = 0;
+        unsigned falseNegative = 0;
+        double precision = 0.0;
+        double recall = 0.0;
+        double f1score = 0.0;
+    };
+
+    struct timings {
+        std::chrono::nanoseconds diffmxcalc;
+        std::chrono::nanoseconds enhancement;
+        std::chrono::nanoseconds sequenceSearch;
+    };
+
+    struct result {
+        seqslamParameters params;
+        timings times;
+        std::vector<predictionStats> stats;
+    };
+
+    struct patchWindowSize_t {};
+    struct sequenceLength_t {};
+    struct nTraj_t {};
 
     [[nodiscard]] auto readParametersConfig(std::filesystem::path const& configFile)
         -> seqslamParameters;

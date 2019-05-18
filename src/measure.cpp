@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <numeric>
 #include <random>
 
 #include <nlohmann/json.hpp>
@@ -9,6 +10,10 @@
 namespace seqslam {
     namespace detail {
         auto rng = std::mt19937{42};
+
+        constexpr auto const tr = 1u;
+        constexpr auto const tq = 24u;
+        constexpr auto const nPixPerThread = 8u;
 
         [[nodiscard]] auto generateThresholdRange(Mx const& mx, unsigned nThresholds)
             -> std::vector<double> {
@@ -24,6 +29,100 @@ namespace seqslam {
             });
 
             return vals;
+        }
+
+        [[nodiscard]] auto generateRange(std::pair<int, int> range) {
+            auto values = std::vector<int>(range.second - range.first + 1);
+            std::iota(values.begin(), values.end(), range.first);
+            return values;
+        }
+
+        [[nodiscard]] auto
+        applyRange(seqslamParameters const& p, std::vector<int> const& range, patchWindowSize_t) {
+            auto ps = std::vector<seqslamParameters>{};
+            std::transform(
+                range.begin(), range.end(), std::back_inserter(ps), [p](auto windowSize) {
+                    auto newP = p;
+                    newP.patchWindowSize = windowSize;
+                    return newP;
+                });
+            return ps;
+        }
+
+        [[nodiscard]] auto
+        applyRange(seqslamParameters const& p, std::vector<int> const& range, sequenceLength_t) {
+            auto ps = std::vector<seqslamParameters>{};
+            std::transform(
+                range.begin(), range.end(), std::back_inserter(ps), [p](auto sequenceLength) {
+                    auto newP = p;
+                    newP.sequenceLength = sequenceLength;
+                    return newP;
+                });
+            return ps;
+        }
+
+        [[nodiscard]] auto
+        applyRange(seqslamParameters const& p, std::vector<int> const& range, nTraj_t) {
+            auto ps = std::vector<seqslamParameters>{};
+            std::transform(range.begin(), range.end(), std::back_inserter(ps), [p](auto nTraj) {
+                auto newP = p;
+                newP.nTraj = nTraj;
+                return newP;
+            });
+            return ps;
+        }
+
+        [[nodiscard]] auto runAndAnalyse(std::vector<Mx> const& referenceImages,
+                                         std::vector<Mx> const& queryImages,
+                                         seqslamParameters const& p,
+                                         std::vector<std::vector<unsigned>> const& groundTruth,
+                                         unsigned nPoints) {
+            auto const diffMatrix =
+                opencl::generateDiffMx(referenceImages, queryImages, tr, tq, nPixPerThread);
+            auto const enhanced = opencl::enhanceDiffMx(diffMatrix, p.patchWindowSize);
+            auto const sequences =
+                opencl::sequenceSearch(enhanced, p.sequenceLength, p.vMin, p.vMax, p.nTraj);
+            return prCurve(sequences, groundTruth, nPoints);
+        }
+
+        [[nodiscard]] auto runAndTime(std::vector<Mx> const& referenceImages,
+                                      std::vector<Mx> const& queryImages,
+                                      seqslamParameters const& p,
+                                      std::chrono::milliseconds minTime) {
+            using hrclock = std::chrono::high_resolution_clock;
+            auto const start = hrclock::now();
+
+            auto diffmxTimes = std::vector<hrclock::duration>{};
+            auto enhanceTimes = std::vector<hrclock::duration>{};
+            auto searchTimes = std::vector<hrclock::duration>{};
+
+            while (hrclock::now() - start < minTime) {
+                auto const begin = hrclock::now();
+                auto const diffMatrix =
+                    opencl::generateDiffMx(referenceImages, queryImages, tr, tq, nPixPerThread);
+                auto const postdiffmx = hrclock::now();
+                auto const enhanced = opencl::enhanceDiffMx(diffMatrix, p.patchWindowSize);
+                auto const postenhanced = hrclock::now();
+                auto const sequences =
+                    opencl::sequenceSearch(enhanced, p.sequenceLength, p.vMin, p.vMax, p.nTraj);
+                auto const end = hrclock::now();
+
+                diffmxTimes.push_back(postdiffmx - begin);
+                enhanceTimes.push_back(postenhanced - postdiffmx);
+                searchTimes.push_back(end - postenhanced);
+            }
+
+            return timings{
+                std::chrono::duration_cast<std::chrono::nanoseconds>(hrclock::duration{
+                    std::accumulate(diffmxTimes.begin(), diffmxTimes.end(), hrclock::duration{0}) /
+                    diffmxTimes.size()}),
+                std::chrono::duration_cast<std::chrono::nanoseconds>(hrclock::duration{
+                    std::accumulate(
+                        enhanceTimes.begin(), enhanceTimes.end(), hrclock::duration{0}) /
+                    enhanceTimes.size()}),
+                std::chrono::duration_cast<std::chrono::nanoseconds>(hrclock::duration{
+                    std::accumulate(searchTimes.begin(), searchTimes.end(), hrclock::duration{0}) /
+                    searchTimes.size()})};
         }
     } // namespace detail
 
@@ -175,5 +274,39 @@ namespace seqslam {
         }
 
         return {ret, newGroundTruth};
+    }
+
+    [[nodiscard]] auto runParameterSet(std::vector<Mx> const& referenceImages,
+                                       std::vector<Mx> const& queryImages,
+                                       std::vector<seqslamParameters> ps,
+                                       std::vector<std::vector<unsigned>> const& groundTruth,
+                                       unsigned prPoints,
+                                       std::chrono::milliseconds minTime) {
+        auto results = std::vector<result>{};
+        std::transform(
+            ps.begin(),
+            ps.end(),
+            std::back_inserter(results),
+            [&referenceImages, &queryImages, &groundTruth, prPoints, minTime](auto const& p) {
+                return result{
+                    p,
+                    detail::runAndTime(referenceImages, queryImages, p, minTime),
+                    detail::runAndAnalyse(referenceImages, queryImages, p, groundTruth, prPoints)};
+            });
+
+        return 0; // TODO: Do something with the results
+    }
+
+    template <typename Var>
+    [[nodiscard]] auto parameterSweep(std::vector<Mx> const& referenceImages,
+                                      std::vector<Mx> const& queryImages,
+                                      seqslamParameters const& p,
+                                      std::vector<std::vector<unsigned>> const& groundTruth,
+                                      unsigned prPoints,
+                                      std::chrono::milliseconds minTime,
+                                      std::pair<int, int> range,
+                                      Var) {
+        auto const ps = detail::applyRange(p, detail::generateRange(range), Var{});
+        runAndTime(referenceImages, queryImages, ps, groundTruth, prPoints, minTime);
     }
 } // namespace seqslam
