@@ -1,5 +1,5 @@
 #include "seqslam.h"
-#include "utils.h"
+#include "measure.h"
 
 #include <filesystem>
 #include <iostream>
@@ -15,25 +15,6 @@ cv::Mat mxToIm(Mx const& mx) {
     auto im = cv::Mat(scaled.rows(), scaled.cols(), CV_8UC1);
     cv::eigen2cv(scaled, im);
     return im;
-}
-
-[[nodiscard]] auto readParametersConfig(std::filesystem::path const& configFile) {
-    auto const json =
-        utils::readJsonConfig(utils::traverseUpUntilMatch(configFile).value())["seqslam"];
-    auto p = seqslamParameters{};
-    p.datasetRoot = json["Dataset root path"].get<std::string>();
-    p.queryPath = json["Query image path"].get<std::string>();
-    p.referencePath = json["Reference image path"].get<std::string>();
-    p.imageRows = json["Image rows"];
-    p.imageCols = json["Image columns"];
-    p.imageContrastThreshold = json["Image contrast enhancement threshold"];
-    p.patchWindowSize = json["Patch window size"];
-    p.sequenceLength = json["Sequence length"];
-    p.vMin = json["Min velocity"];
-    p.vMax = json["Max velocity"];
-    p.nTraj = json["Number of trajectories"];
-
-    return p;
 }
 
 [[nodiscard]] auto loadImages(std::filesystem::path const& path,

@@ -38,7 +38,7 @@ else()
         "-enable-check-profile")
 endif()
 
-add_library(seqslam src/seqslam.cpp)
+add_library(seqslam src/seqslam.cpp src/clutils.cpp src/measure.cpp src/utils.cpp)
 target_include_directories(
     seqslam
     PUBLIC
@@ -49,41 +49,16 @@ target_link_libraries(seqslam
     PUBLIC
     Eigen3::Eigen
     fmt::fmt
-    clutils
     opencv_core
-    PRIVATE
-    utils
-    opencv_imgproc
-    opencv_highgui
-    nlohmann_json::nlohmann_json
-    stdc++fs)
-
-add_library(clutils src/clutils.cpp)
-target_include_directories(
-    clutils
-    PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
-    $<INSTALL_INTERFACE:include/>)
-target_compile_features(clutils PUBLIC cxx_std_17)
-target_link_libraries(clutils
-    PUBLIC
     OpenCL::OpenCL
     stdc++fs
+    nlohmann_json::nlohmann_json
     PRIVATE
-    utils
-    fmt::fmt)
-
-add_library(utils src/utils.cpp)
-target_include_directories(
-    utils
-    PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
-    $<INSTALL_INTERFACE:include/>)
-target_compile_features(utils PUBLIC cxx_std_17)
-target_link_libraries(utils PUBLIC stdc++fs nlohmann_json::nlohmann_json)
+    opencv_imgproc
+    opencv_highgui)
 
 add_executable(demo src/demo.cpp)
-target_link_libraries(demo PRIVATE seqslam utils fmt::fmt)
+target_link_libraries(demo PRIVATE seqslam fmt::fmt)
 
 configure_file(src/kernels/diff-mx.cl ./kernels/diff-mx.cl COPYONLY)
 configure_file(src/kernels/enhancement.cl ./kernels/enhancement.cl COPYONLY)
@@ -97,7 +72,6 @@ add_subdirectory(benchmark)
 if(CLANG_TIDY_EXE AND RUN_CLANG_TIDY)
     set_target_properties(
         seqslam
-        clutils
         demo
         seqslam-benchmark
         sad-benchmark
