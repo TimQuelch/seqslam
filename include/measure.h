@@ -62,9 +62,10 @@ namespace seqslam {
     };
 
     struct timings {
-        std::chrono::nanoseconds diffmxcalc;
-        std::chrono::nanoseconds enhancement;
-        std::chrono::nanoseconds sequenceSearch;
+        std::chrono::nanoseconds diffmxcalc = {};
+        std::chrono::nanoseconds enhancement = {};
+        std::chrono::nanoseconds sequenceSearch = {};
+        unsigned iterations = 0;
     };
 
     struct result {
