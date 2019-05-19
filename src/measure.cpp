@@ -13,7 +13,9 @@ namespace seqslam {
 
         constexpr auto const tr = 1u;
         constexpr auto const tq = 24u;
-        constexpr auto const nPixPerThread = 8u;
+        constexpr auto const diffMxNPixPerThread = 8u;
+        constexpr auto const enhanceNPixPerThread = 8u;
+        constexpr auto const searchNPixPerThread = 6u;
 
         [[nodiscard]] auto generateThresholdRange(Mx const& mx, unsigned nThresholds)
             -> std::vector<double> {
@@ -81,7 +83,7 @@ namespace seqslam {
                                          std::vector<std::vector<unsigned>> const& groundTruth,
                                          unsigned nPoints) {
             auto const diffMatrix =
-                opencl::generateDiffMx(referenceImages, queryImages, tr, tq, nPixPerThread);
+                opencl::generateDiffMx(referenceImages, queryImages, tr, tq, diffMxNPixPerThread);
             auto const enhanced = opencl::enhanceDiffMx(diffMatrix, p.patchWindowSize);
             auto const sequences =
                 opencl::sequenceSearch(enhanced, p.sequenceLength, p.vMin, p.vMax, p.nTraj);
@@ -99,15 +101,48 @@ namespace seqslam {
             auto enhanceTimes = std::vector<hrclock::duration>{};
             auto searchTimes = std::vector<hrclock::duration>{};
 
+            auto context = opencl::createContext();
+            auto diffmxbufs = opencl::diffmxcalc::createBuffers(
+                context, referenceImages.size(), queryImages.size(), p.imageRows * p.imageCols);
+            auto enhancebufs = opencl::diffmxenhance::createBuffers(
+                context, referenceImages.size(), queryImages.size());
+            auto searchbufs = opencl::seqsearch::createBuffers(
+                context, p.sequenceLength, p.nTraj, referenceImages.size(), queryImages.size());
+
             while (hrclock::now() - start < minTime) {
                 auto const begin = hrclock::now();
-                auto const diffMatrix =
-                    opencl::generateDiffMx(referenceImages, queryImages, tr, tq, nPixPerThread);
+
+                opencl::diffmxcalc::writeArgs(
+                    context, diffmxbufs, referenceImages, queryImages, tr, tq, diffMxNPixPerThread);
+                auto const diffMatrix = opencl::generateDiffMx(context,
+                                                               diffmxbufs.diffMx,
+                                                               referenceImages.size(),
+                                                               queryImages.size(),
+                                                               p.imageRows * p.imageCols,
+                                                               tr,
+                                                               tq,
+                                                               diffMxNPixPerThread);
+
                 auto const postdiffmx = hrclock::now();
-                auto const enhanced = opencl::enhanceDiffMx(diffMatrix, p.patchWindowSize);
+
+                opencl::diffmxenhance::writeArgs(
+                    context, enhancebufs, diffMatrix, p.patchWindowSize, enhanceNPixPerThread);
+                auto const enhanced = opencl::enhanceDiffMx(
+                    context, enhancebufs.out, diffMatrix.rows(), diffMatrix.cols());
+
                 auto const postenhanced = hrclock::now();
-                auto const sequences =
-                    opencl::sequenceSearch(enhanced, p.sequenceLength, p.vMin, p.vMax, p.nTraj);
+
+                opencl::seqsearch::writeArgs(context,
+                                             searchbufs,
+                                             enhanced,
+                                             p.sequenceLength,
+                                             p.vMin,
+                                             p.vMax,
+                                             p.nTraj,
+                                             searchNPixPerThread);
+                auto const sequences = opencl::sequenceSearch(
+                    context, searchbufs.out, enhanced.rows(), enhanced.cols(), searchNPixPerThread);
+
                 auto const end = hrclock::now();
 
                 diffmxTimes.push_back(postdiffmx - begin);
