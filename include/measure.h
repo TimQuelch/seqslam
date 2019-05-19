@@ -11,6 +11,32 @@
 #include <Eigen/Dense>
 
 namespace seqslam {
+    struct seqslamParameters;
+    struct result;
+    struct patchWindowSize_t {};
+    struct sequenceLength_t {};
+    struct nTraj_t {};
+
+    namespace detail {
+        [[nodiscard]] auto generateRange(std::pair<int, int> range) -> std::vector<int>;
+        [[nodiscard]] auto applyRange(seqslamParameters const& p,
+                                      std::vector<int> const& range,
+                                      patchWindowSize_t) -> std::vector<seqslamParameters>;
+        [[nodiscard]] auto applyRange(seqslamParameters const& p,
+                                      std::vector<int> const& range,
+                                      sequenceLength_t) -> std::vector<seqslamParameters>;
+        [[nodiscard]] auto applyRange(seqslamParameters const& p,
+                                      std::vector<int> const& range,
+                                      nTraj_t) -> std::vector<seqslamParameters>;
+        [[nodiscard]] auto runParameterSet(std::vector<Mx> const& referenceImages,
+                                           std::vector<Mx> const& queryImages,
+                                           std::vector<seqslamParameters> ps,
+                                           std::vector<std::vector<unsigned>> const& groundTruth,
+                                           unsigned prPoints,
+                                           std::chrono::milliseconds minTime)
+            -> std::vector<result>;
+    } // namespace detail
+
     struct seqslamParameters {
         std::filesystem::path datasetRoot = {};
         std::filesystem::path referencePath = {};
@@ -47,10 +73,6 @@ namespace seqslam {
         std::vector<predictionStats> stats;
     };
 
-    struct patchWindowSize_t {};
-    struct sequenceLength_t {};
-    struct nTraj_t {};
-
     [[nodiscard]] auto readParametersConfig(std::filesystem::path const& configFile)
         -> seqslamParameters;
 
@@ -62,9 +84,11 @@ namespace seqslam {
                                std::vector<std::vector<unsigned>> const& truth,
                                unsigned nPoints) -> std::vector<predictionStats>;
 
-    void writePrCurveToJson(seqslamParameters const& parameters,
+    void writePrCurveToFile(seqslamParameters const& parameters,
                             std::vector<predictionStats> const& stats,
                             std::filesystem::path const& file);
+
+    void writeResultsToFile(std::vector<result> const& stats, std::filesystem::path const& file);
 
     [[nodiscard]] auto nordlandGroundTruth(unsigned n) -> std::vector<std::vector<unsigned>>;
 
@@ -72,6 +96,20 @@ namespace seqslam {
                                   std::pair<double, double> vRange,
                                   unsigned nSegments)
         -> std::pair<std::vector<Mx>, std::vector<std::vector<unsigned>>>;
+
+    template <typename Var>
+    [[nodiscard]] auto parameterSweep(std::vector<Mx> const& referenceImages,
+                                      std::vector<Mx> const& queryImages,
+                                      seqslamParameters const& p,
+                                      std::vector<std::vector<unsigned>> const& groundTruth,
+                                      unsigned prPoints,
+                                      std::chrono::milliseconds minTime,
+                                      std::pair<int, int> range,
+                                      Var) {
+        auto const ps = detail::applyRange(p, detail::generateRange(range), Var{});
+        return detail::runParameterSet(
+            referenceImages, queryImages, ps, groundTruth, prPoints, minTime);
+    }
 } // namespace seqslam
 
 #endif

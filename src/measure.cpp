@@ -31,14 +31,15 @@ namespace seqslam {
             return vals;
         }
 
-        [[nodiscard]] auto generateRange(std::pair<int, int> range) {
+        [[nodiscard]] auto generateRange(std::pair<int, int> range) -> std::vector<int> {
             auto values = std::vector<int>(range.second - range.first + 1);
             std::iota(values.begin(), values.end(), range.first);
             return values;
         }
 
-        [[nodiscard]] auto
-        applyRange(seqslamParameters const& p, std::vector<int> const& range, patchWindowSize_t) {
+        [[nodiscard]] auto applyRange(seqslamParameters const& p,
+                                      std::vector<int> const& range,
+                                      patchWindowSize_t) -> std::vector<seqslamParameters> {
             auto ps = std::vector<seqslamParameters>{};
             std::transform(
                 range.begin(), range.end(), std::back_inserter(ps), [p](auto windowSize) {
@@ -49,8 +50,9 @@ namespace seqslam {
             return ps;
         }
 
-        [[nodiscard]] auto
-        applyRange(seqslamParameters const& p, std::vector<int> const& range, sequenceLength_t) {
+        [[nodiscard]] auto applyRange(seqslamParameters const& p,
+                                      std::vector<int> const& range,
+                                      sequenceLength_t) -> std::vector<seqslamParameters> {
             auto ps = std::vector<seqslamParameters>{};
             std::transform(
                 range.begin(), range.end(), std::back_inserter(ps), [p](auto sequenceLength) {
@@ -61,8 +63,9 @@ namespace seqslam {
             return ps;
         }
 
-        [[nodiscard]] auto
-        applyRange(seqslamParameters const& p, std::vector<int> const& range, nTraj_t) {
+        [[nodiscard]] auto applyRange(seqslamParameters const& p,
+                                      std::vector<int> const& range,
+                                      nTraj_t) -> std::vector<seqslamParameters> {
             auto ps = std::vector<seqslamParameters>{};
             std::transform(range.begin(), range.end(), std::back_inserter(ps), [p](auto nTraj) {
                 auto newP = p;
@@ -123,6 +126,55 @@ namespace seqslam {
                 std::chrono::duration_cast<std::chrono::nanoseconds>(hrclock::duration{
                     std::accumulate(searchTimes.begin(), searchTimes.end(), hrclock::duration{0}) /
                     searchTimes.size()})};
+        }
+
+        [[nodiscard]] auto parametersToJson(seqslamParameters const& p) {
+            return nlohmann::json{{"Image rows", p.imageRows},
+                                  {"Image columns", p.imageCols},
+                                  {"Number of query images", p.nQuery},
+                                  {"Nubmer of reference images", p.nReference},
+                                  {"Patch window size", p.patchWindowSize},
+                                  {"Sequence length", p.sequenceLength},
+                                  {"Number of trajectories", p.nTraj},
+                                  {"Min velocity", p.vMin},
+                                  {"Max velocity", p.vMax}};
+        }
+
+        [[nodiscard]] auto predictionStatsToJson(predictionStats const& s) {
+            return nlohmann::json{{"True Positive", s.truePositive},
+                                  {"False Positive", s.falsePositive},
+                                  {"False Negative", s.falseNegative},
+                                  {"Precision", s.precision},
+                                  {"Recall", s.recall},
+                                  {"F1 Score", s.f1score}};
+        }
+
+        [[nodiscard]] auto timingsToJson(timings const& t) {
+            return nlohmann::json{{"Difference matrix calculation", t.diffmxcalc.count()},
+                                  {"Difference matrix enhancement", t.enhancement.count()},
+                                  {"Sequence search", t.sequenceSearch.count()}};
+        }
+
+        [[nodiscard]] auto runParameterSet(std::vector<Mx> const& referenceImages,
+                                           std::vector<Mx> const& queryImages,
+                                           std::vector<seqslamParameters> ps,
+                                           std::vector<std::vector<unsigned>> const& groundTruth,
+                                           unsigned prPoints,
+                                           std::chrono::milliseconds minTime)
+            -> std::vector<result> {
+            auto results = std::vector<result>{};
+            std::transform(
+                ps.begin(),
+                ps.end(),
+                std::back_inserter(results),
+                [&referenceImages, &queryImages, &groundTruth, prPoints, minTime](auto const& p) {
+                    return result{p,
+                                  detail::runAndTime(referenceImages, queryImages, p, minTime),
+                                  detail::runAndAnalyse(
+                                      referenceImages, queryImages, p, groundTruth, prPoints)};
+                });
+
+            return results; // TODO: Do something with the results
         }
     } // namespace detail
 
@@ -198,32 +250,36 @@ namespace seqslam {
         return stats;
     }
 
-    void writePrCurveToJson(seqslamParameters const& parameters,
+    void writePrCurveToFile(seqslamParameters const& parameters,
                             std::vector<predictionStats> const& stats,
                             std::filesystem::path const& file) {
-        auto j = nlohmann::json{{"parameters",
-                                 {{"Image rows", parameters.imageRows},
-                                  {"Image columns", parameters.imageCols},
-                                  {"Number of query images", parameters.nQuery},
-                                  {"Nubmer of reference images", parameters.nReference},
-                                  {"Patch window size", parameters.patchWindowSize},
-                                  {"Sequence length", parameters.sequenceLength},
-                                  {"Number of trajectories", parameters.nTraj},
-                                  {"Min velocity", parameters.vMin},
-                                  {"Max velocity", parameters.vMax}}}};
+        auto j = nlohmann::json{{"parameters", detail::parametersToJson(parameters)}};
+
+        std::transform(stats.begin(),
+                       stats.end(),
+                       std::back_inserter(j["data"]),
+                       detail::predictionStatsToJson);
+
+        std::ofstream f{file};
+        f << j.dump(2);
+    }
+
+    void writeResultsToFile(std::vector<result> const& results, std::filesystem::path const& file) {
+        auto j = nlohmann::json{};
 
         std::transform(
-            stats.begin(), stats.end(), std::back_inserter(j["data"]), [](auto const& s) {
-                return nlohmann::json{{"True Positive", s.truePositive},
-                                      {"False Positive", s.falsePositive},
-                                      {"False Negative", s.falseNegative},
-                                      {"Precision", s.precision},
-                                      {"Recall", s.recall},
-                                      {"F1 Score", s.f1score}};
+            results.begin(), results.end(), std::back_inserter(j["curves"]), [](auto const& r) {
+                auto e = nlohmann::json{{"parameters", detail::parametersToJson(r.params)},
+                                        {"times", detail::timingsToJson(r.times)}};
+                std::transform(r.stats.begin(),
+                               r.stats.end(),
+                               std::back_inserter(e["data"]),
+                               detail::predictionStatsToJson);
+                return e;
             });
 
         std::ofstream f{file};
-        f << j.dump(4);
+        f << j.dump(2);
     }
 
     [[nodiscard]] auto nordlandGroundTruth(unsigned n) -> std::vector<std::vector<unsigned>> {
@@ -274,39 +330,5 @@ namespace seqslam {
         }
 
         return {ret, newGroundTruth};
-    }
-
-    [[nodiscard]] auto runParameterSet(std::vector<Mx> const& referenceImages,
-                                       std::vector<Mx> const& queryImages,
-                                       std::vector<seqslamParameters> ps,
-                                       std::vector<std::vector<unsigned>> const& groundTruth,
-                                       unsigned prPoints,
-                                       std::chrono::milliseconds minTime) {
-        auto results = std::vector<result>{};
-        std::transform(
-            ps.begin(),
-            ps.end(),
-            std::back_inserter(results),
-            [&referenceImages, &queryImages, &groundTruth, prPoints, minTime](auto const& p) {
-                return result{
-                    p,
-                    detail::runAndTime(referenceImages, queryImages, p, minTime),
-                    detail::runAndAnalyse(referenceImages, queryImages, p, groundTruth, prPoints)};
-            });
-
-        return 0; // TODO: Do something with the results
-    }
-
-    template <typename Var>
-    [[nodiscard]] auto parameterSweep(std::vector<Mx> const& referenceImages,
-                                      std::vector<Mx> const& queryImages,
-                                      seqslamParameters const& p,
-                                      std::vector<std::vector<unsigned>> const& groundTruth,
-                                      unsigned prPoints,
-                                      std::chrono::milliseconds minTime,
-                                      std::pair<int, int> range,
-                                      Var) {
-        auto const ps = detail::applyRange(p, detail::generateRange(range), Var{});
-        runAndTime(referenceImages, queryImages, ps, groundTruth, prPoints, minTime);
     }
 } // namespace seqslam
