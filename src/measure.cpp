@@ -125,7 +125,8 @@ namespace seqslam {
                     enhanceTimes.size()}),
                 std::chrono::duration_cast<std::chrono::nanoseconds>(hrclock::duration{
                     std::accumulate(searchTimes.begin(), searchTimes.end(), hrclock::duration{0}) /
-                    searchTimes.size()})};
+                    searchTimes.size()}),
+                static_cast<unsigned>(diffmxTimes.size())};
         }
 
         [[nodiscard]] auto parametersToJson(seqslamParameters const& p) {
@@ -152,7 +153,8 @@ namespace seqslam {
         [[nodiscard]] auto timingsToJson(timings const& t) {
             return nlohmann::json{{"Difference matrix calculation", t.diffmxcalc.count()},
                                   {"Difference matrix enhancement", t.enhancement.count()},
-                                  {"Sequence search", t.sequenceSearch.count()}};
+                                  {"Sequence search", t.sequenceSearch.count()},
+                                  {"Iterations", t.iterations}};
         }
 
         [[nodiscard]] auto runParameterSet(std::vector<Mx> const& referenceImages,
