@@ -154,7 +154,7 @@ namespace seqslam {
                            float vMax,
                            unsigned nTrajectories,
                            unsigned nPixPerThread,
-                           std::string_view kernelName);
+                           std::string_view kernelName = defaultKernel);
         } // namespace seqsearch
 
         [[nodiscard]] auto generateDiffMx(std::vector<Mx> const& referenceMxs,
