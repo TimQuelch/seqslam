@@ -39,41 +39,47 @@ namespace seqslam {
             return values;
         }
 
-        [[nodiscard]] auto applyRange(seqslamParameters const& p,
+        [[nodiscard]] auto applyRange(std::vector<seqslamParameters> const& originalPs,
                                       std::vector<int> const& range,
                                       patchWindowSize_t) -> std::vector<seqslamParameters> {
             auto ps = std::vector<seqslamParameters>{};
-            std::transform(
-                range.begin(), range.end(), std::back_inserter(ps), [p](auto windowSize) {
-                    auto newP = p;
-                    newP.patchWindowSize = windowSize;
-                    return newP;
-                });
+            for (auto const& p : originalPs) {
+                std::transform(
+                    range.begin(), range.end(), std::back_inserter(ps), [p](auto windowSize) {
+                        auto newP = p;
+                        newP.patchWindowSize = windowSize;
+                        return newP;
+                    });
+            }
             return ps;
         }
 
-        [[nodiscard]] auto applyRange(seqslamParameters const& p,
+        [[nodiscard]] auto applyRange(std::vector<seqslamParameters> const& originalPs,
                                       std::vector<int> const& range,
                                       sequenceLength_t) -> std::vector<seqslamParameters> {
             auto ps = std::vector<seqslamParameters>{};
-            std::transform(
-                range.begin(), range.end(), std::back_inserter(ps), [p](auto sequenceLength) {
-                    auto newP = p;
-                    newP.sequenceLength = sequenceLength;
-                    return newP;
-                });
+            for (auto const& p : originalPs) {
+                std::transform(
+                    range.begin(), range.end(), std::back_inserter(ps), [p](auto sequenceLength) {
+                        auto newP = p;
+                        newP.sequenceLength = sequenceLength;
+                        return newP;
+                    });
+            }
             return ps;
         }
 
-        [[nodiscard]] auto applyRange(seqslamParameters const& p,
+        [[nodiscard]] auto applyRange(std::vector<seqslamParameters> const& originalPs,
                                       std::vector<int> const& range,
                                       nTraj_t) -> std::vector<seqslamParameters> {
             auto ps = std::vector<seqslamParameters>{};
-            std::transform(range.begin(), range.end(), std::back_inserter(ps), [p](auto nTraj) {
-                auto newP = p;
-                newP.nTraj = nTraj;
-                return newP;
-            });
+            for (auto const& p : originalPs) {
+                std::transform(range.begin(), range.end(), std::back_inserter(ps), [p](auto nTraj) {
+                    auto newP = p;
+                    newP.nTraj = nTraj;
+                    return newP;
+                });
+            }
             return ps;
         }
 
