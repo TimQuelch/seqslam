@@ -40,23 +40,15 @@ int main() {
     p.nQuery = queryImages.size();
     p.nReference = referenceImages.size();
 
-    constexpr auto const prPoints = 5;
-    constexpr auto const minTime = std::chrono::milliseconds{200};
-    constexpr auto const range = std::pair{9, 11};
-
-    auto const result = parameterSweep(
-        referenceImages, queryImages, p, groundTruth, prPoints, minTime, range, sequenceLength_t{});
+    auto const result = parameterSweep2d(referenceImages,
+                                         queryImages,
+                                         p,
+                                         groundTruth,
+                                         100,
+                                         std::chrono::milliseconds{1000},
+                                         {5, 15},
+                                         sequenceLength_t{},
+                                         {5, 15},
+                                         nTraj_t{});
     writeResultsToFile(result, "sweep.json");
-
-    auto const result2 = parameterSweep2d(referenceImages,
-                                          queryImages,
-                                          p,
-                                          groundTruth,
-                                          prPoints,
-                                          minTime,
-                                          range,
-                                          sequenceLength_t{},
-                                          range,
-                                          nTraj_t{});
-    writeResultsToFile(result2, "sweep2.json");
 }
