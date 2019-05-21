@@ -14,8 +14,8 @@ namespace seqslam {
         constexpr auto const tr = 1u;
         constexpr auto const tq = 24u;
         constexpr auto const diffMxNPixPerThread = 8u;
-        constexpr auto const enhanceNPixPerThread = 8u;
-        constexpr auto const searchNPixPerThread = 6u;
+        constexpr auto const enhanceNPixPerThread = 4u;
+        constexpr auto const searchNPixPerThread = 4u;
 
         [[nodiscard]] auto generateThresholdRange(Mx const& mx, unsigned nThresholds)
             -> std::vector<double> {
