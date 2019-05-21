@@ -44,11 +44,11 @@ int main() {
                                          queryImages,
                                          p,
                                          groundTruth,
-                                         100,
-                                         std::chrono::milliseconds{1000},
-                                         {5, 15},
+                                         500,
+                                         std::chrono::milliseconds{5000},
+                                         {1, 31},
                                          sequenceLength_t{},
-                                         {5, 15},
-                                         nTraj_t{});
+                                         {1, 31},
+                                         windowSize_t{});
     writeResultsToFile(result, "sweep.json");
 }
