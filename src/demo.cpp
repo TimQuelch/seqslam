@@ -49,6 +49,6 @@ int main() {
                                          {1, 31},
                                          sequenceLength_t{},
                                          {1, 31},
-                                         windowSize_t{});
+                                         patchWindowSize_t{});
     writeResultsToFile(result, "sweep.json");
 }
