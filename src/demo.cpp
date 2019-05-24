@@ -28,7 +28,7 @@ cv::Mat mxToIm(Mx const& mx) {
 }
 
 int main() {
-    auto p = readParametersConfig(utils::defaultConfig);
+    auto p = readParametersConfig();
 
     auto const referenceImages = loadImages(
         p.datasetRoot / p.referencePath, p.imageRows, p.imageCols, p.imageContrastThreshold);

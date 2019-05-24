@@ -2,7 +2,6 @@
 #define SEQSLAM_MEASURE_H
 
 #include "seqslam.h"
-#include "utils.h"
 
 #include <chrono>
 #include <filesystem>
@@ -73,6 +72,8 @@ namespace seqslam {
         timings times;
         std::vector<predictionStats> stats;
     };
+
+    [[nodiscard]] auto readParametersConfig() -> seqslamParameters;
 
     [[nodiscard]] auto readParametersConfig(std::filesystem::path const& configFile)
         -> seqslamParameters;

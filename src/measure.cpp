@@ -1,5 +1,7 @@
 #include "measure.h"
 
+#include "utils.h"
+
 #include <algorithm>
 #include <fstream>
 #include <numeric>
@@ -215,6 +217,10 @@ namespace seqslam {
             return results; // TODO: Do something with the results
         }
     } // namespace detail
+
+    [[nodiscard]] auto readParametersConfig() -> seqslamParameters {
+        return readParametersConfig(utils::defaultConfig);
+    }
 
     [[nodiscard]] auto readParametersConfig(std::filesystem::path const& configFile)
         -> seqslamParameters {
