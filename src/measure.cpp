@@ -156,18 +156,13 @@ namespace seqslam {
                 searchTimes.push_back(end - postenhanced);
             }
 
-            return timings{
-                std::chrono::duration_cast<std::chrono::nanoseconds>(hrclock::duration{
-                    std::accumulate(diffmxTimes.begin(), diffmxTimes.end(), hrclock::duration{0}) /
-                    diffmxTimes.size()}),
-                std::chrono::duration_cast<std::chrono::nanoseconds>(hrclock::duration{
-                    std::accumulate(
-                        enhanceTimes.begin(), enhanceTimes.end(), hrclock::duration{0}) /
-                    enhanceTimes.size()}),
-                std::chrono::duration_cast<std::chrono::nanoseconds>(hrclock::duration{
-                    std::accumulate(searchTimes.begin(), searchTimes.end(), hrclock::duration{0}) /
-                    searchTimes.size()}),
-                static_cast<unsigned>(diffmxTimes.size())};
+            return timings{std::chrono::duration_cast<std::chrono::nanoseconds>(std::accumulate(
+                               diffmxTimes.begin(), diffmxTimes.end(), hrclock::duration{0})),
+                           std::chrono::duration_cast<std::chrono::nanoseconds>(std::accumulate(
+                               enhanceTimes.begin(), enhanceTimes.end(), hrclock::duration{0})),
+                           std::chrono::duration_cast<std::chrono::nanoseconds>(std::accumulate(
+                               searchTimes.begin(), searchTimes.end(), hrclock::duration{0})),
+                           static_cast<unsigned>(diffmxTimes.size())};
         }
 
         [[nodiscard]] auto parametersToJson(seqslamParameters const& p) {
