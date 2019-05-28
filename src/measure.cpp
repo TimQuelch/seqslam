@@ -156,11 +156,11 @@ namespace seqslam {
                 searchTimes.push_back(end - postenhanced);
             }
 
-            return timings{std::chrono::duration_cast<std::chrono::nanoseconds>(std::accumulate(
+            return timings{std::chrono::duration_cast<std::chrono::milliseconds>(std::accumulate(
                                diffmxTimes.begin(), diffmxTimes.end(), hrclock::duration{0})),
-                           std::chrono::duration_cast<std::chrono::nanoseconds>(std::accumulate(
+                           std::chrono::duration_cast<std::chrono::milliseconds>(std::accumulate(
                                enhanceTimes.begin(), enhanceTimes.end(), hrclock::duration{0})),
-                           std::chrono::duration_cast<std::chrono::nanoseconds>(std::accumulate(
+                           std::chrono::duration_cast<std::chrono::milliseconds>(std::accumulate(
                                searchTimes.begin(), searchTimes.end(), hrclock::duration{0})),
                            static_cast<unsigned>(diffmxTimes.size())};
         }
