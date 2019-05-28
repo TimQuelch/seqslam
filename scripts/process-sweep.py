@@ -39,14 +39,45 @@ def main(args):
     nu = d.nunique(axis=0)
     d = d.drop(nu[nu == 1].index, axis=1)
     d['Time'] = d['Difference matrix calculation'] + d['Sequence search'] + d['Difference matrix enhancement']
-    print(d.columns)
 
-    idx = d.groupby(['Number of trajectories', 'Sequence length'])['F1 Score'].transform(max) == d['F1 Score']
+    idx = d.groupby(['Patch window size', 'Sequence length'])['F1 Score'].transform(max) == d['F1 Score']
     d = d[idx]
+
+    timeGrid = d[['Sequence length', 'Patch window size', 'Difference matrix enhancement']]
+    timeGrid = timeGrid.set_index(['Sequence length', 'Patch window size']).sort_index()
+    timeGrid = timeGrid.unstack(level='Patch window size')
+
+    f1Grid = d[['Sequence length', 'Patch window size', 'Iterations']]
+    f1Grid = f1Grid.set_index(['Sequence length', 'Patch window size']).sort_index()
+    f1Grid = f1Grid.unstack(level='Patch window size')
+
+    X, Y = np.meshgrid(d['Sequence length'].unique(), d['Patch window size'].unique())
+    print(X)
+    print(Y)
 
     fig = plt.figure()
     ax = Axes3D(fig)
-    ax.plot_trisurf(d['Sequence length'], d['Number of trajectories'], d['Time'])
+    ax.plot_surface(X, Y, timeGrid)
+    ax.set_xlabel('ws')
+    ax.set_ylabel('sl')
+    ax.set_zlabel('Time')
+
+    fig = plt.figure()
+    ax = Axes3D(fig)
+    ax.plot_surface(X, Y, f1Grid)
+    ax.set_xlabel('ws')
+    ax.set_ylabel('sl')
+    ax.set_zlabel('F1')
+
+    fig, ax = plt.subplots()
+    ax.contourf(X, Y, timeGrid, legend=True)
+    ax.set_xlabel('ws')
+    ax.set_ylabel('sl')
+
+    fig, ax = plt.subplots()
+    ax.contourf(X, Y, f1Grid, legend=True)
+    ax.set_xlabel('ws')
+    ax.set_ylabel('sl')
 
     if args.show:
         plt.show()
