@@ -5,6 +5,7 @@ import numpy as np
 import json
 import argparse
 import os.path
+import gzip
 
 argparser = argparse.ArgumentParser(description="Process PR curves")
 
@@ -12,7 +13,7 @@ argparser.add_argument('-s', '--show', action='store_true', help='Display figure
 argparser.add_argument('-w', '--write', action='store_true', help='Write figures to files')
 argparser.add_argument('-u', '--update', action='store_true', help='Force update csv file')
 
-datafileJson = 'sweep.json'
+datafileJson = 'sweep.json.gz'
 datafileCsv = 'sweep.csv'
 
 def checkUpdateRequired(original, processed):
@@ -32,7 +33,7 @@ def main(args):
     figs = []
 
     if checkUpdateRequired(datafileJson, datafileCsv) or args.update:
-        with open(datafileJson) as b:
+        with gzip.open(datafileJson) as b:
             raw = json.load(b)
 
         def transform(x):
