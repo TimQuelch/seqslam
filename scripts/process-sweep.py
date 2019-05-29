@@ -63,7 +63,7 @@ def main(args):
     timeGrid = timeGrid.set_index(['Sequence length', 'Patch window size']).sort_index()
     timeGrid = timeGrid.unstack(level='Patch window size')
 
-    f1Grid = d[['Sequence length', 'Patch window size', 'Iterations']]
+    f1Grid = d[['Sequence length', 'Patch window size', 'F1 Score']]
     f1Grid = f1Grid.set_index(['Sequence length', 'Patch window size']).sort_index()
     f1Grid = f1Grid.unstack(level='Patch window size')
 
