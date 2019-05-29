@@ -12,16 +12,27 @@ argparser.add_argument('-s', '--show', action='store_true', help='Display figure
 argparser.add_argument('-w', '--write', action='store_true', help='Write figures to files')
 argparser.add_argument('-u', '--update', action='store_true', help='Force update csv file')
 
-datafilejson = 'sweep.json'
-datafilecsv = 'sweep.csv'
+datafileJson = 'sweep.json'
+datafileCsv = 'sweep.csv'
+
+def checkUpdateRequired(original, processed):
+    if not os.path.isfile(processed):
+        return True
+
+    oTime = os.path.getmtime(original)
+    pTime = os.path.getmtime(processed)
+
+    if oTime > pTime:
+        return True
+
+    return False
+
 
 def main(args):
     figs = []
 
-    jsonTime = os.path.getmtime(datafilejson)
-    csvTime = os.path.getmtime(datafilecsv)
-    if jsonTime > csvTime or args.update:
-        with open(datafilejson) as b:
+    if checkUpdateRequired(datafileJson, datafileCsv) or args.update:
+        with open(datafileJson) as b:
             raw = json.load(b)
 
         def transform(x):
@@ -32,9 +43,9 @@ def main(args):
         d = pd.io.json.json_normalize(raw['curves'], record_path=['data'], meta=['parameters', 'times'])
         d = pd.concat([d, d['parameters'].apply(transform), d['times'].apply(transform)], axis=1)
         d = d.drop(['parameters', 'times'], axis=1)
-        d.to_csv(datafilecsv, index=False)
+        d.to_csv(datafileCsv, index=False)
     else:
-        d = pd.read_csv(datafilecsv)
+        d = pd.read_csv(datafileCsv)
 
     nu = d.nunique(axis=0)
     d = d.drop(nu[nu == 1].index, axis=1)
