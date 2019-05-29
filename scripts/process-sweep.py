@@ -49,12 +49,17 @@ def main(args):
 
     nu = d.nunique(axis=0)
     d = d.drop(nu[nu == 1].index, axis=1)
-    d['Time'] = d['Difference matrix calculation'] + d['Sequence search'] + d['Difference matrix enhancement']
+    d['Difference matrix calculation'] = d['Difference matrix calculation'] / d['Iterations']
+    d['Difference matrix enhancement'] = d['Difference matrix enhancement'] / d['Iterations']
+    d['Sequence search'] = d['Sequence search'] / d['Iterations']
+    d['Time'] = (d['Difference matrix calculation'] +
+                 d['Sequence search'] +
+                 d['Difference matrix enhancement'])
 
     idx = d.groupby(['Patch window size', 'Sequence length'])['F1 Score'].transform(max) == d['F1 Score']
     d = d[idx]
 
-    timeGrid = d[['Sequence length', 'Patch window size', 'Difference matrix enhancement']]
+    timeGrid = d[['Sequence length', 'Patch window size', 'Time']]
     timeGrid = timeGrid.set_index(['Sequence length', 'Patch window size']).sort_index()
     timeGrid = timeGrid.unstack(level='Patch window size')
 
@@ -62,9 +67,7 @@ def main(args):
     f1Grid = f1Grid.set_index(['Sequence length', 'Patch window size']).sort_index()
     f1Grid = f1Grid.unstack(level='Patch window size')
 
-    X, Y = np.meshgrid(d['Sequence length'].unique(), d['Patch window size'].unique())
-    print(X)
-    print(Y)
+    X, Y = np.meshgrid(d['Patch window size'].unique(), d['Sequence length'].unique())
 
     fig = plt.figure()
     ax = Axes3D(fig)
@@ -81,12 +84,12 @@ def main(args):
     ax.set_zlabel('F1')
 
     fig, ax = plt.subplots()
-    ax.contourf(X, Y, timeGrid, legend=True)
+    ax.contourf(X, Y, timeGrid)
     ax.set_xlabel('ws')
     ax.set_ylabel('sl')
 
     fig, ax = plt.subplots()
-    ax.contourf(X, Y, f1Grid, legend=True)
+    ax.contourf(X, Y, f1Grid)
     ax.set_xlabel('ws')
     ax.set_ylabel('sl')
 
