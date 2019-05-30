@@ -6,6 +6,7 @@ import json
 import argparse
 import os.path
 import gzip
+from scipy import ndimage
 
 argparser = argparse.ArgumentParser(description="Process PR curves")
 
@@ -65,10 +66,12 @@ def main(args):
     timeGrid = d[['Sequence length', 'Patch window size', 'Time']]
     timeGrid = timeGrid.set_index(['Sequence length', 'Patch window size']).sort_index()
     timeGrid = timeGrid.unstack(level='Patch window size')
+    timeGrid = ndimage.gaussian_filter(timeGrid.to_numpy(), 1);
 
     f1Grid = d[['Sequence length', 'Patch window size', 'F1 Score']]
     f1Grid = f1Grid.set_index(['Sequence length', 'Patch window size']).sort_index()
     f1Grid = f1Grid.unstack(level='Patch window size')
+    f1Grid = ndimage.gaussian_filter(f1Grid.to_numpy(), 1);
 
     X, Y = np.meshgrid(d['Patch window size'].unique(), d['Sequence length'].unique())
 
