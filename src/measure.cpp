@@ -118,8 +118,8 @@ namespace seqslam {
 
                 auto const postdiffmx = hrclock::now();
 
-                auto const enhanced =
-                    opencl::enhanceDiffMx(context, p.patchWindowSize, enhanceNPixPerThread);
+                auto const enhanced = opencl::enhanceDiffMx(
+                    context, diffMatrix, p.patchWindowSize, enhanceNPixPerThread);
 
                 auto const postenhanced = hrclock::now();
 
