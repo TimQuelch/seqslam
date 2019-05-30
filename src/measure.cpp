@@ -33,9 +33,13 @@ namespace seqslam {
             return vals;
         }
 
-        [[nodiscard]] auto generateRange(std::pair<int, int> range) -> std::vector<int> {
-            auto values = std::vector<int>(range.second - range.first + 1);
-            std::iota(values.begin(), values.end(), range.first);
+        [[nodiscard]] auto generateRange(std::tuple<int, int, int> range) -> std::vector<int> {
+            auto values =
+                std::vector<int>((std::get<1>(range) - std::get<0>(range)) / std::get<2>(range));
+            std::iota(values.begin(), values.end(), 0);
+            std::transform(values.begin(), values.end(), values.begin(), [range](int v) {
+                return v * std::get<2>(range) + std::get<0>(range);
+            });
             return values;
         }
 

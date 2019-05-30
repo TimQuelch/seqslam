@@ -46,9 +46,9 @@ int main() {
                                          groundTruth,
                                          500,
                                          std::chrono::milliseconds{5000},
-                                         {1, 31},
+                                         {1, 31, 1},
                                          sequenceLength_t{},
-                                         {1, 31},
+                                         {1, 31, 1},
                                          patchWindowSize_t{});
     writeResultsToFile(result, "sweep.json");
 }
