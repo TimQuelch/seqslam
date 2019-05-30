@@ -108,46 +108,27 @@ namespace seqslam {
             auto searchTimes = std::vector<hrclock::duration>{};
 
             auto context = opencl::createContext();
-            auto diffmxbufs = opencl::diffmxcalc::createBuffers(
-                context, referenceImages.size(), queryImages.size(), p.imageRows * p.imageCols);
-            auto enhancebufs = opencl::diffmxenhance::createBuffers(
-                context, referenceImages.size(), queryImages.size());
-            auto searchbufs = opencl::seqsearch::createBuffers(
-                context, p.sequenceLength, p.nTraj, referenceImages.size(), queryImages.size());
 
             while (hrclock::now() - start < minTime) {
                 auto const begin = hrclock::now();
 
-                opencl::diffmxcalc::writeArgs(
-                    context, diffmxbufs, referenceImages, queryImages, tr, tq, diffMxNPixPerThread);
-                auto const diffMatrix = opencl::generateDiffMx(context,
-                                                               diffmxbufs.diffMx,
-                                                               referenceImages.size(),
-                                                               queryImages.size(),
-                                                               p.imageRows * p.imageCols,
-                                                               tr,
-                                                               tq,
-                                                               diffMxNPixPerThread);
+                auto const diffMatrix = opencl::generateDiffMx(
+                    context, referenceImages, queryImages, tr, tq, diffMxNPixPerThread);
 
                 auto const postdiffmx = hrclock::now();
 
-                opencl::diffmxenhance::writeArgs(
-                    context, enhancebufs, diffMatrix, p.patchWindowSize, enhanceNPixPerThread);
-                auto const enhanced = opencl::enhanceDiffMx(
-                    context, enhancebufs.out, diffMatrix.rows(), diffMatrix.cols());
+                auto const enhanced =
+                    opencl::enhanceDiffMx(context, p.patchWindowSize, enhanceNPixPerThread);
 
                 auto const postenhanced = hrclock::now();
 
-                opencl::seqsearch::writeArgs(context,
-                                             searchbufs,
-                                             enhanced,
-                                             p.sequenceLength,
-                                             p.vMin,
-                                             p.vMax,
-                                             p.nTraj,
-                                             searchNPixPerThread);
-                auto const sequences = opencl::sequenceSearch(
-                    context, searchbufs.out, enhanced.rows(), enhanced.cols(), searchNPixPerThread);
+                auto const sequences = opencl::sequenceSearch(context,
+                                                              enhanced,
+                                                              p.sequenceLength,
+                                                              p.vMin,
+                                                              p.vMax,
+                                                              p.nTraj,
+                                                              searchNPixPerThread);
 
                 auto const end = hrclock::now();
 
