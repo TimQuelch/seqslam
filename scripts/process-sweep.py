@@ -49,7 +49,9 @@ def main(args):
         d = pd.read_csv(datafileCsv)
 
     nu = d.nunique(axis=0)
+    old = d
     d = d.drop(nu[nu == 1].index, axis=1)
+    d['Iterations'] = old['Iterations']
     d['Difference matrix calculation'] = d['Difference matrix calculation'] / d['Iterations']
     d['Difference matrix enhancement'] = d['Difference matrix enhancement'] / d['Iterations']
     d['Sequence search'] = d['Sequence search'] / d['Iterations']
