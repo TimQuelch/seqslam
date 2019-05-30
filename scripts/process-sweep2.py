@@ -14,8 +14,8 @@ argparser.add_argument('-s', '--show', action='store_true', help='Display figure
 argparser.add_argument('-w', '--write', action='store_true', help='Write figures to files')
 argparser.add_argument('-u', '--update', action='store_true', help='Force update csv file')
 
-datafileJson = 'sweep-sl-ws.json.gz'
-datafileCsv = 'sweep-sl-ws.csv'
+datafileJson = 'sweep-sl-nt.json.gz'
+datafileCsv = 'sweep-sl-nt.csv'
 
 def checkUpdateRequired(original, processed):
     if not os.path.isfile(processed):
@@ -60,20 +60,20 @@ def main(args):
                  d['Sequence search'] +
                  d['Difference matrix enhancement'])
 
-    idx = d.groupby(['Patch window size', 'Sequence length'])['F1 Score'].transform(max) == d['F1 Score']
+    idx = d.groupby(['Number of trajectories', 'Sequence length'])['F1 Score'].transform(max) == d['F1 Score']
     d = d[idx]
 
-    timeGrid = d[['Sequence length', 'Patch window size', 'Time']]
-    timeGrid = timeGrid.set_index(['Sequence length', 'Patch window size']).sort_index()
-    timeGrid = timeGrid.unstack(level='Patch window size')
+    timeGrid = d[['Sequence length', 'Number of trajectories', 'Time']]
+    timeGrid = timeGrid.set_index(['Sequence length', 'Number of trajectories']).sort_index()
+    timeGrid = timeGrid.unstack(level='Number of trajectories')
     timeGrid = ndimage.gaussian_filter(timeGrid.to_numpy(), 1);
 
-    f1Grid = d[['Sequence length', 'Patch window size', 'F1 Score']]
-    f1Grid = f1Grid.set_index(['Sequence length', 'Patch window size']).sort_index()
-    f1Grid = f1Grid.unstack(level='Patch window size')
+    f1Grid = d[['Sequence length', 'Number of trajectories', 'F1 Score']]
+    f1Grid = f1Grid.set_index(['Sequence length', 'Number of trajectories']).sort_index()
+    f1Grid = f1Grid.unstack(level='Number of trajectories')
     f1Grid = ndimage.gaussian_filter(f1Grid.to_numpy(), 1);
 
-    X, Y = np.meshgrid(d['Patch window size'].unique(), d['Sequence length'].unique())
+    X, Y = np.meshgrid(d['Number of trajectories'].unique(), d['Sequence length'].unique())
 
     fig = plt.figure()
     ax = Axes3D(fig)
