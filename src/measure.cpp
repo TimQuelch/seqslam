@@ -88,11 +88,12 @@ namespace seqslam {
                                          seqslamParameters const& p,
                                          std::vector<std::vector<unsigned>> const& groundTruth,
                                          unsigned nPoints) {
-            auto const diffMatrix =
-                opencl::generateDiffMx(referenceImages, queryImages, tr, tq, diffMxNPixPerThread);
-            auto const enhanced = opencl::enhanceDiffMx(diffMatrix, p.patchWindowSize);
-            auto const sequences =
-                opencl::sequenceSearch(enhanced, p.sequenceLength, p.vMin, p.vMax, p.nTraj);
+            auto context = opencl::createContext();
+            auto const diffMatrix = opencl::generateDiffMx(
+                context, referenceImages, queryImages, tr, tq, diffMxNPixPerThread);
+            auto const enhanced = opencl::enhanceDiffMx(context, diffMatrix, p.patchWindowSize);
+            auto const sequences = opencl::sequenceSearch(
+                context, enhanced, p.sequenceLength, p.vMin, p.vMax, p.nTraj);
             return prCurve(sequences, groundTruth, nPoints);
         }
 
