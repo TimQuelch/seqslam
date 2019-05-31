@@ -35,20 +35,50 @@ int main() {
     auto const [queryImages, groundTruth] = dropFrames(
         loadImages(p.datasetRoot / p.queryPath, p.imageRows, p.imageCols, p.imageContrastThreshold),
         {1.0, 1.5},
-        30);
+        50);
 
     p.nQuery = queryImages.size();
     p.nReference = referenceImages.size();
 
-    auto const result = parameterSweep2d(referenceImages,
-                                         queryImages,
-                                         p,
-                                         groundTruth,
-                                         500,
-                                         std::chrono::milliseconds{5000},
-                                         {1, 31, 1},
-                                         sequenceLength_t{},
-                                         {1, 31, 1},
-                                         patchWindowSize_t{});
-    writeResultsToFile(result, "sweep.json");
+    auto const minTime = std::chrono::milliseconds{1000};
+    auto const prPoints = 20;
+    auto const slRange = std::tuple{2, 50, 2};
+    auto const wsRange = std::tuple{2, 50, 2};
+    auto const ntRange = std::tuple{2, 50, 2};
+
+    auto const resultSlWs = parameterSweep2d(referenceImages,
+                                             queryImages,
+                                             p,
+                                             groundTruth,
+                                             prPoints,
+                                             minTime,
+                                             slRange,
+                                             sequenceLength_t{},
+                                             wsRange,
+                                             patchWindowSize_t{});
+
+    auto const resultSlNt = parameterSweep2d(referenceImages,
+                                             queryImages,
+                                             p,
+                                             groundTruth,
+                                             prPoints,
+                                             minTime,
+                                             slRange,
+                                             sequenceLength_t{},
+                                             ntRange,
+                                             nTraj_t{});
+
+    auto const resultWsNt = parameterSweep2d(referenceImages,
+                                             queryImages,
+                                             p,
+                                             groundTruth,
+                                             prPoints,
+                                             minTime,
+                                             wsRange,
+                                             patchWindowSize_t{},
+                                             ntRange,
+                                             nTraj_t{});
+    writeResultsToFile(resultSlWs, "sweep-sl-ws.json");
+    writeResultsToFile(resultSlNt, "sweep-sl-nt.json");
+    writeResultsToFile(resultWsNt, "sweep-ws-nt.json");
 }
