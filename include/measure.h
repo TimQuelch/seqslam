@@ -17,7 +17,7 @@ namespace seqslam {
     struct nTraj_t {};
 
     namespace detail {
-        [[nodiscard]] auto generateRange(std::pair<int, int> range) -> std::vector<int>;
+        [[nodiscard]] auto generateRange(std::tuple<int, int, int> range) -> std::vector<int>;
         [[nodiscard]] auto applyRange(std::vector<seqslamParameters> const& p,
                                       std::vector<int> const& range,
                                       patchWindowSize_t) -> std::vector<seqslamParameters>;
@@ -61,9 +61,9 @@ namespace seqslam {
     };
 
     struct timings {
-        std::chrono::nanoseconds diffmxcalc = {};
-        std::chrono::nanoseconds enhancement = {};
-        std::chrono::nanoseconds sequenceSearch = {};
+        std::chrono::milliseconds diffmxcalc = {};
+        std::chrono::milliseconds enhancement = {};
+        std::chrono::milliseconds sequenceSearch = {};
         unsigned iterations = 0;
     };
 
@@ -106,7 +106,7 @@ namespace seqslam {
                                       std::vector<std::vector<unsigned>> const& groundTruth,
                                       unsigned prPoints,
                                       std::chrono::milliseconds minTime,
-                                      std::pair<int, int> range,
+                                      std::tuple<int, int, int> range,
                                       Var) {
         auto const ps = detail::applyRange(std::vector{p}, detail::generateRange(range), Var{});
         return detail::runParameterSet(
@@ -120,9 +120,9 @@ namespace seqslam {
                                         std::vector<std::vector<unsigned>> const& groundTruth,
                                         unsigned prPoints,
                                         std::chrono::milliseconds minTime,
-                                        std::pair<int, int> range1,
+                                        std::tuple<int, int, int> range1,
                                         Var1,
-                                        std::pair<int, int> range2,
+                                        std::tuple<int, int, int> range2,
                                         Var2) {
         auto const p1 = detail::applyRange(std::vector{p}, detail::generateRange(range1), Var1{});
         auto const p2 = detail::applyRange(p1, detail::generateRange(range2), Var2{});

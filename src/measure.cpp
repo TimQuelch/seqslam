@@ -35,9 +35,13 @@ namespace seqslam {
             return vals;
         }
 
-        [[nodiscard]] auto generateRange(std::pair<int, int> range) -> std::vector<int> {
-            auto values = std::vector<int>(range.second - range.first + 1);
-            std::iota(values.begin(), values.end(), range.first);
+        [[nodiscard]] auto generateRange(std::tuple<int, int, int> range) -> std::vector<int> {
+            auto values =
+                std::vector<int>((std::get<1>(range) - std::get<0>(range)) / std::get<2>(range));
+            std::iota(values.begin(), values.end(), 0);
+            std::transform(values.begin(), values.end(), values.begin(), [range](int v) {
+                return v * std::get<2>(range) + std::get<0>(range);
+            });
             return values;
         }
 
@@ -90,11 +94,12 @@ namespace seqslam {
                                          seqslamParameters const& p,
                                          std::vector<std::vector<unsigned>> const& groundTruth,
                                          unsigned nPoints) {
-            auto const diffMatrix =
-                opencl::generateDiffMx(referenceImages, queryImages, tr, tq, diffMxNPixPerThread);
-            auto const enhanced = opencl::enhanceDiffMx(diffMatrix, p.patchWindowSize);
-            auto const sequences =
-                opencl::sequenceSearch(enhanced, p.sequenceLength, p.vMin, p.vMax, p.nTraj);
+            auto context = opencl::createContext();
+            auto const diffMatrix = opencl::generateDiffMx(
+                context, referenceImages, queryImages, tr, tq, diffMxNPixPerThread);
+            auto const enhanced = opencl::enhanceDiffMx(context, diffMatrix, p.patchWindowSize);
+            auto const sequences = opencl::sequenceSearch(
+                context, enhanced, p.sequenceLength, p.vMin, p.vMax, p.nTraj);
             return prCurve(sequences, groundTruth, nPoints);
         }
 
@@ -110,46 +115,27 @@ namespace seqslam {
             auto searchTimes = std::vector<hrclock::duration>{};
 
             auto context = opencl::createContext();
-            auto diffmxbufs = opencl::diffmxcalc::createBuffers(
-                context, referenceImages.size(), queryImages.size(), p.imageRows * p.imageCols);
-            auto enhancebufs = opencl::diffmxenhance::createBuffers(
-                context, referenceImages.size(), queryImages.size());
-            auto searchbufs = opencl::seqsearch::createBuffers(
-                context, p.sequenceLength, p.nTraj, referenceImages.size(), queryImages.size());
 
             while (hrclock::now() - start < minTime) {
                 auto const begin = hrclock::now();
 
-                opencl::diffmxcalc::writeArgs(
-                    context, diffmxbufs, referenceImages, queryImages, tr, tq, diffMxNPixPerThread);
-                auto const diffMatrix = opencl::generateDiffMx(context,
-                                                               diffmxbufs.diffMx,
-                                                               referenceImages.size(),
-                                                               queryImages.size(),
-                                                               p.imageRows * p.imageCols,
-                                                               tr,
-                                                               tq,
-                                                               diffMxNPixPerThread);
+                auto const diffMatrix = opencl::generateDiffMx(
+                    context, referenceImages, queryImages, tr, tq, diffMxNPixPerThread);
 
                 auto const postdiffmx = hrclock::now();
 
-                opencl::diffmxenhance::writeArgs(
-                    context, enhancebufs, diffMatrix, p.patchWindowSize, enhanceNPixPerThread);
                 auto const enhanced = opencl::enhanceDiffMx(
-                    context, enhancebufs.out, diffMatrix.rows(), diffMatrix.cols());
+                    context, diffMatrix, p.patchWindowSize, enhanceNPixPerThread);
 
                 auto const postenhanced = hrclock::now();
 
-                opencl::seqsearch::writeArgs(context,
-                                             searchbufs,
-                                             enhanced,
-                                             p.sequenceLength,
-                                             p.vMin,
-                                             p.vMax,
-                                             p.nTraj,
-                                             searchNPixPerThread);
-                auto const sequences = opencl::sequenceSearch(
-                    context, searchbufs.out, enhanced.rows(), enhanced.cols(), searchNPixPerThread);
+                auto const sequences = opencl::sequenceSearch(context,
+                                                              enhanced,
+                                                              p.sequenceLength,
+                                                              p.vMin,
+                                                              p.vMax,
+                                                              p.nTraj,
+                                                              searchNPixPerThread);
 
                 auto const end = hrclock::now();
 
@@ -158,11 +144,11 @@ namespace seqslam {
                 searchTimes.push_back(end - postenhanced);
             }
 
-            return timings{std::chrono::duration_cast<std::chrono::nanoseconds>(std::accumulate(
+            return timings{std::chrono::duration_cast<std::chrono::milliseconds>(std::accumulate(
                                diffmxTimes.begin(), diffmxTimes.end(), hrclock::duration{0})),
-                           std::chrono::duration_cast<std::chrono::nanoseconds>(std::accumulate(
+                           std::chrono::duration_cast<std::chrono::milliseconds>(std::accumulate(
                                enhanceTimes.begin(), enhanceTimes.end(), hrclock::duration{0})),
-                           std::chrono::duration_cast<std::chrono::nanoseconds>(std::accumulate(
+                           std::chrono::duration_cast<std::chrono::milliseconds>(std::accumulate(
                                searchTimes.begin(), searchTimes.end(), hrclock::duration{0})),
                            static_cast<unsigned>(diffmxTimes.size())};
         }
