@@ -40,8 +40,8 @@ int main() {
     p.nQuery = queryImages.size();
     p.nReference = referenceImages.size();
 
-    auto const minTime = std::chrono::milliseconds{1000};
-    auto const prPoints = 20;
+    auto const minTime = std::chrono::milliseconds{5000};
+    auto const prPoints = 50;
     auto const slRange = std::tuple{2, 50, 2};
     auto const wsRange = std::tuple{2, 50, 2};
     auto const ntRange = std::tuple{2, 50, 2};
