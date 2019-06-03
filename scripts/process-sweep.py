@@ -92,6 +92,7 @@ def main(args):
         ax.set_xlabel(variables[0])
         ax.set_ylabel(variables[1])
         ax.set_zlabel('Time')
+        figs.append((fig, sweep + '-time-surf'))
 
         fig = plt.figure()
         ax = Axes3D(fig)
@@ -99,16 +100,19 @@ def main(args):
         ax.set_xlabel(variables[0])
         ax.set_ylabel(variables[1])
         ax.set_zlabel('F1')
+        figs.append((fig, sweep + '-f1-surf'))
 
         fig, ax = plt.subplots()
         ax.contourf(X, Y, timeGrid)
         ax.set_xlabel(variables[0])
         ax.set_ylabel(variables[1])
+        figs.append((fig, sweep + '-time-contour'))
 
         fig, ax = plt.subplots()
         ax.contourf(X, Y, f1Grid)
         ax.set_xlabel(variables[0])
         ax.set_ylabel(variables[1])
+        figs.append((fig, sweep + '-f1-contour'))
 
     if args.show:
         plt.show()
