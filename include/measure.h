@@ -16,26 +16,6 @@ namespace seqslam {
     struct sequenceLength_t {};
     struct nTraj_t {};
 
-    namespace detail {
-        [[nodiscard]] auto generateRange(std::tuple<int, int, int> range) -> std::vector<int>;
-        [[nodiscard]] auto applyRange(std::vector<seqslamParameters> const& p,
-                                      std::vector<int> const& range,
-                                      patchWindowSize_t) -> std::vector<seqslamParameters>;
-        [[nodiscard]] auto applyRange(std::vector<seqslamParameters> const& p,
-                                      std::vector<int> const& range,
-                                      sequenceLength_t) -> std::vector<seqslamParameters>;
-        [[nodiscard]] auto applyRange(std::vector<seqslamParameters> const& p,
-                                      std::vector<int> const& range,
-                                      nTraj_t) -> std::vector<seqslamParameters>;
-        [[nodiscard]] auto runParameterSet(std::vector<Mx> const& referenceImages,
-                                           std::vector<Mx> const& queryImages,
-                                           std::vector<seqslamParameters> ps,
-                                           std::vector<std::vector<unsigned>> const& groundTruth,
-                                           unsigned prPoints,
-                                           std::chrono::milliseconds minTime)
-            -> std::vector<result>;
-    } // namespace detail
-
     struct seqslamParameters {
         std::filesystem::path datasetRoot = {};
         std::filesystem::path referencePath = {};
@@ -72,6 +52,47 @@ namespace seqslam {
         timings times;
         std::vector<predictionStats> stats;
     };
+
+    namespace detail {
+        constexpr auto const autoSweepMinTime = std::chrono::milliseconds{100};
+        constexpr auto const autoSweepPrPoints = 30u;
+
+        [[nodiscard]] auto generateRange(std::tuple<int, int, int> range) -> std::vector<int>;
+        [[nodiscard]] auto applyRange(std::vector<seqslamParameters> const& p,
+                                      std::vector<int> const& range,
+                                      patchWindowSize_t) -> std::vector<seqslamParameters>;
+        [[nodiscard]] auto applyRange(std::vector<seqslamParameters> const& p,
+                                      std::vector<int> const& range,
+                                      sequenceLength_t) -> std::vector<seqslamParameters>;
+        [[nodiscard]] auto applyRange(std::vector<seqslamParameters> const& p,
+                                      std::vector<int> const& range,
+                                      nTraj_t) -> std::vector<seqslamParameters>;
+        [[nodiscard]] auto runParameterSet(std::vector<Mx> const& referenceImages,
+                                           std::vector<Mx> const& queryImages,
+                                           std::vector<seqslamParameters> ps,
+                                           std::vector<std::vector<unsigned>> const& groundTruth,
+                                           unsigned prPoints,
+                                           std::chrono::milliseconds minTime)
+            -> std::vector<result>;
+
+        [[nodiscard]] auto findBestFromResults(std::vector<result> const& results,
+                                               std::chrono::milliseconds maxTime)
+            -> seqslamParameters;
+
+        [[nodiscard]] constexpr auto extractFromResult(seqslamParameters const& p,
+                                                       patchWindowSize_t) {
+            return p.patchWindowSize;
+        }
+
+        [[nodiscard]] constexpr auto extractFromResult(seqslamParameters const& p,
+                                                       sequenceLength_t) {
+            return p.sequenceLength;
+        }
+
+        [[nodiscard]] constexpr auto extractFromResult(seqslamParameters const& p, nTraj_t) {
+            return p.nTraj;
+        }
+    } // namespace detail
 
     [[nodiscard]] auto readParametersConfig() -> seqslamParameters;
 
@@ -128,6 +149,26 @@ namespace seqslam {
         auto const p2 = detail::applyRange(p1, detail::generateRange(range2), Var2{});
         return detail::runParameterSet(
             referenceImages, queryImages, p2, groundTruth, prPoints, minTime);
+    }
+
+    template <typename Var>
+    auto findOptimalParameter(std::vector<Mx> const& referenceImages,
+                              std::vector<Mx> const& queryImages,
+                              seqslamParameters const& p,
+                              std::vector<std::vector<unsigned>> const& groundTruth,
+                              std::chrono::milliseconds maxTime,
+                              std::tuple<int, int, int> range,
+                              Var) {
+        auto const results = parameterSweep(referenceImages,
+                                            queryImages,
+                                            p,
+                                            groundTruth,
+                                            detail::autoSweepPrPoints,
+                                            detail::autoSweepMinTime,
+                                            range,
+                                            Var{});
+        auto const best = findBestFromResults(results, maxTime);
+        return extractFromParameters(best, Var{});
     }
 } // namespace seqslam
 
