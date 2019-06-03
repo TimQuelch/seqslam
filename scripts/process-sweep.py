@@ -18,9 +18,12 @@ argparser.add_argument('-g', '--gaussian', type=int, default=-1, help='Size of g
 originalExt = '.json.gz'
 processedExt = '.csv'
 prefix = 'sweep'
-sweeps = [('sl-nt', ('Sequence length', 'Number of trajectories')),
-          ('sl-ws', ('Sequence length', 'Patch window size')),
-          ('ws-nt', ('Patch window size', 'Number of trajectories'))]
+sweeps1d = [('sl', ['Sequence length']),
+            ('ws', ['Patch window size']),
+            ('nt', ['Number of trajectories'])]
+sweeps2d = [('sl-nt', ['Sequence length', 'Number of trajectories']),
+            ('sl-ws', ['Sequence length', 'Patch window size']),
+            ('ws-nt', ['Patch window size', 'Number of trajectories'])]
 
 def checkUpdateRequired(original, processed):
     if not os.path.isfile(processed):
@@ -34,55 +37,71 @@ def checkUpdateRequired(original, processed):
 
     return False
 
+def loadSweep(sweep, variables):
+    datafileJson = prefix + '-' + sweep + originalExt
+    datafileCsv = prefix + '-' + sweep + processedExt
+    if checkUpdateRequired(datafileJson, datafileCsv) or args.update:
+        with gzip.open(datafileJson) as b:
+            raw = json.load(b)
+
+        def transform(x):
+            d = pd.io.json.json_normalize(x).transpose()
+            d = pd.Series(d[0])
+            return d
+
+        d = pd.io.json.json_normalize(raw['curves'], record_path=['data'], meta=['parameters', 'times'])
+        d = pd.concat([d, d['parameters'].apply(transform), d['times'].apply(transform)], axis=1)
+        d = d.drop(['parameters', 'times'], axis=1)
+        d.to_csv(datafileCsv, index=False)
+    else:
+        d = pd.read_csv(datafileCsv)
+
+    nu = d.nunique(axis=0)
+    old = d
+    d = d.drop(nu[nu == 1].index, axis=1)
+    d['Iterations'] = old['Iterations']
+    d['Difference matrix calculation'] = d['Difference matrix calculation'] / d['Iterations']
+    d['Difference matrix enhancement'] = d['Difference matrix enhancement'] / d['Iterations']
+    d['Sequence search'] = d['Sequence search'] / d['Iterations']
+    d['Time'] = (d['Difference matrix calculation'] +
+                 d['Sequence search'] +
+                 d['Difference matrix enhancement'])
+
+    full = d
+    idx = d.groupby(variables)['F1 Score'].transform(max) == d['F1 Score']
+    d = d[idx]
+    idx = d.groupby(variables)['Time'].transform(min) == d['Time']
+    d = d[idx]
+    d = d.drop_duplicates(subset=variables + ['F1 Score', 'Time'])
+    return full, d
 
 def main(args):
     figs = []
 
-    for sweep, variables in sweeps:
-        datafileJson = prefix + '-' + sweep + originalExt
-        datafileCsv = prefix + '-' + sweep + processedExt
-        if checkUpdateRequired(datafileJson, datafileCsv) or args.update:
-            with gzip.open(datafileJson) as b:
-                raw = json.load(b)
+    for sweep, variables in sweeps1d:
+        full, d = loadSweep(sweep, variables)
+        v = variables[0]
 
-            def transform(x):
-                d = pd.io.json.json_normalize(x).transpose()
-                d = pd.Series(d[0])
-                return d
+        fig, ax = plt.subplots()
+        d.set_index(v)[['F1 Score', 'Time']].plot(style='-o', secondary_y=['Time'], ax=ax)
+        axes = fig.get_axes()
+        axes[0].set_ylabel('F1 Score')
+        axes[0].set_ylim([0, 1])
+        axes[1].set_ylabel('Time')
+        axes[1].set_ylim([300, 360])
 
-            d = pd.io.json.json_normalize(raw['curves'], record_path=['data'], meta=['parameters', 'times'])
-            d = pd.concat([d, d['parameters'].apply(transform), d['times'].apply(transform)], axis=1)
-            d = d.drop(['parameters', 'times'], axis=1)
-            d.to_csv(datafileCsv, index=False)
-        else:
-            d = pd.read_csv(datafileCsv)
-
-        nu = d.nunique(axis=0)
-        old = d
-        d = d.drop(nu[nu == 1].index, axis=1)
-        d['Iterations'] = old['Iterations']
-        d['Difference matrix calculation'] = d['Difference matrix calculation'] / d['Iterations']
-        d['Difference matrix enhancement'] = d['Difference matrix enhancement'] / d['Iterations']
-        d['Sequence search'] = d['Sequence search'] / d['Iterations']
-        d['Time'] = (d['Difference matrix calculation'] +
-                    d['Sequence search'] +
-                    d['Difference matrix enhancement'])
-
-        idx = d.groupby([variables[0], variables[1]])['F1 Score'].transform(max) == d['F1 Score']
-        d = d[idx]
-        idx = d.groupby([variables[0], variables[1]])['Time'].transform(min) == d['Time']
-        d = d[idx]
-        d = d.drop_duplicates(subset=[variables[0], variables[1], 'F1 Score', 'Time'])
+    for sweep, variables in sweeps2d:
+        full, d = loadSweep(sweep, variables)
 
         timeGrid = d[[variables[0], variables[1], 'Time']]
         timeGrid = timeGrid.set_index([variables[1], variables[0]]).sort_index()
         timeGrid = timeGrid.unstack(level=variables[0])
-        timeGrid = ndimage.gaussian_filter(timeGrid.to_numpy(), args.gaussian) if args.gaussian > 0 else timeGrid.to_numpy();
+        timeGrid = ndimage.gaussian_filter(timeGrid.to_numpy(), args.gaussian) if args.gaussian > 0 else timeGrid.to_numpy()
 
         f1Grid = d[[variables[0], variables[1], 'F1 Score']]
         f1Grid = f1Grid.set_index([variables[1], variables[0]]).sort_index()
         f1Grid = f1Grid.unstack(level=variables[0])
-        f1Grid = ndimage.gaussian_filter(f1Grid.to_numpy(), args.gaussian) if args.gaussian > 0 else f1Grid.to_numpy();
+        f1Grid = ndimage.gaussian_filter(f1Grid.to_numpy(), args.gaussian) if args.gaussian > 0 else f1Grid.to_numpy()
 
         X, Y = np.meshgrid(d[variables[0]].unique(), d[variables[1]].unique())
 
