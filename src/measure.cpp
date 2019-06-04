@@ -207,6 +207,8 @@ namespace seqslam {
 
         [[nodiscard]] auto findBestFromResults(std::vector<result> const& results, ms maxTime)
             -> seqslamParameters {
+
+            // Find the best F1 score of the parameter sets which were less than the max time
             auto inTime = std::vector<std::pair<seqslamParameters, double>>{};
             for (auto const& r : results) {
                 if (totalTime(r.times) < r.times.iterations * maxTime) {
@@ -220,6 +222,7 @@ namespace seqslam {
                 }
             }
 
+            // If none gave results less than the max time, return the value with the min time
             if (inTime.empty()) {
                 return std::min_element(results.begin(),
                                         results.end(),
@@ -230,6 +233,7 @@ namespace seqslam {
                     ->params;
             }
 
+            // Else return the paramters which had the best F1 score
             return std::max_element(
                        inTime.begin(),
                        inTime.end(),
