@@ -49,6 +49,42 @@ int main() {
     auto const wsDenseRange = std::tuple{2, 50, 1};
     auto const ntDenseRange = std::tuple{2, 50, 1};
 
+    auto const timeRange = std::tuple{ms{300}, ms{400}, ms{5}};
+
+    auto const tsResultsSl = autoSweepTime(referenceImages,
+                                       queryImages,
+                                       p,
+                                       groundTruth,
+                                       slRange,
+                                       sequenceLength_t{},
+                                       timeRange,
+                                       prPoints,
+                                       minTime);
+
+    auto const tsResultsWs = autoSweepTime(referenceImages,
+                                       queryImages,
+                                       p,
+                                       groundTruth,
+                                       wsRange,
+                                       patchWindowSize_t{},
+                                       timeRange,
+                                       prPoints,
+                                       minTime);
+
+    auto const tsResultsNt = autoSweepTime(referenceImages,
+                                       queryImages,
+                                       p,
+                                       groundTruth,
+                                       ntRange,
+                                       nTraj_t{},
+                                       timeRange,
+                                       prPoints,
+                                       minTime);
+
+    writeTimeSweepResultsToFile(tsResultsSl, "timesweep-sl.json");
+    writeTimeSweepResultsToFile(tsResultsWs, "timesweep-ws.json");
+    writeTimeSweepResultsToFile(tsResultsNt, "timesweep-nt.json");
+
     auto const resultSl = parameterSweep(referenceImages,
                                          queryImages,
                                          p,
