@@ -202,6 +202,29 @@ namespace seqslam {
 
             return results; // TODO: Do something with the results
         }
+
+        [[nodiscard]] auto findBestFromResults(std::vector<result> const& results,
+                                               std::chrono::milliseconds maxTime)
+            -> seqslamParameters {
+            auto inTime = std::vector<std::pair<seqslamParameters, double>>{};
+            for (auto const& r : results) {
+                if (r.times.diffmxcalc + r.times.enhancement + r.times.sequenceSearch <
+                    r.times.iterations * maxTime) {
+                    auto const maxf1 = std::max_element(r.stats.begin(),
+                                                        r.stats.end(),
+                                                        [](auto const& lhs, auto const& rhs) {
+                                                            return lhs.f1score < rhs.f1score;
+                                                        })
+                                           ->f1score;
+                    inTime.push_back({r.params, maxf1});
+                }
+            }
+            return std::max_element(
+                       inTime.begin(),
+                       inTime.end(),
+                       [](auto const& lhs, auto const& rhs) { return lhs.second < rhs.second; })
+                ->first;
+        }
     } // namespace detail
 
     [[nodiscard]] auto readParametersConfig() -> seqslamParameters {
