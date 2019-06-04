@@ -124,7 +124,10 @@ namespace seqslam {
                             std::vector<predictionStats> const& stats,
                             std::filesystem::path const& file);
 
-    void writeResultsToFile(std::vector<result> const& stats, std::filesystem::path const& file);
+    void writeResultsToFile(std::vector<result> const& results, std::filesystem::path const& file);
+
+    void writeTimeSweepResultsToFile(std::vector<std::pair<result, ms>> const& results,
+                                     std::filesystem::path const& file);
 
     [[nodiscard]] auto nordlandGroundTruth(unsigned n) -> std::vector<std::vector<unsigned>>;
 

@@ -350,6 +350,26 @@ namespace seqslam {
         f << j.dump(2);
     }
 
+    void writeTimeSweepResultsToFile(std::vector<std::pair<result, ms>> const& results,
+                                     std::filesystem::path const& file) {
+        auto j = nlohmann::json{};
+
+        std::transform(
+            results.begin(), results.end(), std::back_inserter(j["curves"]), [](auto const& r) {
+                auto e = nlohmann::json{{"parameters", detail::parametersToJson(r.first.params)},
+                                        {"times", detail::timingsToJson(r.first.times)}};
+                e["times"]["Max time"] = r.second.count();
+                std::transform(r.first.stats.begin(),
+                               r.first.stats.end(),
+                               std::back_inserter(e["data"]),
+                               detail::predictionStatsToJson);
+                return e;
+            });
+
+        std::ofstream f{file};
+        f << j.dump(2);
+    }
+
     [[nodiscard]] auto nordlandGroundTruth(unsigned n) -> std::vector<std::vector<unsigned>> {
         auto truth = std::vector<std::vector<unsigned>>{};
         truth.reserve(n);
