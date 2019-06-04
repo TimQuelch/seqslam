@@ -178,12 +178,12 @@ namespace seqslam {
                                             queryImages,
                                             p,
                                             groundTruth,
-                                            detail::autoSweepPrPoints,
-                                            detail::autoSweepMinTime,
+                                            sweepMinTime,
+                                            sweepPrPoints,
                                             range,
                                             Var{});
-        auto const best = findBestFromResults(results, maxTime);
-        return extractFromParameters(best, Var{});
+        return findBestFromResults(results, maxTime);
+    }
     }
 } // namespace seqslam
 
