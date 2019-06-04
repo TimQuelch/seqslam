@@ -222,6 +222,17 @@ namespace seqslam {
                     inTime.push_back({r.params, maxf1});
                 }
             }
+
+            if (inTime.empty()) {
+                return std::min_element(results.begin(),
+                                        results.end(),
+                                        [](auto const& lhs, auto const& rhs) {
+                                            return totalTime(lhs.times) / lhs.times.iterations <
+                                                   totalTime(rhs.times) / rhs.times.iterations;
+                                        })
+                    ->params;
+            }
+
             return std::max_element(
                        inTime.begin(),
                        inTime.end(),
