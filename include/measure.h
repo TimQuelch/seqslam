@@ -208,7 +208,7 @@ namespace seqslam {
                                             Var{});
         auto timeSweepResults = std::vector<std::pair<result, ms>>{};
         for (auto t : tRange) {
-            auto const optimalParams = findBestFromResults(results, t);
+            auto const optimalParams = detail::findBestFromResults(results, t);
             auto const optimalResults = detail::runParameterSet(referenceImages,
                                                                 queryImages,
                                                                 {optimalParams},
