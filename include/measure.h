@@ -80,31 +80,17 @@ namespace seqslam {
         [[nodiscard]] auto applyRange(std::vector<seqslamParameters> const& p,
                                       std::vector<int> const& range,
                                       nTraj_t) -> std::vector<seqslamParameters>;
+
         [[nodiscard]] auto runParameterSet(std::vector<Mx> const& referenceImages,
                                            std::vector<Mx> const& queryImages,
                                            std::vector<seqslamParameters> ps,
                                            std::vector<std::vector<unsigned>> const& groundTruth,
                                            unsigned prPoints,
-                                           std::chrono::milliseconds minTime)
-            -> std::vector<result>;
+                                           ms minTime) -> std::vector<result>;
 
         [[nodiscard]] auto findBestFromResults(std::vector<result> const& results,
                                                std::chrono::milliseconds maxTime)
             -> seqslamParameters;
-
-        [[nodiscard]] constexpr auto extractFromResult(seqslamParameters const& p,
-                                                       patchWindowSize_t) {
-            return p.patchWindowSize;
-        }
-
-        [[nodiscard]] constexpr auto extractFromResult(seqslamParameters const& p,
-                                                       sequenceLength_t) {
-            return p.sequenceLength;
-        }
-
-        [[nodiscard]] constexpr auto extractFromResult(seqslamParameters const& p, nTraj_t) {
-            return p.nTraj;
-        }
     } // namespace detail
 
     [[nodiscard]] auto readParametersConfig() -> seqslamParameters;
@@ -153,7 +139,7 @@ namespace seqslam {
                                         seqslamParameters const& p,
                                         std::vector<std::vector<unsigned>> const& groundTruth,
                                         unsigned prPoints,
-                                        std::chrono::milliseconds minTime,
+                                        ms minTime,
                                         std::tuple<int, int, int> range1,
                                         Var1,
                                         std::tuple<int, int, int> range2,
