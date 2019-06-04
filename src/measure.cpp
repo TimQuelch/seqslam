@@ -119,7 +119,7 @@ namespace seqslam {
 
             auto context = opencl::createContext();
 
-            while (hrclock::now() - start < minTime) {
+            while (hrclock::now() - start < minTime || diffmxTimes.empty()) {
                 auto const begin = hrclock::now();
 
                 auto const diffMatrix = opencl::generateDiffMx(
