@@ -17,13 +17,17 @@ argparser.add_argument('-g', '--gaussian', type=int, default=-1, help='Size of g
 
 originalExt = '.json.gz'
 processedExt = '.csv'
-prefix = 'sweep'
+sweepPrefix = 'sweep'
+timesweepPrefix = 'timesweep'
 sweeps1d = [('sl', ['Sequence length']),
             ('ws', ['Patch window size']),
             ('nt', ['Number of trajectories'])]
 sweeps2d = [('sl-nt', ['Sequence length', 'Number of trajectories']),
             ('sl-ws', ['Sequence length', 'Patch window size']),
             ('ws-nt', ['Patch window size', 'Number of trajectories'])]
+timesweeps = [('sl', ['Sequence length', 'Max time']),
+              ('ws', ['Patch window size', 'Max time']),
+              ('nt', ['Number of trajectories', 'Max time'])]
 
 def checkUpdateRequired(original, processed):
     if not os.path.isfile(processed):
@@ -37,7 +41,7 @@ def checkUpdateRequired(original, processed):
 
     return False
 
-def loadSweep(sweep, variables):
+def loadSweep(prefix, sweep, variables):
     datafileJson = prefix + '-' + sweep + originalExt
     datafileCsv = prefix + '-' + sweep + processedExt
     if checkUpdateRequired(datafileJson, datafileCsv) or args.update:
@@ -79,7 +83,7 @@ def main(args):
     figs = []
 
     for sweep, variables in sweeps1d:
-        full, d = loadSweep(sweep, variables)
+        full, d = loadSweep(sweepPrefix, sweep, variables)
         v = variables[0]
 
         fig, ax = plt.subplots()
@@ -90,8 +94,23 @@ def main(args):
         axes[1].set_ylabel('Time')
         axes[1].set_ylim([300, 360])
 
+    for sweep, variables in timesweeps:
+        full, d = loadSweep(timesweepPrefix, sweep, variables)
+
+        d['Max time 2'] = d['Max time']
+        d = d.set_index('Max time 2')
+
+        fig, ax = plt.subplots()
+        d[['F1 Score', 'Time', 'Max time']].plot(style=['-o', '-o', ':'], secondary_y=['Time', 'Max time'], ax=ax)
+        axes = fig.get_axes()
+        axes[0].set_xlabel('Max time')
+        axes[0].set_ylabel('F1 Score')
+        axes[0].set_ylim([0, 1])
+        axes[1].set_ylabel('Time')
+        axes[1].set_ylim([300, 360])
+
     for sweep, variables in sweeps2d:
-        full, d = loadSweep(sweep, variables)
+        full, d = loadSweep(sweepPrefix, sweep, variables)
 
         timeGrid = d[[variables[0], variables[1], 'Time']]
         timeGrid = timeGrid.set_index([variables[1], variables[0]]).sort_index()
