@@ -110,7 +110,7 @@ namespace seqslam {
         [[nodiscard]] auto runAndTime(std::vector<Mx> const& referenceImages,
                                       std::vector<Mx> const& queryImages,
                                       seqslamParameters const& p,
-                                      std::chrono::milliseconds minTime) {
+                                      ms minTime) {
             using hrclock = std::chrono::high_resolution_clock;
             auto const start = hrclock::now();
 
@@ -148,11 +148,11 @@ namespace seqslam {
                 searchTimes.push_back(end - postenhanced);
             }
 
-            return timings{std::chrono::duration_cast<std::chrono::milliseconds>(std::accumulate(
+            return timings{std::chrono::duration_cast<ms>(std::accumulate(
                                diffmxTimes.begin(), diffmxTimes.end(), hrclock::duration{0})),
-                           std::chrono::duration_cast<std::chrono::milliseconds>(std::accumulate(
+                           std::chrono::duration_cast<ms>(std::accumulate(
                                enhanceTimes.begin(), enhanceTimes.end(), hrclock::duration{0})),
-                           std::chrono::duration_cast<std::chrono::milliseconds>(std::accumulate(
+                           std::chrono::duration_cast<ms>(std::accumulate(
                                searchTimes.begin(), searchTimes.end(), hrclock::duration{0})),
                            static_cast<unsigned>(diffmxTimes.size())};
         }
@@ -190,8 +190,7 @@ namespace seqslam {
                                            std::vector<seqslamParameters> ps,
                                            std::vector<std::vector<unsigned>> const& groundTruth,
                                            unsigned prPoints,
-                                           std::chrono::milliseconds minTime)
-            -> std::vector<result> {
+                                           ms minTime) -> std::vector<result> {
             auto results = std::vector<result>{};
             std::transform(
                 ps.begin(),
@@ -207,8 +206,7 @@ namespace seqslam {
             return results; // TODO: Do something with the results
         }
 
-        [[nodiscard]] auto findBestFromResults(std::vector<result> const& results,
-                                               std::chrono::milliseconds maxTime)
+        [[nodiscard]] auto findBestFromResults(std::vector<result> const& results, ms maxTime)
             -> seqslamParameters {
             auto inTime = std::vector<std::pair<seqslamParameters, double>>{};
             for (auto const& r : results) {

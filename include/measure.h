@@ -16,6 +16,8 @@ namespace seqslam {
     struct sequenceLength_t {};
     struct nTraj_t {};
 
+    using ms = std::chrono::milliseconds;
+
     struct seqslamParameters {
         std::filesystem::path datasetRoot = {};
         std::filesystem::path referencePath = {};
@@ -41,9 +43,9 @@ namespace seqslam {
     };
 
     struct timings {
-        std::chrono::milliseconds diffmxcalc = {};
-        std::chrono::milliseconds enhancement = {};
-        std::chrono::milliseconds sequenceSearch = {};
+        ms diffmxcalc = {};
+        ms enhancement = {};
+        ms sequenceSearch = {};
         unsigned iterations = 0;
     };
 
@@ -54,7 +56,7 @@ namespace seqslam {
     };
 
     namespace detail {
-        constexpr auto const autoSweepMinTime = std::chrono::milliseconds{100};
+        constexpr auto const autoSweepMinTime = ms{100};
         constexpr auto const autoSweepPrPoints = 30u;
 
         [[nodiscard]] auto generateRange(std::tuple<int, int, int> range) -> std::vector<int>;
@@ -126,7 +128,7 @@ namespace seqslam {
                                       seqslamParameters const& p,
                                       std::vector<std::vector<unsigned>> const& groundTruth,
                                       unsigned prPoints,
-                                      std::chrono::milliseconds minTime,
+                                      ms minTime,
                                       std::tuple<int, int, int> range,
                                       Var) {
         auto const ps = detail::applyRange(std::vector{p}, detail::generateRange(range), Var{});
@@ -156,7 +158,7 @@ namespace seqslam {
                               std::vector<Mx> const& queryImages,
                               seqslamParameters const& p,
                               std::vector<std::vector<unsigned>> const& groundTruth,
-                              std::chrono::milliseconds maxTime,
+                              ms maxTime,
                               std::tuple<int, int, int> range,
                               Var) {
         auto const results = parameterSweep(referenceImages,
