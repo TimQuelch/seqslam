@@ -5,6 +5,7 @@
 
 #include <chrono>
 #include <filesystem>
+#include <numeric>
 #include <vector>
 
 #include <Eigen/Dense>
@@ -59,7 +60,17 @@ namespace seqslam {
         constexpr auto const autoSweepMinTime = ms{100};
         constexpr auto const autoSweepPrPoints = 30u;
 
-        [[nodiscard]] auto generateRange(std::tuple<int, int, int> range) -> std::vector<int>;
+        template <typename T>
+        [[nodiscard]] auto generateRange(std::tuple<T, T, T> range) {
+            auto values =
+                std::vector<T>((std::get<1>(range) - std::get<0>(range)) / std::get<2>(range));
+            std::iota(values.begin(), values.end(), T{0});
+            std::transform(values.begin(), values.end(), values.begin(), [range](T v) {
+                return v * std::get<2>(range) + std::get<0>(range);
+            });
+            return values;
+        }
+
         [[nodiscard]] auto applyRange(std::vector<seqslamParameters> const& p,
                                       std::vector<int> const& range,
                                       patchWindowSize_t) -> std::vector<seqslamParameters>;
