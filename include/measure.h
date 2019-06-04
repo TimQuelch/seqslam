@@ -71,6 +71,20 @@ namespace seqslam {
             return values;
         }
 
+        template <typename Rep, typename Period>
+        [[nodiscard]] auto generateRange(std::tuple<std::chrono::duration<Rep, Period>,
+                                                    std::chrono::duration<Rep, Period>,
+                                                    std::chrono::duration<Rep, Period>> range) {
+            using Dur = std::chrono::duration<Rep, Period>;
+            auto values =
+                std::vector<Dur>((std::get<1>(range) - std::get<0>(range)) / std::get<2>(range));
+            std::iota(values.begin(), values.end(), Dur{0});
+            std::transform(values.begin(), values.end(), values.begin(), [range](Dur v) {
+                return v * std::get<2>(range).count() + std::get<0>(range);
+            });
+            return values;
+        }
+
         [[nodiscard]] auto applyRange(std::vector<seqslamParameters> const& p,
                                       std::vector<int> const& range,
                                       patchWindowSize_t) -> std::vector<seqslamParameters>;
