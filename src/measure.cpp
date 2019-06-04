@@ -19,6 +19,10 @@ namespace seqslam {
         constexpr auto const enhanceNPixPerThread = 4u;
         constexpr auto const searchNPixPerThread = 4u;
 
+        [[nodiscard]] constexpr auto totalTime(timings const& t) {
+            return t.diffmxcalc + t.enhancement + t.sequenceSearch;
+        }
+
         [[nodiscard]] auto generateThresholdRange(Mx const& mx, unsigned nThresholds)
             -> std::vector<double> {
             auto const max = mx.maxCoeff();
@@ -208,8 +212,7 @@ namespace seqslam {
             -> seqslamParameters {
             auto inTime = std::vector<std::pair<seqslamParameters, double>>{};
             for (auto const& r : results) {
-                if (r.times.diffmxcalc + r.times.enhancement + r.times.sequenceSearch <
-                    r.times.iterations * maxTime) {
+                if (totalTime(r.times) < r.times.iterations * maxTime) {
                     auto const maxf1 = std::max_element(r.stats.begin(),
                                                         r.stats.end(),
                                                         [](auto const& lhs, auto const& rhs) {
