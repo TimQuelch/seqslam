@@ -171,7 +171,9 @@ namespace seqslam {
                               std::vector<std::vector<unsigned>> const& groundTruth,
                               ms maxTime,
                               std::tuple<int, int, int> range,
-                              Var) {
+                              Var,
+                              ms sweepMinTime = detail::autoSweepMinTime,
+                              unsigned sweepPrPoints = detail::autoSweepPrPoints) {
         auto const results = parameterSweep(referenceImages,
                                             queryImages,
                                             p,
