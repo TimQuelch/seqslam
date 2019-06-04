@@ -184,6 +184,41 @@ namespace seqslam {
                                             Var{});
         return findBestFromResults(results, maxTime);
     }
+
+    template <typename Var>
+    auto autoSweepTime(std::vector<Mx> const& referenceImages,
+                       std::vector<Mx> const& queryImages,
+                       seqslamParameters const& p,
+                       std::vector<std::vector<unsigned>> const& groundTruth,
+                       std::tuple<int, int, int> varRange,
+                       Var,
+                       std::tuple<ms, ms, ms> timeRange,
+                       unsigned resultsPrPoints,
+                       ms resultsMinTime,
+                       unsigned sweepPrPoints = detail::autoSweepPrPoints,
+                       ms sweepMinTime = detail::autoSweepMinTime) {
+        auto const tRange = detail::generateRange(timeRange);
+        auto const results = parameterSweep(referenceImages,
+                                            queryImages,
+                                            p,
+                                            groundTruth,
+                                            sweepPrPoints,
+                                            sweepMinTime,
+                                            varRange,
+                                            Var{});
+        auto timeSweepResults = std::vector<std::pair<result, ms>>{};
+        for (auto t : tRange) {
+            auto const optimalParams = findBestFromResults(results, t);
+            auto const optimalResults = detail::runParameterSet(referenceImages,
+                                                                queryImages,
+                                                                {optimalParams},
+                                                                groundTruth,
+                                                                resultsPrPoints,
+                                                                resultsMinTime);
+            assert(optimalResults.size() == 1u);
+            timeSweepResults.push_back({optimalResults[0], t});
+        }
+        return timeSweepResults;
     }
 } // namespace seqslam
 
