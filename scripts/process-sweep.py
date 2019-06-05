@@ -28,6 +28,9 @@ sweeps2d = [('sl-nt', ['Sequence length', 'Number of trajectories']),
 timesweeps = [('sl', ['Sequence length', 'Max time']),
               ('ws', ['Patch window size', 'Max time']),
               ('nt', ['Number of trajectories', 'Max time'])]
+prs = [('sl', 'Sequence length', [2, 5, 10, 20, 40]),
+       ('ws', 'Patch window size', [2, 5, 10, 20, 40]),
+       ('nt', 'Number of trajectories', [2, 5, 10, 20, 40])]
 
 def checkUpdateRequired(original, processed):
     if not os.path.isfile(processed):
@@ -93,6 +96,7 @@ def main(args):
         axes[0].set_ylim([0, 1])
         axes[1].set_ylabel('Time')
         axes[1].set_ylim([300, 360])
+        figs.append((fig, sweepPrefix + '-' + sweep))
 
     for sweep, variables in timesweeps:
         full, d = loadSweep(timesweepPrefix, sweep, variables)
@@ -108,6 +112,7 @@ def main(args):
         axes[0].set_ylim([0, 1])
         axes[1].set_ylabel('Time')
         axes[1].set_ylim([300, 360])
+        figs.append((fig, timesweepPrefix + '-' + sweep))
 
     for sweep, variables in sweeps2d:
         full, d = loadSweep(sweepPrefix, sweep, variables)
@@ -130,7 +135,8 @@ def main(args):
         ax.set_xlabel(variables[0])
         ax.set_ylabel(variables[1])
         ax.set_zlabel('Time')
-        figs.append((fig, sweep + '-time-surf'))
+        ax.view_init(elev=25, azim=-135)
+        figs.append((fig, sweepPrefix + '-' + sweep + '-time-surf'))
 
         fig = plt.figure()
         ax = Axes3D(fig)
@@ -138,26 +144,41 @@ def main(args):
         ax.set_xlabel(variables[0])
         ax.set_ylabel(variables[1])
         ax.set_zlabel('F1')
-        figs.append((fig, sweep + '-f1-surf'))
+        ax.view_init(elev=25, azim=-135)
+        figs.append((fig, sweepPrefix + '-' + sweep + '-f1-surf'))
 
         fig, ax = plt.subplots()
         ax.contourf(X, Y, timeGrid)
         ax.set_xlabel(variables[0])
         ax.set_ylabel(variables[1])
-        figs.append((fig, sweep + '-time-contour'))
+        figs.append((fig, sweepPrefix + '-' + sweep + '-time-contour'))
 
         fig, ax = plt.subplots()
         ax.contourf(X, Y, f1Grid)
         ax.set_xlabel(variables[0])
         ax.set_ylabel(variables[1])
-        figs.append((fig, sweep + '-f1-contour'))
+        figs.append((fig, sweepPrefix + '-' + sweep + '-f1-contour'))
+
+    for sweep, variable, values in prs:
+        full, d = loadSweep(sweepPrefix, sweep, [variable])
+        pr = full.set_index(variable).loc[values].reset_index()
+        pr = pr.set_index('Recall')
+
+        fig, ax = plt.subplots()
+        pr.groupby(variable)['Precision'].plot(style='-', legend=True, ax=ax)
+        ax.set_prop_cycle(None)
+        pr.groupby(variable)['F1 Score'].plot(style=':', legend=False, ax=ax)
+        ax.set_ylabel('Precision')
+        ax.set_ylim([0, 1])
+        ax.set_xlim([0, 1])
+        figs.append((fig, 'pr-' + sweep))
 
     if args.show:
         plt.show()
 
     if args.write:
         for fig, name in figs:
-            fig.savefig(prefix + '-' + name + '.pdf')
+            fig.savefig(name + '.pdf')
 
 if __name__ == '__main__':
     args = argparser.parse_args()
