@@ -11,8 +11,8 @@
         "Image columns": 64,
         "Image contrast enhancement threshold": 20,
         "Patch window size": 10,
-        "Sequence length": 10,
-        "Number of trajectories": 10,
+        "Sequence length": 30,
+        "Number of trajectories": 15,
         "Min velocity": 0.9,
         "Max velocity": 1.6
     }

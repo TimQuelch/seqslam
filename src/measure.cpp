@@ -4,7 +4,6 @@
 
 #include <algorithm>
 #include <fstream>
-#include <numeric>
 #include <random>
 
 #include <nlohmann/json.hpp>
@@ -18,6 +17,10 @@ namespace seqslam {
         constexpr auto const diffMxNPixPerThread = 8u;
         constexpr auto const enhanceNPixPerThread = 4u;
         constexpr auto const searchNPixPerThread = 4u;
+
+        [[nodiscard]] constexpr auto totalTime(timings const& t) {
+            return t.diffmxcalc + t.enhancement + t.sequenceSearch;
+        }
 
         [[nodiscard]] auto generateThresholdRange(Mx const& mx, unsigned nThresholds)
             -> std::vector<double> {
@@ -106,7 +109,7 @@ namespace seqslam {
         [[nodiscard]] auto runAndTime(std::vector<Mx> const& referenceImages,
                                       std::vector<Mx> const& queryImages,
                                       seqslamParameters const& p,
-                                      std::chrono::milliseconds minTime) {
+                                      ms minTime) {
             using hrclock = std::chrono::high_resolution_clock;
             auto const start = hrclock::now();
 
@@ -116,7 +119,7 @@ namespace seqslam {
 
             auto context = opencl::createContext();
 
-            while (hrclock::now() - start < minTime) {
+            while (hrclock::now() - start < minTime || diffmxTimes.empty()) {
                 auto const begin = hrclock::now();
 
                 auto const diffMatrix = opencl::generateDiffMx(
@@ -144,11 +147,11 @@ namespace seqslam {
                 searchTimes.push_back(end - postenhanced);
             }
 
-            return timings{std::chrono::duration_cast<std::chrono::milliseconds>(std::accumulate(
+            return timings{std::chrono::duration_cast<ms>(std::accumulate(
                                diffmxTimes.begin(), diffmxTimes.end(), hrclock::duration{0})),
-                           std::chrono::duration_cast<std::chrono::milliseconds>(std::accumulate(
+                           std::chrono::duration_cast<ms>(std::accumulate(
                                enhanceTimes.begin(), enhanceTimes.end(), hrclock::duration{0})),
-                           std::chrono::duration_cast<std::chrono::milliseconds>(std::accumulate(
+                           std::chrono::duration_cast<ms>(std::accumulate(
                                searchTimes.begin(), searchTimes.end(), hrclock::duration{0})),
                            static_cast<unsigned>(diffmxTimes.size())};
         }
@@ -186,8 +189,7 @@ namespace seqslam {
                                            std::vector<seqslamParameters> ps,
                                            std::vector<std::vector<unsigned>> const& groundTruth,
                                            unsigned prPoints,
-                                           std::chrono::milliseconds minTime)
-            -> std::vector<result> {
+                                           ms minTime) -> std::vector<result> {
             auto results = std::vector<result>{};
             std::transform(
                 ps.begin(),
@@ -201,6 +203,42 @@ namespace seqslam {
                 });
 
             return results; // TODO: Do something with the results
+        }
+
+        [[nodiscard]] auto findBestFromResults(std::vector<result> const& results, ms maxTime)
+            -> seqslamParameters {
+
+            // Find the best F1 score of the parameter sets which were less than the max time
+            auto inTime = std::vector<std::pair<seqslamParameters, double>>{};
+            for (auto const& r : results) {
+                if (totalTime(r.times) < r.times.iterations * maxTime) {
+                    auto const maxf1 = std::max_element(r.stats.begin(),
+                                                        r.stats.end(),
+                                                        [](auto const& lhs, auto const& rhs) {
+                                                            return lhs.f1score < rhs.f1score;
+                                                        })
+                                           ->f1score;
+                    inTime.push_back({r.params, maxf1});
+                }
+            }
+
+            // If none gave results less than the max time, return the value with the min time
+            if (inTime.empty()) {
+                return std::min_element(results.begin(),
+                                        results.end(),
+                                        [](auto const& lhs, auto const& rhs) {
+                                            return totalTime(lhs.times) / lhs.times.iterations <
+                                                   totalTime(rhs.times) / rhs.times.iterations;
+                                        })
+                    ->params;
+            }
+
+            // Else return the paramters which had the best F1 score
+            return std::max_element(
+                       inTime.begin(),
+                       inTime.end(),
+                       [](auto const& lhs, auto const& rhs) { return lhs.second < rhs.second; })
+                ->first;
         }
     } // namespace detail
 
@@ -303,6 +341,26 @@ namespace seqslam {
                                         {"times", detail::timingsToJson(r.times)}};
                 std::transform(r.stats.begin(),
                                r.stats.end(),
+                               std::back_inserter(e["data"]),
+                               detail::predictionStatsToJson);
+                return e;
+            });
+
+        std::ofstream f{file};
+        f << j.dump(2);
+    }
+
+    void writeTimeSweepResultsToFile(std::vector<std::pair<result, ms>> const& results,
+                                     std::filesystem::path const& file) {
+        auto j = nlohmann::json{};
+
+        std::transform(
+            results.begin(), results.end(), std::back_inserter(j["curves"]), [](auto const& r) {
+                auto e = nlohmann::json{{"parameters", detail::parametersToJson(r.first.params)},
+                                        {"times", detail::timingsToJson(r.first.times)}};
+                e["times"]["Max time"] = r.second.count();
+                std::transform(r.first.stats.begin(),
+                               r.first.stats.end(),
                                std::back_inserter(e["data"]),
                                detail::predictionStatsToJson);
                 return e;

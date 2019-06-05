@@ -5,6 +5,7 @@
 
 #include <chrono>
 #include <filesystem>
+#include <numeric>
 #include <vector>
 
 #include <Eigen/Dense>
@@ -16,25 +17,7 @@ namespace seqslam {
     struct sequenceLength_t {};
     struct nTraj_t {};
 
-    namespace detail {
-        [[nodiscard]] auto generateRange(std::tuple<int, int, int> range) -> std::vector<int>;
-        [[nodiscard]] auto applyRange(std::vector<seqslamParameters> const& p,
-                                      std::vector<int> const& range,
-                                      patchWindowSize_t) -> std::vector<seqslamParameters>;
-        [[nodiscard]] auto applyRange(std::vector<seqslamParameters> const& p,
-                                      std::vector<int> const& range,
-                                      sequenceLength_t) -> std::vector<seqslamParameters>;
-        [[nodiscard]] auto applyRange(std::vector<seqslamParameters> const& p,
-                                      std::vector<int> const& range,
-                                      nTraj_t) -> std::vector<seqslamParameters>;
-        [[nodiscard]] auto runParameterSet(std::vector<Mx> const& referenceImages,
-                                           std::vector<Mx> const& queryImages,
-                                           std::vector<seqslamParameters> ps,
-                                           std::vector<std::vector<unsigned>> const& groundTruth,
-                                           unsigned prPoints,
-                                           std::chrono::milliseconds minTime)
-            -> std::vector<result>;
-    } // namespace detail
+    using ms = std::chrono::milliseconds;
 
     struct seqslamParameters {
         std::filesystem::path datasetRoot = {};
@@ -61,9 +44,9 @@ namespace seqslam {
     };
 
     struct timings {
-        std::chrono::milliseconds diffmxcalc = {};
-        std::chrono::milliseconds enhancement = {};
-        std::chrono::milliseconds sequenceSearch = {};
+        ms diffmxcalc = {};
+        ms enhancement = {};
+        ms sequenceSearch = {};
         unsigned iterations = 0;
     };
 
@@ -72,6 +55,57 @@ namespace seqslam {
         timings times;
         std::vector<predictionStats> stats;
     };
+
+    namespace detail {
+        constexpr auto const autoSweepMinTime = ms{100};
+        constexpr auto const autoSweepPrPoints = 30u;
+
+        template <typename T>
+        [[nodiscard]] auto generateRange(std::tuple<T, T, T> range) {
+            auto values =
+                std::vector<T>((std::get<1>(range) - std::get<0>(range)) / std::get<2>(range));
+            std::iota(values.begin(), values.end(), T{0});
+            std::transform(values.begin(), values.end(), values.begin(), [range](T v) {
+                return v * std::get<2>(range) + std::get<0>(range);
+            });
+            return values;
+        }
+
+        template <typename Rep, typename Period>
+        [[nodiscard]] auto generateRange(std::tuple<std::chrono::duration<Rep, Period>,
+                                                    std::chrono::duration<Rep, Period>,
+                                                    std::chrono::duration<Rep, Period>> range) {
+            using Dur = std::chrono::duration<Rep, Period>;
+            auto values =
+                std::vector<Dur>((std::get<1>(range) - std::get<0>(range)) / std::get<2>(range));
+            std::iota(values.begin(), values.end(), Dur{0});
+            std::transform(values.begin(), values.end(), values.begin(), [range](Dur v) {
+                return v * std::get<2>(range).count() + std::get<0>(range);
+            });
+            return values;
+        }
+
+        [[nodiscard]] auto applyRange(std::vector<seqslamParameters> const& p,
+                                      std::vector<int> const& range,
+                                      patchWindowSize_t) -> std::vector<seqslamParameters>;
+        [[nodiscard]] auto applyRange(std::vector<seqslamParameters> const& p,
+                                      std::vector<int> const& range,
+                                      sequenceLength_t) -> std::vector<seqslamParameters>;
+        [[nodiscard]] auto applyRange(std::vector<seqslamParameters> const& p,
+                                      std::vector<int> const& range,
+                                      nTraj_t) -> std::vector<seqslamParameters>;
+
+        [[nodiscard]] auto runParameterSet(std::vector<Mx> const& referenceImages,
+                                           std::vector<Mx> const& queryImages,
+                                           std::vector<seqslamParameters> ps,
+                                           std::vector<std::vector<unsigned>> const& groundTruth,
+                                           unsigned prPoints,
+                                           ms minTime) -> std::vector<result>;
+
+        [[nodiscard]] auto findBestFromResults(std::vector<result> const& results,
+                                               std::chrono::milliseconds maxTime)
+            -> seqslamParameters;
+    } // namespace detail
 
     [[nodiscard]] auto readParametersConfig() -> seqslamParameters;
 
@@ -90,7 +124,10 @@ namespace seqslam {
                             std::vector<predictionStats> const& stats,
                             std::filesystem::path const& file);
 
-    void writeResultsToFile(std::vector<result> const& stats, std::filesystem::path const& file);
+    void writeResultsToFile(std::vector<result> const& results, std::filesystem::path const& file);
+
+    void writeTimeSweepResultsToFile(std::vector<std::pair<result, ms>> const& results,
+                                     std::filesystem::path const& file);
 
     [[nodiscard]] auto nordlandGroundTruth(unsigned n) -> std::vector<std::vector<unsigned>>;
 
@@ -105,7 +142,7 @@ namespace seqslam {
                                       seqslamParameters const& p,
                                       std::vector<std::vector<unsigned>> const& groundTruth,
                                       unsigned prPoints,
-                                      std::chrono::milliseconds minTime,
+                                      ms minTime,
                                       std::tuple<int, int, int> range,
                                       Var) {
         auto const ps = detail::applyRange(std::vector{p}, detail::generateRange(range), Var{});
@@ -119,7 +156,7 @@ namespace seqslam {
                                         seqslamParameters const& p,
                                         std::vector<std::vector<unsigned>> const& groundTruth,
                                         unsigned prPoints,
-                                        std::chrono::milliseconds minTime,
+                                        ms minTime,
                                         std::tuple<int, int, int> range1,
                                         Var1,
                                         std::tuple<int, int, int> range2,
@@ -128,6 +165,63 @@ namespace seqslam {
         auto const p2 = detail::applyRange(p1, detail::generateRange(range2), Var2{});
         return detail::runParameterSet(
             referenceImages, queryImages, p2, groundTruth, prPoints, minTime);
+    }
+
+    template <typename Var>
+    auto findOptimalParameter(std::vector<Mx> const& referenceImages,
+                              std::vector<Mx> const& queryImages,
+                              seqslamParameters const& p,
+                              std::vector<std::vector<unsigned>> const& groundTruth,
+                              ms maxTime,
+                              std::tuple<int, int, int> range,
+                              Var,
+                              ms sweepMinTime = detail::autoSweepMinTime,
+                              unsigned sweepPrPoints = detail::autoSweepPrPoints) {
+        auto const results = parameterSweep(referenceImages,
+                                            queryImages,
+                                            p,
+                                            groundTruth,
+                                            sweepMinTime,
+                                            sweepPrPoints,
+                                            range,
+                                            Var{});
+        return findBestFromResults(results, maxTime);
+    }
+
+    template <typename Var>
+    auto autoSweepTime(std::vector<Mx> const& referenceImages,
+                       std::vector<Mx> const& queryImages,
+                       seqslamParameters const& p,
+                       std::vector<std::vector<unsigned>> const& groundTruth,
+                       std::tuple<int, int, int> varRange,
+                       Var,
+                       std::tuple<ms, ms, ms> timeRange,
+                       unsigned resultsPrPoints,
+                       ms resultsMinTime,
+                       unsigned sweepPrPoints = detail::autoSweepPrPoints,
+                       ms sweepMinTime = detail::autoSweepMinTime) {
+        auto const tRange = detail::generateRange(timeRange);
+        auto const results = parameterSweep(referenceImages,
+                                            queryImages,
+                                            p,
+                                            groundTruth,
+                                            sweepPrPoints,
+                                            sweepMinTime,
+                                            varRange,
+                                            Var{});
+        auto timeSweepResults = std::vector<std::pair<result, ms>>{};
+        for (auto t : tRange) {
+            auto const optimalParams = detail::findBestFromResults(results, t);
+            auto const optimalResults = detail::runParameterSet(referenceImages,
+                                                                queryImages,
+                                                                {optimalParams},
+                                                                groundTruth,
+                                                                resultsPrPoints,
+                                                                resultsMinTime);
+            assert(optimalResults.size() == 1u);
+            timeSweepResults.push_back({optimalResults[0], t});
+        }
+        return timeSweepResults;
     }
 } // namespace seqslam
 
