@@ -15,22 +15,28 @@ argparser.add_argument('-w', '--write', action='store_true', help='Write figures
 argparser.add_argument('-u', '--update', action='store_true', help='Force update csv file')
 argparser.add_argument('-g', '--gaussian', type=int, default=-1, help='Size of gaussian kernel to smooth surfaces')
 
+slName = '$l_s$'
+ntName = '$n_{traj}$'
+wsName = '$w_s$'
+f1Name = '$F_1$'
+timeName = 'Time ($\mathrm{ms^{-1}}$)'
+
 originalExt = '.json.gz'
 processedExt = '.csv'
 sweepPrefix = 'sweep'
 timesweepPrefix = 'timesweep'
-sweeps1d = [('sl', ['Sequence length']),
-            ('ws', ['Patch window size']),
-            ('nt', ['Number of trajectories'])]
-sweeps2d = [('sl-nt', ['Sequence length', 'Number of trajectories']),
-            ('sl-ws', ['Sequence length', 'Patch window size']),
-            ('ws-nt', ['Patch window size', 'Number of trajectories'])]
-timesweeps = [('sl', ['Sequence length', 'Max time']),
-              ('ws', ['Patch window size', 'Max time']),
-              ('nt', ['Number of trajectories', 'Max time'])]
-prs = [('sl', 'Sequence length', [2, 5, 10, 20, 40]),
-       ('ws', 'Patch window size', [2, 5, 10, 20, 40]),
-       ('nt', 'Number of trajectories', [2, 5, 10, 20, 40])]
+sweeps1d = [('sl', [slName]),
+            ('ws', [wsName]),
+            ('nt', [ntName])]
+sweeps2d = [('sl-nt', [slName, ntName]),
+            ('sl-ws', [slName, wsName]),
+            ('ws-nt', [wsName, ntName])]
+timesweeps = [('sl', [slName, 'Max time']),
+              ('ws', [wsName, 'Max time']),
+              ('nt', [ntName, 'Max time'])]
+prs = [('sl', slName, [2, 5, 10, 20, 40]),
+       ('ws', wsName, [2, 5, 10, 20, 40]),
+       ('nt', ntName, [2, 5, 10, 20, 40])]
 
 def checkUpdateRequired(original, processed):
     if not os.path.isfile(processed):
@@ -63,6 +69,11 @@ def loadSweep(prefix, sweep, variables):
     else:
         d = pd.read_csv(datafileCsv)
 
+    d = d.rename(columns={'F1 Score': f1Name,
+                          'Sequence length': slName,
+                          'Patch window size': wsName,
+                          'Number of trajectories': ntName})
+
     nu = d.nunique(axis=0)
     old = d
     d = d.drop(nu[nu == 1].index, axis=1)
@@ -70,16 +81,16 @@ def loadSweep(prefix, sweep, variables):
     d['Difference matrix calculation'] = d['Difference matrix calculation'] / d['Iterations']
     d['Difference matrix enhancement'] = d['Difference matrix enhancement'] / d['Iterations']
     d['Sequence search'] = d['Sequence search'] / d['Iterations']
-    d['Time'] = (d['Difference matrix calculation'] +
+    d[timeName] = (d['Difference matrix calculation'] +
                  d['Sequence search'] +
                  d['Difference matrix enhancement'])
 
     full = d
-    idx = d.groupby(variables)['F1 Score'].transform(max) == d['F1 Score']
+    idx = d.groupby(variables)[f1Name].transform(max) == d[f1Name]
     d = d[idx]
-    idx = d.groupby(variables)['Time'].transform(min) == d['Time']
+    idx = d.groupby(variables)[timeName].transform(min) == d[timeName]
     d = d[idx]
-    d = d.drop_duplicates(subset=variables + ['F1 Score', 'Time'])
+    d = d.drop_duplicates(subset=variables + [f1Name, timeName])
     return full, d
 
 def main(args):
@@ -90,39 +101,39 @@ def main(args):
         v = variables[0]
 
         fig, ax = plt.subplots()
-        d.set_index(v)[['F1 Score', 'Time']].plot(style='-o', secondary_y=['Time'], ax=ax)
+        d.set_index(v)[[f1Name, timeName]].plot(style='-o', secondary_y=[timeName], ax=ax)
         axes = fig.get_axes()
-        axes[0].set_ylabel('F1 Score')
+        axes[0].set_ylabel(f1Name)
         axes[0].set_ylim([0, 1])
-        axes[1].set_ylabel('Time')
+        axes[1].set_ylabel(timeName)
         axes[1].set_ylim([300, 360])
         figs.append((fig, sweepPrefix + '-' + sweep))
 
     for sweep, variables in timesweeps:
         full, d = loadSweep(timesweepPrefix, sweep, variables)
 
-        d['Max time 2'] = d['Max time']
-        d = d.set_index('Max time 2')
+        maxTimeName = 'Max time ($\mathrm{ms^{-1}}$)'
+        d[maxTimeName] = d['Max time']
+        d = d.set_index(maxTimeName)
 
         fig, ax = plt.subplots()
-        d[['F1 Score', 'Time', 'Max time']].plot(style=['-o', '-o', ':'], secondary_y=['Time', 'Max time'], ax=ax)
+        d[[f1Name, timeName, 'Max time']].plot(style=['-o', '-o', ':'], secondary_y=[timeName, 'Max time'], ax=ax)
         axes = fig.get_axes()
-        axes[0].set_xlabel('Max time')
-        axes[0].set_ylabel('F1 Score')
+        axes[0].set_ylabel(f1Name)
         axes[0].set_ylim([0, 1])
-        axes[1].set_ylabel('Time')
+        axes[1].set_ylabel(timeName)
         axes[1].set_ylim([300, 360])
         figs.append((fig, timesweepPrefix + '-' + sweep))
 
     for sweep, variables in sweeps2d:
         full, d = loadSweep(sweepPrefix, sweep, variables)
 
-        timeGrid = d[[variables[0], variables[1], 'Time']]
+        timeGrid = d[[variables[0], variables[1], timeName]]
         timeGrid = timeGrid.set_index([variables[1], variables[0]]).sort_index()
         timeGrid = timeGrid.unstack(level=variables[0])
         timeGrid = ndimage.gaussian_filter(timeGrid.to_numpy(), args.gaussian) if args.gaussian > 0 else timeGrid.to_numpy()
 
-        f1Grid = d[[variables[0], variables[1], 'F1 Score']]
+        f1Grid = d[[variables[0], variables[1], f1Name]]
         f1Grid = f1Grid.set_index([variables[1], variables[0]]).sort_index()
         f1Grid = f1Grid.unstack(level=variables[0])
         f1Grid = ndimage.gaussian_filter(f1Grid.to_numpy(), args.gaussian) if args.gaussian > 0 else f1Grid.to_numpy()
@@ -134,7 +145,7 @@ def main(args):
         ax.plot_surface(X, Y, timeGrid)
         ax.set_xlabel(variables[0])
         ax.set_ylabel(variables[1])
-        ax.set_zlabel('Time')
+        ax.set_zlabel(timeName)
         ax.view_init(elev=25, azim=-135)
         figs.append((fig, sweepPrefix + '-' + sweep + '-time-surf'))
 
@@ -143,7 +154,7 @@ def main(args):
         ax.plot_surface(X, Y, f1Grid)
         ax.set_xlabel(variables[0])
         ax.set_ylabel(variables[1])
-        ax.set_zlabel('F1')
+        ax.set_zlabel(f1Name)
         ax.view_init(elev=25, azim=-135)
         figs.append((fig, sweepPrefix + '-' + sweep + '-f1-surf'))
 
@@ -167,7 +178,7 @@ def main(args):
         fig, ax = plt.subplots()
         pr.groupby(variable)['Precision'].plot(style='-', legend=True, ax=ax)
         ax.set_prop_cycle(None)
-        pr.groupby(variable)['F1 Score'].plot(style=':', legend=False, ax=ax)
+        pr.groupby(variable)[f1Name].plot(style=':', legend=False, ax=ax)
         ax.set_ylabel('Precision')
         ax.set_ylim([0, 1])
         ax.set_xlim([0, 1])
