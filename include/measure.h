@@ -57,7 +57,7 @@ namespace seqslam {
     };
 
     namespace detail {
-        constexpr auto const autoSweepMinTime = ms{100};
+        constexpr auto const autoSweepMinTime = ms{500};
         constexpr auto const autoSweepPrPoints = 30u;
 
         template <typename T>
