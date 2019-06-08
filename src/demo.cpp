@@ -40,7 +40,7 @@ int main() {
     p.nQuery = queryImages.size();
     p.nReference = referenceImages.size();
 
-    auto const minTime = std::chrono::milliseconds{5000};
+    auto const minTime = std::chrono::milliseconds{10000};
     auto const prPoints = 50;
     auto const slRange = std::tuple{2, 50, 2};
     auto const wsRange = std::tuple{2, 50, 2};
@@ -49,7 +49,7 @@ int main() {
     auto const wsDenseRange = std::tuple{2, 50, 1};
     auto const ntDenseRange = std::tuple{2, 50, 1};
 
-    auto const timeRange = std::tuple{ms{300}, ms{400}, ms{5}};
+    auto const timeRange = std::tuple{ms{300}, ms{400}, ms{2}};
 
     auto const tsResultsSl = autoSweepTime(referenceImages,
                                        queryImages,
@@ -106,6 +106,10 @@ int main() {
     auto const resultNt = parameterSweep(
         referenceImages, queryImages, p, groundTruth, prPoints, minTime, ntDenseRange, nTraj_t{});
 
+    writeResultsToFile(resultSl, "sweep-sl.json");
+    writeResultsToFile(resultWs, "sweep-ws.json");
+    writeResultsToFile(resultNt, "sweep-nt.json");
+
     auto const resultSlWs = parameterSweep2d(referenceImages,
                                              queryImages,
                                              p,
@@ -139,9 +143,6 @@ int main() {
                                              ntRange,
                                              nTraj_t{});
 
-    writeResultsToFile(resultSl, "sweep-sl.json");
-    writeResultsToFile(resultWs, "sweep-ws.json");
-    writeResultsToFile(resultNt, "sweep-nt.json");
     writeResultsToFile(resultSlWs, "sweep-sl-ws.json");
     writeResultsToFile(resultSlNt, "sweep-sl-nt.json");
     writeResultsToFile(resultWsNt, "sweep-ws-nt.json");
