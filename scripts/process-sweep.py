@@ -106,7 +106,8 @@ def main(args):
         axes[0].set_ylabel(f1Name)
         axes[0].set_ylim([0, 1])
         axes[1].set_ylabel(timeName)
-        axes[1].set_ylim([300, 360])
+        axes[1].set_ylim([310, 360])
+        axes[0].get_legend().set_bbox_to_anchor((1, 0.3))
         figs.append((fig, sweepPrefix + '-' + sweep))
 
     for sweep, variables in timesweeps:
@@ -122,7 +123,8 @@ def main(args):
         axes[0].set_ylabel(f1Name)
         axes[0].set_ylim([0, 1])
         axes[1].set_ylabel(timeName)
-        axes[1].set_ylim([300, 360])
+        axes[1].set_ylim([310, 360])
+        axes[0].get_legend().set_bbox_to_anchor((1, 0.3))
         figs.append((fig, timesweepPrefix + '-' + sweep))
 
     for sweep, variables in sweeps2d:
@@ -182,6 +184,7 @@ def main(args):
         ax.set_ylabel('Precision')
         ax.set_ylim([0, 1])
         ax.set_xlim([0, 1])
+        ax.get_legend().set_title(variable)
         figs.append((fig, 'pr-' + sweep))
 
     if args.show:
